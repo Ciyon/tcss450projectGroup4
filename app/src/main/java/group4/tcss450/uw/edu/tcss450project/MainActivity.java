@@ -1,5 +1,6 @@
 package group4.tcss450.uw.edu.tcss450project;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.FragmentTransaction;
@@ -28,7 +29,9 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnF
 
     @Override
     public void onFragmentInteraction(String username, String password) {
-        // TODO: create intent and start MainDrawerActivity
+        // TODO: send login/user information via intent
+        Intent intent = new Intent(this, MainDrawerActivity.class);
+        startActivity(intent);
 
     }
 

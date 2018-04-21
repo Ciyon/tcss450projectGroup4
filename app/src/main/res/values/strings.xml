@@ -34,4 +34,12 @@
     <string name="button_login">Login</string>
     <string name="button_register">Register</string>
     <string name="button_submit">Submit</string>
+    <string name="button_logout">Logout</string>
+    
+    // Menu item text 
+    <string name="menu_home">Home</string>
+    <string name="menu_connections">Connections</string>
+    <string name="menu_requests">Requests</string>
+    <string name="menu_conversations">Conversations</string>
+    <string name="menu_weather">Weather</string>
 </resources>
