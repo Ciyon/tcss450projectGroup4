@@ -8,6 +8,30 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    // Headers
+    <string name="header_login">Login</string>
+    <string name="header_register">Register</string>
+
+    // Hints
+    <string name="hint_username">Enter username</string>
+    <string name="hint_password">Enter password</string>
+    <string name="hint_firstname">Enter first name</string>
+    <string name="hint_lastname">Enter last name</string>
+    <string name="hint_email">Enter e-mail address</string>
+    <string name="hint_confirm_password">Reenter password</string>
+
+    // EditText text
+    <string name="edittext_username">Username</string>
+    <string name="edittext_password">password</string>
+    <string name="edittext_firstname">First name</string>
+    <string name="edittext_lastname">Last name</string>
+    <string name="edittext_email">E-mail address</string>
+
+    // CheckBox text
+    <string name="checkbox_stay_logged_in">Stay logged in</string>
+
+    // Button text
+    <string name="button_login">Login</string>
+    <string name="button_register">Register</string>
+    <string name="button_submit">Submit</string>
 </resources>
