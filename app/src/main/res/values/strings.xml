@@ -12,6 +12,14 @@
     <string name="header_login">Login</string>
     <string name="header_register">Register</string>
 
+    // Temporary headers
+    <string name="header_chat">Chat</string>
+    <string name="header_home">Home</string>
+    <string name="header_connections">Connections</string>
+    <string name="header_requests">Requests</string>
+    <string name="header_weather">Weather</string>
+    <string name="header_conversations">Conversations</string>
+
     // Hints
     <string name="hint_username">Enter username</string>
     <string name="hint_password">Enter password</string>

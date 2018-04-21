@@ -1,9 +1,8 @@
 package group4.tcss450.uw.edu.tcss450project;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -102,7 +101,7 @@ public class MainDrawerActivity extends AppCompatActivity
     private void loadFragment(Fragment frag) {
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragmentContainer, frag)
+                .replace(R.id.fragmentContainer2, frag)
                 .addToBackStack(null);
         // Commit the transaction
         transaction.commit();
