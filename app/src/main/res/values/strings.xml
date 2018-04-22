@@ -3,8 +3,8 @@
     <string name="title_activity_main_drawer">MainDrawerActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">ChatApp</string>
+    <string name="nav_header_subtitle">tcss 450 group 4</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
@@ -43,11 +43,14 @@
     <string name="button_register">Register</string>
     <string name="button_submit">Submit</string>
     <string name="button_logout">Logout</string>
-    
-    // Menu item text 
+
+    // Menu item text
     <string name="menu_home">Home</string>
     <string name="menu_connections">Connections</string>
     <string name="menu_requests">Requests</string>
     <string name="menu_conversations">Conversations</string>
     <string name="menu_weather">Weather</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
