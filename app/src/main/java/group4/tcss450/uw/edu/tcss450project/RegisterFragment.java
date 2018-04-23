@@ -121,7 +121,7 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
                         confirmPasswordEditText.setError(confirmPasswordErrorMessage);
                     }
 
-                    if (passes == true) {
+                    if (passes) {
                         mListener.onFragmentInteraction(username, password);
                     }
                     break;

@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.OnF
     @Override
     public void onFragmentInteraction(String username, String password) {
         // TODO: send login/user information via intent
-        // TODO: clear back stack
         Intent intent = new Intent(this, MainDrawerActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
 
     }

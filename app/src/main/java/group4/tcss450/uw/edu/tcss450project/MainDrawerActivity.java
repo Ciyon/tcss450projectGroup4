@@ -17,7 +17,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 
 public class MainDrawerActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, NewConversationFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +43,21 @@ public class MainDrawerActivity extends AppCompatActivity
         Button logoutButton = findViewById(R.id.logoutButton);
         logoutButton.setOnClickListener(view -> {
             Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         });
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        //setContentView(R.layout.content_main);
+        if(savedInstanceState == null) {
+            if (findViewById(R.id.fragmentContainer2) != null) {
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragmentContainer2, new HomeFragment())
+                        .commit();
+            }
+        }
+
     }
 
     @Override
@@ -84,6 +95,7 @@ public class MainDrawerActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -107,10 +119,19 @@ public class MainDrawerActivity extends AppCompatActivity
 
     private void loadFragment(Fragment frag) {
         FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragmentContainer2, frag)
-                .addToBackStack(null);
+                            .beginTransaction()
+                            .replace(R.id.fragmentContainer2, frag)
+                            .addToBackStack(null);
+
+
         // Commit the transaction
         transaction.commit();
+    }
+
+    //This is being called by the Inbox Fragment and the NewConversation Fragment and simulates
+    //either a new chat being created or an existing chat being opened
+    @Override
+    public void onFragmentInteraction() {
+        loadFragment(new ChatFragment());
     }
 }

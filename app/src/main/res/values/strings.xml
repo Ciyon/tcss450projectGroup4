@@ -19,6 +19,8 @@
     <string name="header_requests">Requests</string>
     <string name="header_weather">Weather</string>
     <string name="header_conversations">Conversations</string>
+    <string name="header_inbox">Inbox</string>
+    <string name="header_new_conversation">New Conversation</string>
 
     // Hints
     <string name="hint_username">Enter username</string>
@@ -43,7 +45,8 @@
     <string name="button_register">Register</string>
     <string name="button_submit">Submit</string>
     <string name="button_logout">Logout</string>
-
+    <string name="button_create_conversation">Create Conversation</string>
+    <string name="button_load_conversation">Load Conversation</string>
     // Menu item text
     <string name="menu_home">Home</string>
     <string name="menu_connections">Connections</string>
