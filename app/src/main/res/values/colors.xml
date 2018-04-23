@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <!-- Color scheme 1 Blue and Red ->
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryDark">#004BA0</color>
+    <color name="colorAccent">#D32F3F</color>
+    -->
+    <!-- Color scheme 2 Pink and Brown ->
+    <color name="colorPrimary">#8D6E63</color>
+    <color name="colorPrimaryDark">#5F4339</color>
+    <color name="colorAccent">#D81B60</color>
+    -->
+
+    <!-- Color scheme 3 Grey and Cyan -->
+    <color name="colorPrimary">#BDBDBD</color>
+    <color name="colorPrimaryDark">#8D8D8D</color>
+    <color name="colorAccent">#26C6DA</color>
+    
 </resources>
