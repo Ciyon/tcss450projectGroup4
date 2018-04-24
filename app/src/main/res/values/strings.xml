@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">tcss450 project</string>
+    <string name="app_name">TCSS450 Project</string>
     <string name="title_activity_main_drawer">MainDrawerActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">ChatApp</string>
-    <string name="nav_header_subtitle">tcss 450 group 4</string>
+    <string name="nav_header_subtitle">TCSS 450 Group 4</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 

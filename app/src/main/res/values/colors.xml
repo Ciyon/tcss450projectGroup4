@@ -13,7 +13,7 @@
 
     <!-- Color scheme 3 Grey and Cyan -->
     <color name="colorPrimary">#BDBDBD</color>
-    <color name="colorPrimaryDark">#8D8D8D</color>
-    <color name="colorAccent">#26C6DA</color>
+    <color name="colorPrimaryDark">#8d8d8d</color>
+    <color name="colorAccent">#26c6da</color>
     
 </resources>
