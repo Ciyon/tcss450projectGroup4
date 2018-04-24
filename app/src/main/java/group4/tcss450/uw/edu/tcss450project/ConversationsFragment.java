@@ -14,10 +14,10 @@ import android.widget.Button;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class InboxFragment extends Fragment implements View.OnClickListener{
+public class ConversationsFragment extends Fragment implements View.OnClickListener{
     private NewConversationFragment.OnFragmentInteractionListener mListener;
 
-    public InboxFragment() {
+    public ConversationsFragment() {
         // Required empty public constructor
     }
 
