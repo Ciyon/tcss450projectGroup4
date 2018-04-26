@@ -3,14 +3,16 @@ package group4.tcss450.uw.edu.tcss450project;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import group4.tcss450.uw.edu.tcss450project.model.Credentials;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass.
@@ -65,10 +67,10 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
         if (mListener != null) {
             switch (view.getId()) {
                 case R.id.loginButton:
-                    EditText usernameEditText = getView().findViewById(R.id.usernameEdit);
+                    EditText usernameEditText = getView().findViewById(R.id.usernameLogin);
                     EditText passwordEditText = getView().findViewById(R.id.passwordEdit);
                     String username = usernameEditText.getText().toString();
-                    String password = passwordEditText.getText().toString();
+                    Editable password = passwordEditText.getEditableText();
 
                     boolean passes = true;
 
@@ -82,7 +84,7 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
                         passes = false;
                     }
 
-                    if (password.isEmpty()) {
+                    if (password.toString().isEmpty()) {
                         passwordErrorMessage += empty;
                         passes = false;
                     }
@@ -95,17 +97,29 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
                         passwordEditText.setError(passwordErrorMessage);
                     }
 
-                    if (passes == true) {
-                        mListener.onFragmentInteraction(username, password);
+                    if (passes) {
+                        Credentials credentials = new Credentials
+                                .Builder(username, password)
+                                .build();
+                        mListener.onLoginAttempt(credentials);
                     }
                     break;
                 case R.id.registerButton:
-                    mListener.onFragmentInteraction();
+                    mListener.onRegisterClicked();
                     break;
                 default:
                     Log.wtf("", "Didn't expect to see me...");
             }
         }
+    }
+
+    public void setError(String error) {
+        TextView tv = getView().findViewById(R.id.usernameRegister);
+        if (error.contains("email"))
+        {
+            tv = getView().findViewById(R.id.emailRegister);
+        }
+        tv.setError("Login Unsuccessful: " + error);
     }
 
     /**
@@ -120,8 +134,7 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(String username, String password);
-
-        void onFragmentInteraction();
+        void onLoginAttempt(Credentials credentials);
+        void onRegisterClicked();
     }
 }

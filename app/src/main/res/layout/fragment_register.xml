@@ -15,7 +15,7 @@
         android:gravity="center"
         android:text="@string/header_register"
         android:textAlignment="center"
-        android:textSize="22dp"
+        android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -30,10 +30,9 @@
         android:layout_marginTop="8dp"
         android:hint="@string/hint_firstname"
         android:inputType="text"
-        android:text="@string/edittext_firstname"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"/>
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <EditText
         android:id="@+id/lastName"
@@ -42,34 +41,31 @@
         android:layout_marginTop="8dp"
         android:hint="@string/hint_lastname"
         android:inputType="text"
-        android:text="@string/edittext_lastname"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/firstName" />
 
     <EditText
-        android:id="@+id/eMail"
+        android:id="@+id/emailRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="@string/hint_email"
         android:inputType="textEmailAddress"
-        android:text="@string/edittext_email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lastName" />
 
     <EditText
-        android:id="@+id/username"
+        android:id="@+id/usernameRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="@string/hint_username"
         android:inputType="text"
-        android:text="@string/edittext_username"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eMail" />
+        app:layout_constraintTop_toBottomOf="@+id/emailRegister" />
 
     <EditText
         android:id="@+id/password"
@@ -78,10 +74,9 @@
         android:layout_marginTop="8dp"
         android:hint="@string/hint_password"
         android:inputType="textPassword"
-        android:text="@string/edittext_password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username" />
+        app:layout_constraintTop_toBottomOf="@+id/usernameRegister" />
 
     <EditText
         android:id="@+id/confirmPassword"
@@ -90,7 +85,6 @@
         android:layout_marginTop="8dp"
         android:hint="@string/hint_confirm_password"
         android:inputType="textPassword"
-        android:text="@string/edittext_password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password" />
@@ -99,7 +93,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom|right">
+        android:gravity="bottom|end"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <Button
             android:id="@+id/submitButton"
             style="@style/Widget.AppCompat.Button.Colored"

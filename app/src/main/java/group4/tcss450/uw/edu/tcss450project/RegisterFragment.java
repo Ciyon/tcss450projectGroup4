@@ -3,13 +3,16 @@ package group4.tcss450.uw.edu.tcss450project;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import group4.tcss450.uw.edu.tcss450project.model.Credentials;
 
 
 /**
@@ -60,16 +63,16 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
         if (mListener != null) {
             switch (view.getId()) {
                 case R.id.submitButton:
-                    EditText usernameEditText = getView().findViewById(R.id.username);
+                    EditText usernameEditText = getView().findViewById(R.id.usernameRegister);
                     EditText passwordEditText = getView().findViewById(R.id.password);
                     EditText confirmPasswordEditText = getView().findViewById(R.id.confirmPassword);
                     EditText firstNameEditText = getView().findViewById(R.id.firstName);
                     EditText lastNameEditText = getView().findViewById(R.id.lastName);
-                    EditText emailEditText = getView().findViewById(R.id.eMail);
+                    EditText emailEditText = getView().findViewById(R.id.emailRegister);
 
                     String username = usernameEditText.getText().toString();
-                    String password = passwordEditText.getText().toString();
-                    String confirmPassword = confirmPasswordEditText.getText().toString();
+                    Editable password = passwordEditText.getEditableText();
+                    Editable confirmPassword = confirmPasswordEditText.getEditableText();
                     String firstname = firstNameEditText.getText().toString();
                     String lastname = lastNameEditText.getText().toString();
                     String email = emailEditText.getText().toString();
@@ -89,12 +92,12 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
                         passes = false;
                     }
 
-                    if (password.isEmpty()) {
+                    if (password.toString().isEmpty()) {
                         passwordErrorMessage += empty;
                         passes = false;
                     }
 
-                    if (confirmPassword.isEmpty()) {
+                    if (confirmPassword.toString().isEmpty()) {
                         confirmPasswordErrorMessage += empty;
                         passes = false;
                     }
@@ -104,7 +107,7 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
                         passes = false;
                     }
 
-                    if (!password.equals(confirmPassword)) {
+                    if (!password.toString().equals(confirmPassword.toString())) {
                         confirmPasswordErrorMessage += match;
                         passes = false;
                     }
@@ -122,13 +125,27 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
                     }
 
                     if (passes) {
-                        mListener.onFragmentInteraction(username, password);
+                        Credentials credentials = new Credentials
+                                .Builder(username, password)
+                                .addFirstName(firstname)
+                                .addLastName(lastname)
+                                .addEmail(email)
+                                .build();
+                        mListener.onRegisterAttempt(credentials);
                     }
                     break;
                 default:
                     Log.wtf("", "Didn't expect to see me...");
             }
         }
+    }
+    public void setError(String error) {
+        TextView tv = getView().findViewById(R.id.usernameRegister);
+        if (error.contains("email"))
+        {
+            tv = getView().findViewById(R.id.emailRegister);
+        }
+        tv.setError("Login Unsuccessful: " + error);
     }
 
 
@@ -143,8 +160,7 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(String username, String password);
+        void onRegisterAttempt(Credentials credentials);
     }
 }
 

@@ -31,8 +31,8 @@
     <string name="hint_confirm_password">Reenter password</string>
 
     // EditText text
-    <string name="edittext_username">Username</string>
-    <string name="edittext_password">password</string>
+    <string name="edittext_username">test</string>
+    <string name="edittext_password">test</string>
     <string name="edittext_firstname">First name</string>
     <string name="edittext_lastname">Last name</string>
     <string name="edittext_email">E-mail address</string>
@@ -47,6 +47,7 @@
     <string name="button_logout">Logout</string>
     <string name="button_create_conversation">Create Conversation</string>
     <string name="button_load_conversation">Load Conversation</string>
+
     // Menu item text
     <string name="menu_home">Home</string>
     <string name="menu_connections">Connections</string>
@@ -54,6 +55,8 @@
     <string name="menu_conversations">Conversations</string>
     <string name="menu_weather">Weather</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    // Keys
+    <string name="keys_fragment_login">loginFragmentTag</string>
+    <string name="keys_fragment_register">registerFragmentTag</string>
+
 </resources>
