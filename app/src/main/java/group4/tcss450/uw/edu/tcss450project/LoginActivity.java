@@ -1,11 +1,14 @@
 package group4.tcss450.uw.edu.tcss450project;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.CheckBox;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,10 +29,21 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
 
         if (savedInstanceState == null) {
             if (findViewById(R.id.fragmentContainer) != null) {
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragmentContainer, new LoginFragment(),
-                                getString(R.string.keys_fragment_login))
-                        .commit();
+                SharedPreferences prefs =
+                        getSharedPreferences(
+                                getString(R.string.keys_shared_prefs),
+                                Context.MODE_PRIVATE);
+                if (prefs.getBoolean(getString(R.string.keys_prefs_stay_logged_in),
+                        false)) {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                } else {
+                    getSupportFragmentManager().beginTransaction()
+                            .add(R.id.fragmentContainer, new LoginFragment(),
+                                    getString(R.string.keys_fragment_login))
+                            .commit();
+                }
             }
         }
 
@@ -89,6 +103,25 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
 
     }
 
+    private void checkStayLoggedIn() {
+        if (((CheckBox) findViewById(R.id.logCheckBox)).isChecked()) {
+            SharedPreferences prefs =
+                    getSharedPreferences(
+                            getString(R.string.keys_shared_prefs),
+                            Context.MODE_PRIVATE);
+            //save the username for later usage
+            prefs.edit().putString(
+                    getString(R.string.keys_prefs_username),
+                    mCredentials.getUsername())
+                    .apply();
+            //save the users “want” to stay logged in
+            prefs.edit().putBoolean(
+                    getString(R.string.keys_prefs_stay_logged_in),
+                    true)
+                    .apply();
+        }
+    }
+
     /**
      * Handle errors that may occur during the AsyncTask.
      *
@@ -109,6 +142,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
+                checkStayLoggedIn();
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
