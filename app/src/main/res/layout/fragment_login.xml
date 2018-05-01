@@ -30,7 +30,6 @@
         android:layout_marginTop="8dp"
         android:hint="@string/hint_username"
         android:inputType="text"
-        android:text="@string/edittext_username"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -43,7 +42,6 @@
         android:layout_marginTop="8dp"
         android:hint="@string/hint_password"
         android:inputType="textPassword"
-        android:text="@string/edittext_password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/usernameLogin" />

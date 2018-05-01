@@ -59,86 +59,89 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
     }
 
     @Override
-    public void onClick(View view) {
-        if (mListener != null) {
-            switch (view.getId()) {
-                case R.id.submitButton:
-                    EditText usernameEditText = getView().findViewById(R.id.usernameRegister);
-                    EditText passwordEditText = getView().findViewById(R.id.password);
-                    EditText confirmPasswordEditText = getView().findViewById(R.id.confirmPassword);
-                    EditText firstNameEditText = getView().findViewById(R.id.firstName);
-                    EditText lastNameEditText = getView().findViewById(R.id.lastName);
-                    EditText emailEditText = getView().findViewById(R.id.emailRegister);
+    public void onClick(View v) {
+        EditText username = getActivity().findViewById(R.id.usernameRegister);
+        EditText password = getActivity().findViewById(R.id.password);
+        EditText password2 = getActivity().findViewById(R.id.confirmPassword);
+        EditText email = getActivity().findViewById(R.id.emailRegister);
+        EditText firstName = getActivity().findViewById(R.id.firstName);
+        EditText lastName = getActivity().findViewById(R.id.lastName);
 
-                    String username = usernameEditText.getText().toString();
-                    Editable password = passwordEditText.getEditableText();
-                    Editable confirmPassword = confirmPasswordEditText.getEditableText();
-                    String firstname = firstNameEditText.getText().toString();
-                    String lastname = lastNameEditText.getText().toString();
-                    String email = emailEditText.getText().toString();
+        boolean unValid = true;
+        boolean pw1Valid = true;
+        boolean pw2Valid = true;
+        boolean emailValid = true;
+        boolean firstNameValid = true;
+        boolean lastNameValid = true;
 
-                    boolean passes = true;
+        //Check and throw errors for username edittext
+        if(username.getText().toString().isEmpty()) {
+            unValid = false;
+            username.setError("Empty Field!");
+        }
 
-                    String empty = "Empty field ";
-                    String match = "Passwords don't match ";
-                    String length = "Password must be at least 5 characters";
+        //Check and throw errors for password edittext
+        if(password.getText().toString().isEmpty()) {
+            pw1Valid = false;
+            password.setError("Empty Field!");
+        } else if(password.getText().toString().length() > 0 && password.getText().toString().length() < 5) {
+            pw1Valid = false;
+            password.setError("Password must be at least 5 characters");
+        }
 
-                    String usernameErrorMessage = "";
-                    String passwordErrorMessage = "";
-                    String confirmPasswordErrorMessage = "";
 
-                    if (username.isEmpty()) {
-                        usernameErrorMessage += empty;
-                        passes = false;
-                    }
-
-                    if (password.toString().isEmpty()) {
-                        passwordErrorMessage += empty;
-                        passes = false;
-                    }
-
-                    if (confirmPassword.toString().isEmpty()) {
-                        confirmPasswordErrorMessage += empty;
-                        passes = false;
-                    }
-
-                    if (password.length() < 5) {
-                        passwordErrorMessage += length;
-                        passes = false;
-                    }
-
-                    if (!password.toString().equals(confirmPassword.toString())) {
-                        confirmPasswordErrorMessage += match;
-                        passes = false;
-                    }
-
-                    if (!usernameErrorMessage.isEmpty()) {
-                        usernameEditText.setError(usernameErrorMessage);
-                    }
-
-                    if (!passwordErrorMessage.isEmpty()) {
-                        passwordEditText.setError(passwordErrorMessage);
-                    }
-
-                    if (!confirmPasswordErrorMessage.isEmpty()) {
-                        confirmPasswordEditText.setError(confirmPasswordErrorMessage);
-                    }
-
-                    if (passes) {
-                        Credentials credentials = new Credentials
-                                .Builder(username, password)
-                                .addFirstName(firstname)
-                                .addLastName(lastname)
-                                .addEmail(email)
-                                .build();
-                        mListener.onRegisterAttempt(credentials);
-                    }
-                    break;
-                default:
-                    Log.wtf("", "Didn't expect to see me...");
+        //Check and throw errors for password conformation edittext
+        if(password2.getText().toString().isEmpty()) {
+            pw2Valid = false;
+            password2.setError("Empty Field!");
+        } else if(pw2Valid){
+            String confError = "";
+            if(!password2.getText().toString().equals(password.getText().toString())) {
+                pw2Valid = false;
+                confError += "Passwords do not match!";
+            }
+            if(password2.getText().toString().length() < 5) {
+                pw2Valid = false;
+                if(!confError.isEmpty()){
+                    confError += "\n";
+                }
+                confError += "Password must be at least 5 characters";
+            }
+            if(!pw2Valid) {
+                password2.setError(confError);
             }
         }
+
+
+        //Check and throw errors for email edittext
+        String e = email.getText().toString();
+        if(e.isEmpty()) {
+            emailValid = false;
+            email.setError("Empty Field!");
+        } else if (!e.contains("@")) {
+            email.setError("Invalid email address");
+        }
+
+        //Check and throw errors for name fields
+        if(firstName.getText().toString().isEmpty()) {
+            firstNameValid = false;
+            firstName.setError("Empty Field!");
+        }
+        if(lastName.getText().toString().isEmpty()) {
+            lastNameValid = false;
+            lastName.setError("Empty Field!");
+        }
+
+        if(unValid && pw1Valid && pw2Valid && emailValid && firstNameValid && lastNameValid) {
+            Credentials c = new Credentials.Builder(username.getText().toString(), password.getText())
+                    .addEmail(email.getText().toString())
+                    .addFirstName(firstName.getText().toString())
+                    .addLastName(lastName.getText().toString())
+                    .build();
+            mListener.onRegisterAttempt(c);
+        }
     }
+
     public void setError(String error) {
         TextView tv = getView().findViewById(R.id.usernameRegister);
         if (error.contains("email"))

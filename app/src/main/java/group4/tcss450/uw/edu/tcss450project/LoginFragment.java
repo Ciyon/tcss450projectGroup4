@@ -63,46 +63,12 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(View v) {
+
         if (mListener != null) {
-            switch (view.getId()) {
+            switch (v.getId()) {
                 case R.id.loginButton:
-                    EditText usernameEditText = getView().findViewById(R.id.usernameLogin);
-                    EditText passwordEditText = getView().findViewById(R.id.passwordEdit);
-                    String username = usernameEditText.getText().toString();
-                    Editable password = passwordEditText.getEditableText();
-
-                    boolean passes = true;
-
-                    String empty = "Empty field ";
-
-                    String usernameErrorMessage = "";
-                    String passwordErrorMessage = "";
-
-                    if (username.isEmpty()) {
-                        usernameErrorMessage += empty;
-                        passes = false;
-                    }
-
-                    if (password.toString().isEmpty()) {
-                        passwordErrorMessage += empty;
-                        passes = false;
-                    }
-
-                    if (!usernameErrorMessage.isEmpty()) {
-                        usernameEditText.setError(usernameErrorMessage);
-                    }
-
-                    if (!passwordErrorMessage.isEmpty()) {
-                        passwordEditText.setError(passwordErrorMessage);
-                    }
-
-                    if (passes) {
-                        Credentials credentials = new Credentials
-                                .Builder(username, password)
-                                .build();
-                        mListener.onLoginAttempt(credentials);
-                    }
+                    login();
                     break;
                 case R.id.registerButton:
                     mListener.onRegisterClicked();
@@ -111,15 +77,51 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
                     Log.wtf("", "Didn't expect to see me...");
             }
         }
+
     }
 
-    public void setError(String error) {
-        TextView tv = getView().findViewById(R.id.usernameRegister);
-        if (error.contains("email"))
-        {
-            tv = getView().findViewById(R.id.emailRegister);
+    //Performs the client side checks for login, will set errors for empty fields
+    //and for any password < 5 characters, which cannot possibly be valid
+    private void login() {
+        EditText username = getActivity().findViewById(R.id.usernameLogin);
+        EditText password = getActivity().findViewById(R.id.passwordEdit);
+        String un = username.getText().toString();
+        boolean valid = true;
+
+        if(un.isEmpty()) {
+            valid = false;
+            username.setError("Empty Field!");
         }
-        tv.setError("Login Unsuccessful: " + error);
+
+        if(password.getText().toString().isEmpty()) {
+            valid = false;
+            password.setError("Empty Field!");
+        }
+
+        if(password.getText().toString().length() > 0 && password.getText().toString().length() < 5) {
+            valid = false;
+            password.setError("Invalid Password!");
+        }
+
+        if(valid) {
+            Credentials c = new Credentials.Builder(un,password.getText())
+                    .build();
+            mListener.onLoginAttempt(c);
+        }
+    }
+
+    /**
+     * Allows an external source to set an error message on this fragment. This may
+     * be needed if an Activity includes processing that could cause login to fail.
+     *
+     @param err
+     the error message to display.
+     */
+    public void
+    setError(String err) {
+        //Log in unsuccessful for reason: err. Try again.
+        //you may want to add error stuffs for the user here.
+        ((TextView) getView().findViewById(R.id.usernameLogin)).setError("Login Unsuccessful");
     }
 
     /**
