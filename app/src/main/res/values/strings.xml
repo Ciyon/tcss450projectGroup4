@@ -8,11 +8,12 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    // Headers
+    <!-- Headers -->
     <string name="header_login">Login</string>
     <string name="header_register">Register</string>
+    <string name="header_settings">Settings</string>
 
-    // Temporary headers
+    <!-- Temporary headers -->
     <string name="header_chat">Chat</string>
     <string name="header_home">Home</string>
     <string name="header_connections">Connections</string>
@@ -22,7 +23,10 @@
     <string name="header_inbox">Inbox</string>
     <string name="header_new_conversation">New Conversation</string>
 
-    // Hints
+    <!-- Labels -->
+    <string name="label_color_selection">App Color Scheme</string>
+
+    <!-- Hints -->
     <string name="hint_username">Enter username</string>
     <string name="hint_password">Enter password</string>
     <string name="hint_firstname">Enter first name</string>
@@ -30,34 +34,41 @@
     <string name="hint_email">Enter e-mail address</string>
     <string name="hint_confirm_password">Reenter password</string>
 
-    // EditText text
+    <!-- EditText text -->
     <string name="edittext_username">test</string>
     <string name="edittext_password">test</string>
     <string name="edittext_firstname">First name</string>
     <string name="edittext_lastname">Last name</string>
     <string name="edittext_email">E-mail address</string>
 
-    // CheckBox text
+    <!-- CheckBox text -->
     <string name="checkbox_stay_logged_in">Stay logged in</string>
 
-    // Button text
+    <!-- Button text -->
     <string name="button_login">Login</string>
     <string name="button_register">Register</string>
     <string name="button_submit">Submit</string>
     <string name="button_logout">Logout</string>
     <string name="button_create_conversation">Create Conversation</string>
     <string name="button_load_conversation">Load Conversation</string>
+    <string name="button_settings_apply">Apply</string>
 
-    // Menu item text
+    <!-- Radiobutton Text -->
+    <string name="radio_theme1">Blue and Red</string>
+    <string name="radio_theme2">Pink and Brown</string>
+    <string name="radio_theme3">Grey and Cyan</string>
+
+    <!-- Menu item text -->
     <string name="menu_home">Home</string>
     <string name="menu_connections">Connections</string>
     <string name="menu_requests">Requests</string>
     <string name="menu_conversations">Conversations</string>
     <string name="menu_weather">Weather</string>
 
-    // Keys
+    <!-- Keys -->
     <string name="keys_shared_prefs">edu.uw.tcss450.group4.tcss450project.PREFS</string>
     <string name="keys_prefs_username">username</string>
+    <string name="keys_prefs_theme">theme</string>
     <string name="keys_prefs_stay_logged_in">loggedIn</string>
     <string name="keys_fragment_login">loginFragmentTag</string>
     <string name="keys_fragment_register">registerFragmentTag</string>

@@ -23,13 +23,33 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        int theme = prefs.getInt(getString(R.string.keys_prefs_theme), 1);
+        switch(theme) {
+            case 1:
+                setTheme(R.style.AppTheme);
+                break;
+            case 2:
+                setTheme(R.style.AppTheme2);
+                break;
+            case 3:
+                setTheme(R.style.AppTheme3);
+                break;
+            default:
+                setTheme(R.style.AppTheme);
+                break;
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
         if (savedInstanceState == null) {
             if (findViewById(R.id.fragmentContainer) != null) {
-                SharedPreferences prefs =
+                prefs =
                         getSharedPreferences(
                                 getString(R.string.keys_shared_prefs),
                                 Context.MODE_PRIVATE);

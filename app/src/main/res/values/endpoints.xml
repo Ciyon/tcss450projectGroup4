@@ -3,7 +3,7 @@
     <!--
     TODO: SET ep_base_url to group 4 server instead of tcss450 server.
     !-->
-    <string name="ep_base_url">tcss450.herokuapp.com</string>
+    <string name="ep_base_url">roberjam-lab4-backend.herokuapp.com</string>
     <string name="ep_login">login</string>
     <string name="ep_register">register</string>
 </resources>

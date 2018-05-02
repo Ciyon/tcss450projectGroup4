@@ -19,11 +19,34 @@ import android.view.MenuItem;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, NewConversationFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, NewConversationFragment.OnFragmentInteractionListener,
+        SettingsFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        int theme = prefs.getInt(getString(R.string.keys_prefs_theme), 1);
+        switch(theme) {
+            case 1:
+                setTheme(R.style.AppTheme_NoActionBar);
+                break;
+            case 2:
+                setTheme(R.style.AppTheme_NoActionBar2);
+                break;
+            case 3:
+                setTheme(R.style.AppTheme_NoActionBar3);
+                break;
+            default:
+                setTheme(R.style.AppTheme_NoActionBar);
+                break;
+        }
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main_drawer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -89,6 +112,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            loadFragment(new SettingsFragment());
             return true;
         }
 
@@ -150,5 +174,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction() {
         loadFragment(new ChatFragment());
+    }
+
+    @Override
+    public void onSettingsUpdate(int choice) {
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        //save the username for later usage
+        prefs.edit().putInt(
+                getString(R.string.keys_prefs_theme),
+                choice)
+                .apply();
+
+        //reload activity
+        Intent intent = getIntent();
+        finish();
+
+        startActivity(intent);
+
     }
 }
