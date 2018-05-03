@@ -22,9 +22,10 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NewConversationFragment.OnFragmentInteractionListener,
         SettingsFragment.OnFragmentInteractionListener{
 
+    private String Username;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        Username = "bob";
         setUserTheme();
         super.onCreate(savedInstanceState);
 
