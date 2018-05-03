@@ -148,7 +148,7 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
         {
             tv = getView().findViewById(R.id.emailRegister);
         }
-        tv.setError("Login Unsuccessful: " + error);
+        tv.setError("Registration Unsuccessful: " + error);
     }
 
 
