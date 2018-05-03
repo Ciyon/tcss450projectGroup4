@@ -143,6 +143,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         try {
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
+
             if (success) {
                 //Need to check if verified, if true do this
                 boolean verified = true;
@@ -164,7 +165,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                         (LoginFragment) getSupportFragmentManager()
                                 .findFragmentByTag(getString(R.string.keys_fragment_login));
 
-                frag.setError(resultsJSON.getString("message"));
+                frag.setError("fail");
             }
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String
@@ -197,8 +198,8 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                         (RegisterFragment) getSupportFragmentManager()
                                 .findFragmentByTag(getString(R.string.keys_fragment_register));
 
-                String error = resultsJSON.getJSONObject("error").get("detail").toString();
-                frag.setError(error);
+
+                frag.setError("fail");
             }
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String

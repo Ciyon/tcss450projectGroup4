@@ -23,6 +23,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark3</item>
         <item name="colorAccent">@color/colorAccent3</item>
         <item name="android:navigationBarColor">@color/colorPrimaryDark3</item>
+
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -50,6 +51,8 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark3</item>
         <item name="colorAccent">@color/colorAccent3</item>
         <item name="android:navigationBarColor">@color/colorPrimaryDark3</item>
+
+
     </style>
 
 

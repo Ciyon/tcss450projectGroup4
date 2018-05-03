@@ -3,6 +3,7 @@ package group4.tcss450.uw.edu.tcss450project;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NewConversationFragment.OnFragmentInteractionListener,
@@ -25,7 +27,7 @@ public class MainActivity extends AppCompatActivity
     private String Username;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Username = "bob";
+
         setUserTheme();
         super.onCreate(savedInstanceState);
 
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
         //setContentView(R.layout.content_main);
         if(savedInstanceState == null) {
             if (findViewById(R.id.fragmentContainer2) != null) {
@@ -82,6 +85,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_drawer, menu);
+        setDrawerColor();
         return true;
     }
 
@@ -179,6 +183,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setUserTheme() {
+
         SharedPreferences prefs =
                 getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
@@ -196,6 +201,26 @@ public class MainActivity extends AppCompatActivity
                 break;
             default:
                 setTheme(R.style.AppTheme_NoActionBar);
+                break;
+        }
+
+    }
+
+    private void setDrawerColor() {
+        LinearLayout t = findViewById(R.id.actionBarStuff);
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        int theme = prefs.getInt(getString(R.string.keys_prefs_theme), 1);
+        switch(theme) {
+            case 2:
+                t.setBackgroundColor(Color.rgb(216, 27, 96));
+                break;
+            case 3:
+                t.setBackgroundColor(Color.rgb(38, 198, 218));
+                break;
+            default:
                 break;
         }
 

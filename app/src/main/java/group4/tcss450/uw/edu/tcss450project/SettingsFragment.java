@@ -2,6 +2,7 @@ package group4.tcss450.uw.edu.tcss450project;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -25,6 +26,11 @@ public class SettingsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        SharedPreferences prefs =
+        getActivity().getSharedPreferences(
+                getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
+        int theme = prefs.getInt(getString(R.string.keys_prefs_theme), 1);
         // Inflate the layout for this fragment
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_settings, container, false);
@@ -35,7 +41,7 @@ public class SettingsFragment extends Fragment {
                 onRadioColorClicked(view);
             }
         });
-
+        if(theme == 1) rb.toggle();
         rb = (RadioButton) v.findViewById(R.id.radioTheme2);
         rb.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,7 +49,7 @@ public class SettingsFragment extends Fragment {
                 onRadioColorClicked(view);
             }
         });
-
+        if(theme == 2) rb.toggle();
         rb = (RadioButton) v.findViewById(R.id.radioTheme3);
         rb.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,7 +57,7 @@ public class SettingsFragment extends Fragment {
                 onRadioColorClicked(view);
             }
         });
-
+        if(theme == 3) rb.toggle();
         return v;
     }
 
