@@ -25,26 +25,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        SharedPreferences prefs =
-                getSharedPreferences(
-                        getString(R.string.keys_shared_prefs),
-                        Context.MODE_PRIVATE);
-        int theme = prefs.getInt(getString(R.string.keys_prefs_theme), 1);
-        switch(theme) {
-            case 1:
-                setTheme(R.style.AppTheme_NoActionBar);
-                break;
-            case 2:
-                setTheme(R.style.AppTheme_NoActionBar2);
-                break;
-            case 3:
-                setTheme(R.style.AppTheme_NoActionBar3);
-                break;
-            default:
-                setTheme(R.style.AppTheme_NoActionBar);
-                break;
-        }
-
+        setUserTheme();
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main_drawer);
@@ -193,6 +174,29 @@ public class MainActivity extends AppCompatActivity
         finish();
 
         startActivity(intent);
+
+    }
+
+    private void setUserTheme() {
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        int theme = prefs.getInt(getString(R.string.keys_prefs_theme), 1);
+        switch(theme) {
+            case 1:
+                setTheme(R.style.AppTheme_NoActionBar);
+                break;
+            case 2:
+                setTheme(R.style.AppTheme_NoActionBar2);
+                break;
+            case 3:
+                setTheme(R.style.AppTheme_NoActionBar3);
+                break;
+            default:
+                setTheme(R.style.AppTheme_NoActionBar);
+                break;
+        }
 
     }
 }

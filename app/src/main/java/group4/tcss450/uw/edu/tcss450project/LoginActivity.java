@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,33 +24,14 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences prefs =
-                getSharedPreferences(
-                        getString(R.string.keys_shared_prefs),
-                        Context.MODE_PRIVATE);
-        int theme = prefs.getInt(getString(R.string.keys_prefs_theme), 1);
-        switch(theme) {
-            case 1:
-                setTheme(R.style.AppTheme);
-                break;
-            case 2:
-                setTheme(R.style.AppTheme2);
-                break;
-            case 3:
-                setTheme(R.style.AppTheme3);
-                break;
-            default:
-                setTheme(R.style.AppTheme);
-                break;
-        }
+        setUserTheme();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         if (savedInstanceState == null) {
             if (findViewById(R.id.fragmentContainer) != null) {
-                prefs =
+                SharedPreferences prefs =
                         getSharedPreferences(
                                 getString(R.string.keys_shared_prefs),
                                 Context.MODE_PRIVATE);
@@ -162,10 +144,12 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
+                //Need to check if verified, if true do this
                 checkStayLoggedIn();
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
+                //if false pop up the toast and do nothing
             } else {
                 // Login was unsuccessful. Don’t switch fragments and inform the user
                 LoginFragment frag =
@@ -188,9 +172,17 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                Toast.makeText(this,
+                        "Registration Successful!\nPlease Respond to Confirmation Email",
+                        Toast.LENGTH_LONG).show();
+
+                FragmentTransaction transaction = getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragmentContainer, new LoginFragment(),
+                                getString(R.string.keys_fragment_login));
+                // Commit the transaction
+                transaction.commit();
+
             } else {
                 //Login was unsuccessful. Don’t switch fragments and inform the user
                 RegisterFragment frag =
@@ -206,6 +198,28 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
             Log.e("JSON_PARSE_ERROR", result
                     + System.lineSeparator()
                     + e.getMessage());
+        }
+    }
+
+    private void setUserTheme() {
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        int theme = prefs.getInt(getString(R.string.keys_prefs_theme), 1);
+        switch(theme) {
+            case 1:
+                setTheme(R.style.AppTheme);
+                break;
+            case 2:
+                setTheme(R.style.AppTheme2);
+                break;
+            case 3:
+                setTheme(R.style.AppTheme3);
+                break;
+            default:
+                setTheme(R.style.AppTheme);
+                break;
         }
     }
 }
