@@ -42,6 +42,9 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
         b = v.findViewById(R.id.registerButton);
         b.setOnClickListener(this);
 
+        b = v.findViewById(R.id.resendButton);
+        b.setOnClickListener(this);
+
         return v;
     }
 
@@ -72,6 +75,9 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
                     break;
                 case R.id.registerButton:
                     mListener.onRegisterClicked();
+                    break;
+                case R.id.resendButton:
+                    mListener.onResendEmailClicked();
                     break;
                 default:
                     Log.wtf("", "Didn't expect to see me...");
@@ -138,5 +144,6 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
         // TODO: Update argument type and name
         void onLoginAttempt(Credentials credentials);
         void onRegisterClicked();
+        void onResendEmailClicked();
     }
 }

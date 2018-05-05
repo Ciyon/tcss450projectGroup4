@@ -11,6 +11,7 @@
     <!-- Headers -->
     <string name="header_login">Login</string>
     <string name="header_register">Register</string>
+    <string name="header_resend">Resend Verification Email</string>
     <string name="header_settings">Settings</string>
 
     <!-- Temporary headers -->
@@ -48,6 +49,8 @@
     <string name="button_login">Login</string>
     <string name="button_register">Register</string>
     <string name="button_submit">Submit</string>
+    <string name="button_resend">Resend Email</string>
+    <string name="button_send">Send Email</string>
     <string name="button_logout">Logout</string>
     <string name="button_create_conversation">Create Conversation</string>
     <string name="button_load_conversation">Load Conversation</string>
@@ -72,5 +75,9 @@
     <string name="keys_prefs_stay_logged_in">loggedIn</string>
     <string name="keys_fragment_login">loginFragmentTag</string>
     <string name="keys_fragment_register">registerFragmentTag</string>
+    <string name="keys_fragment_resend_email">resendemailFragmentTag</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

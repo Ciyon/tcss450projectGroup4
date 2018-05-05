@@ -18,7 +18,7 @@ import group4.tcss450.uw.edu.tcss450project.model.Credentials;
 import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 
 public class LoginActivity extends AppCompatActivity implements LoginFragment.OnFragmentInteractionListener,
-        RegisterFragment.OnFragmentInteractionListener {
+        RegisterFragment.OnFragmentInteractionListener, ResendEmailFragment.OnFragmentInteractionListener {
 
     private Credentials mCredentials;
 
@@ -58,6 +58,17 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                 .replace(R.id.fragmentContainer, new RegisterFragment(),
                         getString(R.string.keys_fragment_register))
                 .addToBackStack(null);
+        // Commit the transaction
+        transaction.commit();
+    }
+
+    @Override
+    public void onResendEmailClicked()
+    {
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, new ResendEmailFragment(),
+                        getString(R.string.keys_fragment_resend_email));
         // Commit the transaction
         transaction.commit();
     }
@@ -103,6 +114,32 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                 .onCancelled(this::handleErrorsInTask)
                 .build().execute();
 
+    }
+
+    @Override
+    public void onSendClicked(String email)
+    {
+        //build the web service URL
+        Uri uri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_resend))
+                .build();
+        //build the JSONObject
+        JSONObject msg = new JSONObject();
+        try {
+            msg.put("email", email);
+        } catch (JSONException e) {
+            Log.wtf("RESEND EMAIL", "Error creating JSON: " + e.getMessage());
+        }
+        //instantiate and execute the AsyncTask.
+        //Feel free to add a handler for onPreExecution so that a progress bar
+        //is displayed or maybe disable buttons. You would need a method in
+        //LoginFragment to perform this.
+        new SendPostAsyncTask.Builder(uri.toString(), msg)
+                .onPostExecute(this::handleResendEmailOnPost)
+                .onCancelled(this::handleErrorsInTask)
+                .build().execute();
     }
 
     private void checkStayLoggedIn() {
@@ -210,6 +247,40 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         }
     }
 
+    private void handleResendEmailOnPost(String result) {
+        try {
+            JSONObject resultsJSON = new JSONObject(result);
+            boolean success = resultsJSON.getBoolean("success");
+            if (success) {
+                Toast.makeText(this,
+                        "Email Resent!\nPlease Respond to Confirmation Email",
+                        Toast.LENGTH_LONG).show();
+
+                FragmentTransaction transaction = getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragmentContainer, new LoginFragment(),
+                                getString(R.string.keys_fragment_login));
+                // Commit the transaction
+                transaction.commit();
+
+            } else {
+                //Login was unsuccessful. Don’t switch fragments and inform the user
+                ResendEmailFragment frag =
+                        (ResendEmailFragment) getSupportFragmentManager()
+                                .findFragmentByTag(getString(R.string.keys_fragment_resend_email));
+
+
+                frag.setError("fail");
+            }
+        } catch (JSONException e) {
+            //It appears that the web service didn’t return a JSON formatted String
+            //or it didn’t have what we expected in it.
+            Log.e("JSON_PARSE_ERROR", result
+                    + System.lineSeparator()
+                    + e.getMessage());
+        }
+    }
+
     private void setUserTheme() {
         SharedPreferences prefs =
                 getSharedPreferences(
@@ -231,4 +302,6 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                 break;
         }
     }
+
+
 }
