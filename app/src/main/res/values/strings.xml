@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name"></string>
+    <string name="app_name">ChatApp</string>
     <string name="title_activity_main_drawer"></string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -34,6 +34,7 @@
     <string name="hint_lastname">Enter last name</string>
     <string name="hint_email">Enter e-mail address</string>
     <string name="hint_confirm_password">Reenter password</string>
+    <string name="hint_enter_message">Write a message</string>
 
     <!-- EditText text -->
     <string name="edittext_username">test</string>
@@ -68,16 +69,5 @@
     <string name="menu_conversations">Conversations</string>
     <string name="menu_weather">Weather</string>
 
-    <!-- Keys -->
-    <string name="keys_shared_prefs">edu.uw.tcss450.group4.tcss450project.PREFS</string>
-    <string name="keys_prefs_username">username</string>
-    <string name="keys_prefs_theme">theme</string>
-    <string name="keys_prefs_stay_logged_in">loggedIn</string>
-    <string name="keys_fragment_login">loginFragmentTag</string>
-    <string name="keys_fragment_register">registerFragmentTag</string>
-    <string name="keys_fragment_resend_email">resendemailFragmentTag</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
