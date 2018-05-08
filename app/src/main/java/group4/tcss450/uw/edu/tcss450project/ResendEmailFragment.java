@@ -83,11 +83,9 @@ public class ResendEmailFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    public void
-    setError(String err) {
-        //Log in unsuccessful for reason: err. Try again.
-        //you may want to add error stuffs for the user here.
-        ((TextView) getView().findViewById(R.id.emailResend)).setError("Email resend unsuccessful: " + err);
+    public void setError(String err) {
+        TextView email = getView().findViewById(R.id.emailResend);
+        email.setError(err);
     }
 
     /**

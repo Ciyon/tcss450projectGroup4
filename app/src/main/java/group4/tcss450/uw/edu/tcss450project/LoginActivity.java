@@ -180,21 +180,12 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         try {
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
-
             if (success) {
-                //Need to check if verified, if true do this
-                boolean verified = true;
-                if(verified) {
-                    checkStayLoggedIn();
-                    Intent intent = new Intent(this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    intent.putExtra("Username", "hi");
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this,
-                            "Please Respond to Confirmation Email to Log In",
-                            Toast.LENGTH_LONG).show();
-                }
+                checkStayLoggedIn();
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.putExtra("Username", "hi");
+                startActivity(intent);
                 //if false pop up the toast and do nothing
             } else {
                 // Login was unsuccessful. Don’t switch fragments and inform the user
@@ -202,7 +193,8 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                         (LoginFragment) getSupportFragmentManager()
                                 .findFragmentByTag(getString(R.string.keys_fragment_login));
 
-                frag.setError("fail");
+                String error = resultsJSON.get("error").toString();
+                frag.setError(error);
             }
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String
@@ -235,8 +227,8 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                         (RegisterFragment) getSupportFragmentManager()
                                 .findFragmentByTag(getString(R.string.keys_fragment_register));
 
-
-                frag.setError("fail");
+                String error = resultsJSON.get("error").toString();
+                frag.setError(error);
             }
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String
@@ -269,8 +261,8 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                         (ResendEmailFragment) getSupportFragmentManager()
                                 .findFragmentByTag(getString(R.string.keys_fragment_resend_email));
 
-
-                frag.setError("fail");
+                String error = resultsJSON.get("error").toString();
+                frag.setError(error);
             }
         } catch (JSONException e) {
             //It appears that the web service didn’t return a JSON formatted String

@@ -143,12 +143,10 @@ public class RegisterFragment extends android.support.v4.app.Fragment implements
     }
 
     public void setError(String error) {
-        TextView tv = getView().findViewById(R.id.usernameRegister);
-        if (error.contains("email"))
-        {
-            tv = getView().findViewById(R.id.emailRegister);
-        }
-        tv.setError("Registration Unsuccessful: " + error);
+        TextView username = getView().findViewById(R.id.usernameRegister);
+        TextView email = getView().findViewById(R.id.emailRegister);
+        username.setError(error);
+        email.setError(error);
     }
 
 
