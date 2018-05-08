@@ -42,6 +42,9 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
         b = v.findViewById(R.id.registerButton);
         b.setOnClickListener(this);
 
+        b = v.findViewById(R.id.resendButton);
+        b.setOnClickListener(this);
+
         return v;
     }
 
@@ -72,6 +75,9 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
                     break;
                 case R.id.registerButton:
                     mListener.onRegisterClicked();
+                    break;
+                case R.id.resendButton:
+                    mListener.onResendEmailClicked();
                     break;
                 default:
                     Log.wtf("", "Didn't expect to see me...");
@@ -117,11 +123,19 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
      @param err
      the error message to display.
      */
-    public void
-    setError(String err) {
-        //Log in unsuccessful for reason: err. Try again.
-        //you may want to add error stuffs for the user here.
-        ((TextView) getView().findViewById(R.id.usernameLogin)).setError("Login Unsuccessful: " + err);
+    public void setError(String err) {
+        TextView username = getView().findViewById(R.id.usernameLogin);
+        TextView pass = getView().findViewById(R.id.passwordEdit);
+        username.setError(null);
+        pass.setError(null);
+        if (err.contains("User hasn't confirmed email") || err.contains("Username not found.") || err.contains("Missing credentials"))
+        {
+            username.setError(err);
+        }
+        else if (err.contains("Incorrect password"))
+        {
+            pass.setError(err);
+        }
     }
 
     /**
@@ -138,5 +152,6 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
         // TODO: Update argument type and name
         void onLoginAttempt(Credentials credentials);
         void onRegisterClicked();
+        void onResendEmailClicked();
     }
 }
