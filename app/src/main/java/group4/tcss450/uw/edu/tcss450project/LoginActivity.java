@@ -68,7 +68,8 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentContainer, new ResendEmailFragment(),
-                        getString(R.string.keys_fragment_resend_email));
+                        getString(R.string.keys_fragment_resend_email))
+                .addToBackStack(null);
         // Commit the transaction
         transaction.commit();
     }
