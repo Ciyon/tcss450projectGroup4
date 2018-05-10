@@ -68,5 +68,6 @@
     <string name="menu_requests">Requests</string>
     <string name="menu_conversations">Conversations</string>
     <string name="menu_weather">Weather</string>
+    <string name="send_message">Send message</string>
 
 </resources>
