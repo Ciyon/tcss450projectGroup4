@@ -1,5 +1,10 @@
 package group4.tcss450.uw.edu.tcss450project.model;
 
+import android.content.SharedPreferences;
+import android.net.Uri;
+
+import group4.tcss450.uw.edu.tcss450project.R;
+
 /**
  * Represents a single connection with relevent information for display.
  */

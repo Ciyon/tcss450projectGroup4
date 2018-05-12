@@ -1,4 +1,4 @@
-package group4.tcss450.uw.edu.tcss450project.model;
+package group4.tcss450.uw.edu.tcss450project.utils;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,8 +6,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import group4.tcss450.uw.edu.tcss450project.R;
+import group4.tcss450.uw.edu.tcss450project.model.Connection;
 
-public class ConnectionsAdapter extends RecyclerView.Adapter<group4.tcss450.uw.edu.tcss450project.model.ConnectionsAdapter.ViewHolder> {
+public class ConnectionsAdapter extends RecyclerView.Adapter<ConnectionsAdapter.ViewHolder> {
 
     Connection[] mDataSet;
 
@@ -30,19 +31,19 @@ public class ConnectionsAdapter extends RecyclerView.Adapter<group4.tcss450.uw.e
 
     // Create new views (invoked by the layout manager)
     @Override
-    public group4.tcss450.uw.edu.tcss450project.model.ConnectionsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                                                       int viewType) {
+    public ConnectionsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                            int viewType) {
         // create a new view
         TextView v = (TextView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_connection, parent, false);
 
-        group4.tcss450.uw.edu.tcss450project.model.ConnectionsAdapter.ViewHolder vh = new group4.tcss450.uw.edu.tcss450project.model.ConnectionsAdapter.ViewHolder(v);
+        ConnectionsAdapter.ViewHolder vh = new ConnectionsAdapter.ViewHolder(v);
         return vh;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(group4.tcss450.uw.edu.tcss450project.model.ConnectionsAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(ConnectionsAdapter.ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.mTextView.setText(mDataSet[position].getUserName());
