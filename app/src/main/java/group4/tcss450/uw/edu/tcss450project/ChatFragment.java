@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import group4.tcss450.uw.edu.tcss450project.model.Credentials;
 import group4.tcss450.uw.edu.tcss450project.utils.ListenManager;
 import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 
@@ -31,6 +32,7 @@ public class ChatFragment extends Fragment {
     private String mSendUrl;
     private TextView mOutputTextView;
     private ListenManager mListenManager;
+    private LoginFragment.OnFragmentInteractionListener mListener;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -137,8 +139,7 @@ public class ChatFragment extends Fragment {
         final String[] msgs;
         if (messages.has(getString(R.string.keys_json_messages))) {
             try {
-                JSONArray jMessages = messages.getJSONArray(getString(R.string.keys_json_messages));
-                msgs = new String[jMessages.length()];
+                JSONArray jMessages = messages.getJSONArray(getString(R.string.keys_json_messages));msgs = new String[jMessages.length()];
                 for (int i = 0; i < jMessages.length(); i++) {
                     JSONObject msg = jMessages.getJSONObject(i);
                     String username = msg.get(getString(R.string.keys_json_username)).toString();
@@ -168,6 +169,23 @@ public class ChatFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onLoginAttempt(Credentials credentials);
+        void onRegisterClicked();
+        void onResendEmailClicked();
     }
 
 }
