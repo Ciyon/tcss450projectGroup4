@@ -10,7 +10,7 @@
 
     <string name="keys_fragment_login">loginFragmentTag</string>
     <string name="keys_fragment_register">registerFragmentTag</string>
-    <string name="keys_fragment_resend_email">resendemailFragmentTag</string>
+    <string name="keys_fragment_account_options">accountOptionsFragmentTag</string>
 
     <string name="keys_json_username">username</string>
     <string name="keys_json_password">password</string>

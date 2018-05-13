@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
@@ -18,7 +21,7 @@ import group4.tcss450.uw.edu.tcss450project.model.Credentials;
 import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 
 public class LoginActivity extends AppCompatActivity implements LoginFragment.OnFragmentInteractionListener,
-        RegisterFragment.OnFragmentInteractionListener, ResendEmailFragment.OnFragmentInteractionListener {
+        RegisterFragment.OnFragmentInteractionListener, AccountOptionsFragment.OnFragmentInteractionListener {
 
     private Credentials mCredentials;
 
@@ -52,6 +55,34 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.login_drawer, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.accountOptions) {
+            FragmentTransaction transaction = getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragmentContainer, new AccountOptionsFragment(),
+                            getString(R.string.keys_fragment_account_options))
+                    .addToBackStack(null);
+            transaction.commit();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onRegisterClicked() {
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
@@ -62,17 +93,6 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         transaction.commit();
     }
 
-    @Override
-    public void onResendEmailClicked()
-    {
-        FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragmentContainer, new ResendEmailFragment(),
-                        getString(R.string.keys_fragment_resend_email))
-                .addToBackStack(null);
-        // Commit the transaction
-        transaction.commit();
-    }
 
     @Override
     public void onLoginAttempt(Credentials credentials) {
@@ -142,6 +162,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                 .onCancelled(this::handleErrorsInTask)
                 .build().execute();
     }
+
 
     private void checkStayLoggedIn() {
         if (((CheckBox) findViewById(R.id.logCheckBox)).isChecked()) {
@@ -258,9 +279,9 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
 
             } else {
                 //Login was unsuccessful. Don’t switch fragments and inform the user
-                ResendEmailFragment frag =
-                        (ResendEmailFragment) getSupportFragmentManager()
-                                .findFragmentByTag(getString(R.string.keys_fragment_resend_email));
+                AccountOptionsFragment frag =
+                        (AccountOptionsFragment) getSupportFragmentManager()
+                                .findFragmentByTag(getString(R.string.keys_fragment_account_options));
 
                 String error = resultsJSON.get("error").toString();
                 frag.setError(error);

@@ -10,20 +10,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import group4.tcss450.uw.edu.tcss450project.model.Credentials;
-
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ResendEmailFragment.OnFragmentInteractionListener} interface
+ * {@link AccountOptionsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class ResendEmailFragment extends Fragment implements View.OnClickListener{
+public class AccountOptionsFragment extends Fragment implements View.OnClickListener{
 
     private OnFragmentInteractionListener mListener;
 
-    public ResendEmailFragment() {
+    public AccountOptionsFragment() {
         // Required empty public constructor
     }
 
@@ -32,7 +30,7 @@ public class ResendEmailFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_resend_email, container, false);
+        View v = inflater.inflate(R.layout.fragment_account_options, container, false);
         Button b = v.findViewById(R.id.sendButton);
         b.setOnClickListener(this);
         return v;
