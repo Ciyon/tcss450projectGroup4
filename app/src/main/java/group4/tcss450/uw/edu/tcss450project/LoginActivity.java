@@ -27,7 +27,8 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setUserTheme();
+        //No user theme should get set here, since no user is logged in with their theme
+        //setUserTheme();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -295,6 +296,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         }
     }
 
+    //Probably not needed
     private void setUserTheme() {
         SharedPreferences prefs =
                 getSharedPreferences(
