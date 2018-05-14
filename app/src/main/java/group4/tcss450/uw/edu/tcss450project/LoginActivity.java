@@ -25,7 +25,6 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         RegisterFragment.OnFragmentInteractionListener, AccountOptionsFragment.OnFragmentInteractionListener, ResetPasswordFragment.OnFragmentInteractionListener {
 
     private Credentials mCredentials;
-    private String mEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +142,9 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
     @Override
     public void onResendConfirmationClick(String email)
     {
+        AccountOptionsFragment frag =
+                (AccountOptionsFragment) getSupportFragmentManager()
+                        .findFragmentByTag(getString(R.string.keys_fragment_account_options));
         //build the web service URL
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -168,7 +170,6 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
 
     @Override
     public void onSendResetCode(String email) {
-        mEmail = email;
         //build the web service URL
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -334,6 +335,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         try {
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
+
             if (success) {
                 Toast.makeText(this,
                         "Email Resent!\nPlease Respond to Confirmation Email",
@@ -347,11 +349,9 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                 transaction.commit();
 
             } else {
-                //Login was unsuccessful. Don’t switch fragments and inform the user
                 AccountOptionsFragment frag =
                         (AccountOptionsFragment) getSupportFragmentManager()
                                 .findFragmentByTag(getString(R.string.keys_fragment_account_options));
-
                 String error = resultsJSON.get("error").toString();
                 frag.setError(error);
             }

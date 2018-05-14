@@ -17,6 +17,7 @@
     <string name="header_resend">Resend Verification Email</string>
     <string name="header_send_reset_code">Send Password Reset Code</string>
     <string name="header_reset_code">Enter Password Reset Code</string>
+    <string name="header_reset_password">Reset Password</string>
     <string name="header_settings">Settings</string>
 
     <!-- Temporary headers -->
