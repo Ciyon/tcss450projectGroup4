@@ -41,6 +41,8 @@
     <string name="hint_confirm_password">Reenter password</string>
     <string name="hint_enter_message">Write a message</string>
     <string name="hint_enter_code">Enter password reset code</string>
+    <string name="hint_enter_new_password">Enter new password</string>
+    <string name="hint_reenter_new_password">Reenter new password</string>
 
     <!-- EditText text -->
     <string name="edittext_username">test</string>
@@ -73,5 +75,8 @@
     <string name="menu_conversations">Conversations</string>
     <string name="menu_weather">Weather</string>
     <string name="send_message">Send message</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

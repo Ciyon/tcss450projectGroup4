@@ -17,7 +17,7 @@ import android.widget.TextView;
  * {@link AccountOptionsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class AccountOptionsFragment extends Fragment implements View.OnClickListener{
+public class AccountOptionsFragment extends Fragment implements View.OnClickListener {
 
     private OnFragmentInteractionListener mListener;
 
@@ -33,7 +33,7 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
         View v = inflater.inflate(R.layout.fragment_account_options, container, false);
         Button b = v.findViewById(R.id.resendConfirmationButton);
         b.setOnClickListener(this);
-        b = v.findViewById(R.id.resetPasswordButton);
+        b = v.findViewById(R.id.resetPwEmailButton);
         b.setOnClickListener(this);
         b = v.findViewById(R.id.enterCodeButton);
         b.setOnClickListener(this);
@@ -59,33 +59,72 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
     }
 
     @Override
-    public void onClick(View v)
-    {
+    public void onClick(View v) {
         if (mListener != null) {
             switch (v.getId()) {
                 case R.id.resendConfirmationButton:
                     resendEmail();
                     break;
-                case R.id.resetPasswordButton:
+                case R.id.resetPwEmailButton:
+                    resetPassword();
                     break;
                 case R.id.enterCodeButton:
+                    enterCode();
                     break;
             }
         }
     }
 
-    private void resendEmail()
-    {
+    private void resendEmail() {
         EditText email = getActivity().findViewById(R.id.emailResend);
         boolean valid = true;
 
-        if(email.getText().toString().isEmpty()) {
+        if (email.getText().toString().isEmpty()) {
             valid = false;
             email.setError("Empty Field!");
+        } else if (!email.getText().toString().contains("@")) {
+            valid = false;
+            email.setError("Email is invalid.");
         }
 
-        if(valid) {
-            mListener.onSendClicked(email.getText().toString());
+        if (valid) {
+            mListener.onResendConfirmationClick(email.getText().toString());
+        }
+    }
+
+    private void resetPassword() {
+        EditText email = getActivity().findViewById(R.id.emailReset);
+        boolean valid = true;
+
+        if (email.getText().toString().isEmpty()) {
+            valid = false;
+            email.setError("Empty Field!");
+        } else if (!email.getText().toString().contains("@")) {
+            valid = false;
+            email.setError("Email is invalid.");
+        }
+
+        if (valid) {
+            mListener.onResetPasswordClick(email.getText().toString());
+        }
+    }
+
+    private void enterCode() {
+        EditText code = getActivity().findViewById(R.id.enterCode);
+        boolean valid = true;
+
+        if (code.getText().toString().isEmpty()) {
+            valid = false;
+            code.setError("Empty Field!");
+        }
+
+        else if (code.getText().toString().length() != 6) {
+            valid = false;
+            code.setError("Code must have 6 characters.");
+        }
+
+        if (valid) {
+            mListener.onPasswordCodeSubmit(code.getText().toString());
         }
     }
 
@@ -105,7 +144,8 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onSendClicked(String email);
+        void onResendConfirmationClick(String email);
+        void onResetPasswordClick(String email);
+        void onPasswordCodeSubmit(String code);
     }
 }

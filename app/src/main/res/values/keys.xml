@@ -11,6 +11,7 @@
     <string name="keys_fragment_login">loginFragmentTag</string>
     <string name="keys_fragment_register">registerFragmentTag</string>
     <string name="keys_fragment_account_options">accountOptionsFragmentTag</string>
+    <string name="keys_fragment_reset_password">resetPasswordFragmentTag</string>
 
     <string name="keys_json_username">username</string>
     <string name="keys_json_password">password</string>
