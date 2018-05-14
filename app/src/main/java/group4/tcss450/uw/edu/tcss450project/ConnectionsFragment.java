@@ -49,7 +49,7 @@ public class ConnectionsFragment extends Fragment {
 
         mPref = getSharedPreferences();
         // TODO: populate the dataset with the user's contacts (change static method)
-        mDataSet = createConnectionsList(mPref);
+        mDataSet = createConnectionsList();
 
         mAdapter = new ConnectionsAdapter(mDataSet);
         mRecyclerView.setAdapter(mAdapter);
@@ -66,7 +66,7 @@ public class ConnectionsFragment extends Fragment {
 
         // Update the connections
         mPref = getSharedPreferences();
-        mDataSet = createConnectionsList(mPref);
+        mDataSet = createConnectionsList();
     }
 
     private SharedPreferences getSharedPreferences() {
@@ -81,23 +81,8 @@ public class ConnectionsFragment extends Fragment {
     }
 
 
-    public Connection[] createConnectionsList(SharedPreferences prefs) {
-        //TODO: get the user's connections
-        String userName;
-        String sendUrl;
-        userName = prefs.getString(getString(R.string.keys_prefs_username), "");
-        sendUrl = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_send_message))
-                .build()
-                .toString();
-        Uri retrieve = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_get_message))
-                .appendQueryParameter("chatId", "1")
-                .build();
+    public Connection[] createConnectionsList() {
+        // Make a list of connections from JSONArray?
         return new Connection[0];
     }
 }

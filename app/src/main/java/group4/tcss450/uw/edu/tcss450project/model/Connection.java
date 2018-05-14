@@ -11,12 +11,14 @@ import group4.tcss450.uw.edu.tcss450project.R;
 public class Connection {
 
     /* username and name */
-    String userName;
-    String firstName;
-    String lastName;
+    private String userName;
+    private String firstName;
+    private String lastName;
+
+    private boolean isSelected = false;
 
     /* whether or not the connection is pending */
-    boolean verified = false;
+    private boolean verified = false;
 
     public Connection(String userName, String firstName, String lastName) {
         this.userName = userName;
@@ -38,5 +40,13 @@ public class Connection {
 
     public void setVerified(boolean verified) {
         this.verified = verified;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
     }
 }

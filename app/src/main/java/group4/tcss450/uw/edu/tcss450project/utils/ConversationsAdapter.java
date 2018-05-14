@@ -32,7 +32,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     // Create new views (invoked by the layout manager)
     @Override
     public ConversationsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                            int viewType) {
+                                                              int viewType) {
         // create a new view
         TextView v = (TextView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_connection, parent, false);
