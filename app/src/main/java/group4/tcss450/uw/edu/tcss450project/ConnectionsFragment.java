@@ -83,6 +83,10 @@ public class ConnectionsFragment extends Fragment {
 
     public Connection[] createConnectionsList() {
         // Make a list of connections from JSONArray?
-        return new Connection[0];
+        Connection[] connections = new Connection[3];
+        connections[0] = new Connection("use1", "The", "Boss");
+        connections[1] = new Connection("user2","Billy", "Bob");
+        connections[2] = new Connection("user3", "Bob", "Joe");
+        return connections;
     }
 }

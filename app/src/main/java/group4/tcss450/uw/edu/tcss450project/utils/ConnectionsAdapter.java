@@ -54,8 +54,7 @@ public class ConnectionsAdapter extends RecyclerView.Adapter<ConnectionsAdapter.
         holder.mTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                connection.setSelected(!connection.isSelected());
-                holder.mTextView.setBackgroundColor(connection.isSelected() ? Color.CYAN : Color.WHITE);
+                // go to chat or to new conversation fragment
             }
         });
 

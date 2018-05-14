@@ -7,10 +7,11 @@ import android.widget.TextView;
 
 import group4.tcss450.uw.edu.tcss450project.R;
 import group4.tcss450.uw.edu.tcss450project.model.Connection;
+import group4.tcss450.uw.edu.tcss450project.model.Conversation;
 
 public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdapter.ViewHolder> {
 
-    Connection[] mDataSet;
+    Conversation[] mDataSet;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -25,7 +26,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         }
     }
 
-    public ConversationsAdapter(Connection[] connections) {
+    public ConversationsAdapter(Conversation[] connections) {
         mDataSet = connections;
     }
 
@@ -46,7 +47,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     public void onBindViewHolder(ConversationsAdapter.ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.mTextView.setText(mDataSet[position].getUserName());
+        holder.mTextView.setText(mDataSet[position].toString());
 
     }
 

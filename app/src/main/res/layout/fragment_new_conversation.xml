@@ -30,4 +30,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
+
+    <android.support.v7.widget.RecyclerView android:id="@+id/recyclerSelectConnections"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout_height="wrap_content"
+        xmlns:android="http://schemas.android.com/apk/res/android" />
+
 </android.support.constraint.ConstraintLayout>
