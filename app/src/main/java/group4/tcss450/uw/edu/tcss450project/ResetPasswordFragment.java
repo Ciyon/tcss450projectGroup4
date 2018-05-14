@@ -47,6 +47,7 @@ public class ResetPasswordFragment extends Fragment implements View.OnClickListe
         }
     }
     private void resetPassword() {
+        String email = getArguments().getString("email");
         EditText pw1 = getActivity().findViewById(R.id.newPassword);
         EditText pw2 = getActivity().findViewById(R.id.reenterNewPassword);
         boolean valid = true;
@@ -57,12 +58,19 @@ public class ResetPasswordFragment extends Fragment implements View.OnClickListe
             pw2.setError("Empty Field!");
         } else if (pw1.getText().toString().length() < 5 || pw2.getText().toString().length() < 5) {
             valid = false;
-            pw1.setError("Password must be at least 5 characters");
-            pw2.setError("Password must be at least 5 characters");
+            pw1.setError("Password must be at least 5 characters.");
+            pw2.setError("Password must be at least 5 characters.");
+        }
+
+        if (!pw1.getText().toString().equals(pw2.getText().toString()))
+        {
+            valid = false;
+            pw1.setError("Passwords must be equal to each other.");
+            pw2.setError("Passwords must be equal to each other.");
         }
 
         if (valid) {
-            mListener.onSubmitPassword(pw1.getEditableText());
+            mListener.onSubmitPassword(pw1.getEditableText(), email);
         }
     }
 
@@ -83,6 +91,13 @@ public class ResetPasswordFragment extends Fragment implements View.OnClickListe
         mListener = null;
     }
 
+    public void setError(String error) {
+        EditText pw1 = getActivity().findViewById(R.id.newPassword);
+        EditText pw2 = getActivity().findViewById(R.id.reenterNewPassword);
+        pw1.setError(error);
+        pw2.setError(error);
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -95,6 +110,6 @@ public class ResetPasswordFragment extends Fragment implements View.OnClickListe
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onSubmitPassword(Editable password);
+        void onSubmitPassword(Editable password, String email);
     }
 }
