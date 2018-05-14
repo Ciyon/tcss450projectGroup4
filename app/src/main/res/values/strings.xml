@@ -15,8 +15,9 @@
     <string name="header_login">Login</string>
     <string name="header_register">Register</string>
     <string name="header_resend">Resend Verification Email</string>
+    <string name="header_send_reset_code">Send Password Reset Code</string>
+    <string name="header_reset_code">Enter Password Reset Code</string>
     <string name="header_reset_password">Reset Password</string>
-    <string name="header_reset_code">Password Reset Code</string>
     <string name="header_settings">Settings</string>
 
     <!-- Temporary headers -->
@@ -62,6 +63,7 @@
     <string name="button_create_conversation">Create Conversation</string>
     <string name="button_load_conversation">Load Conversation</string>
     <string name="button_settings_apply">Apply</string>
+    <string name="button_enter_code">Enter Code</string>
 
     <!-- Radiobutton Text -->
     <string name="radio_theme1">Blue and Red</string>

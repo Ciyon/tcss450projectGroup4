@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 
@@ -66,10 +67,10 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
                     resendEmail();
                     break;
                 case R.id.resetPwEmailButton:
-                    resetPassword();
+                    sendResetCode();
                     break;
                 case R.id.enterCodeButton:
-                    enterCode();
+                    mListener.onPasswordCodeSubmit();
                     break;
             }
         }
@@ -92,7 +93,7 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
         }
     }
 
-    private void resetPassword() {
+    private void sendResetCode() {
         EditText email = getActivity().findViewById(R.id.emailReset);
         boolean valid = true;
 
@@ -105,32 +106,21 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
         }
 
         if (valid) {
-            mListener.onResetPasswordClick(email.getText().toString());
-        }
-    }
-
-    private void enterCode() {
-        EditText code = getActivity().findViewById(R.id.enterCode);
-        boolean valid = true;
-
-        if (code.getText().toString().isEmpty()) {
-            valid = false;
-            code.setError("Empty Field!");
-        }
-
-        else if (code.getText().toString().length() != 6) {
-            valid = false;
-            code.setError("Code must have 6 characters.");
-        }
-
-        if (valid) {
-            mListener.onPasswordCodeSubmit(code.getText().toString());
+            mListener.onSendResetCode(email.getText().toString());
         }
     }
 
     public void setError(String err) {
-        TextView email = getView().findViewById(R.id.emailResend);
-        email.setError(err);
+        TextView resendEmail = getView().findViewById(R.id.emailResend);
+        TextView resetEmail = getView().findViewById(R.id.emailReset);
+        if (err.contains("Email doesn't exist.") || err.contains("Email already verified."))
+        {
+            resendEmail.setError(err);
+        }
+        else if (err.contains("Email must be confirmed in order to reset password.") || err.contains("Email doesn't belong to any account registered."))
+        {
+            resetEmail.setError(err);
+        }
     }
 
     /**
@@ -145,7 +135,7 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
      */
     public interface OnFragmentInteractionListener {
         void onResendConfirmationClick(String email);
-        void onResetPasswordClick(String email);
-        void onPasswordCodeSubmit(String code);
+        void onSendResetCode(String email);
+        void onPasswordCodeSubmit();
     }
 }
