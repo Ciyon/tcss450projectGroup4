@@ -31,7 +31,11 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_account_options, container, false);
-        Button b = v.findViewById(R.id.sendButton);
+        Button b = v.findViewById(R.id.resendConfirmationButton);
+        b.setOnClickListener(this);
+        b = v.findViewById(R.id.resetPasswordButton);
+        b.setOnClickListener(this);
+        b = v.findViewById(R.id.enterCodeButton);
         b.setOnClickListener(this);
         return v;
     }
@@ -59,8 +63,12 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
     {
         if (mListener != null) {
             switch (v.getId()) {
-                case R.id.sendButton:
+                case R.id.resendConfirmationButton:
                     resendEmail();
+                    break;
+                case R.id.resetPasswordButton:
+                    break;
+                case R.id.enterCodeButton:
                     break;
             }
         }

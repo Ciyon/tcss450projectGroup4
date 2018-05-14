@@ -15,6 +15,8 @@
     <string name="header_login">Login</string>
     <string name="header_register">Register</string>
     <string name="header_resend">Resend Verification Email</string>
+    <string name="header_reset_password">Reset Password</string>
+    <string name="header_reset_code">Password Reset Code</string>
     <string name="header_settings">Settings</string>
 
     <!-- Temporary headers -->
@@ -38,6 +40,7 @@
     <string name="hint_email">Enter e-mail address</string>
     <string name="hint_confirm_password">Reenter password</string>
     <string name="hint_enter_message">Write a message</string>
+    <string name="hint_enter_code">Enter password reset code</string>
 
     <!-- EditText text -->
     <string name="edittext_username">test</string>
@@ -53,7 +56,6 @@
     <string name="button_login">Login</string>
     <string name="button_register">Register</string>
     <string name="button_submit">Submit</string>
-    <string name="button_send">Send Email</string>
     <string name="button_logout">Logout</string>
     <string name="button_create_conversation">Create Conversation</string>
     <string name="button_load_conversation">Load Conversation</string>

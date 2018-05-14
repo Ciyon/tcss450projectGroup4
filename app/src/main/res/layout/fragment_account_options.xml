@@ -9,54 +9,134 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <EditText
-        android:id="@+id/emailResend"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:hint="@string/edittext_email"
-        android:inputType="text|textEmailAddress"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
-
     <TextView
-        android:id="@+id/textView4"
-        android:layout_width="0dp"
+        android:id="@+id/resendEmailHeader"
+        android:layout_width="wrap_content"
         android:layout_height="74dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="@string/header_resend"
         android:textAlignment="center"
         android:textSize="22sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/emailResend"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="bottom|end"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+    <EditText
+        android:id="@+id/emailResend"
+        android:layout_width="241dp"
+        android:layout_height="46dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:hint="@string/edittext_email"
+        android:inputType="text|textEmailAddress"
+        app:layout_constraintEnd_toStartOf="@+id/resendConfirmationButton"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toBottomOf="@+id/resendEmailHeader" />
 
-        <Button
-            android:id="@+id/sendButton"
-            style="@android:style/Widget.Material.Button.Colored"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="1"
-            android:text="@string/button_send"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/resendConfirmationButton"
+        style="@android:style/Widget.Material.Button.Colored"
+        android:layout_width="107dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1"
+        android:text="@string/button_submit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/emailResend"
+        app:layout_constraintTop_toBottomOf="@+id/resendEmailHeader" />
+
+    <TextView
+        android:id="@+id/passwordResetHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="74dp"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:text="@string/header_reset_password"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailResend" />
+
+    <EditText
+        android:id="@+id/emailReset"
+        android:layout_width="241dp"
+        android:layout_height="47dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:hint="@string/edittext_email"
+        android:inputType="text|textEmailAddress"
+        app:layout_constraintEnd_toStartOf="@+id/resetPasswordButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordResetHeader" />
+
+    <Button
+        android:id="@+id/resetPasswordButton"
+        style="@android:style/Widget.Material.Button.Colored"
+        android:layout_width="107dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:text="@string/button_submit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/emailReset"
+        app:layout_constraintTop_toBottomOf="@+id/passwordResetHeader" />
+
+    <TextView
+        android:id="@+id/passwordCodeHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:text="@string/header_reset_code"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailReset" />
+
+    <Button
+        android:id="@+id/enterCodeButton"
+        style="@android:style/Widget.Material.Button.Colored"
+        android:layout_width="107dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:text="@string/button_submit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/enterCode"
+        app:layout_constraintTop_toBottomOf="@+id/passwordCodeHeader" />
+
+    <EditText
+        android:id="@+id/enterCode"
+        android:layout_width="245dp"
+        android:layout_height="46dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="@string/hint_enter_code"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toStartOf="@+id/enterCodeButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordCodeHeader" />
+
 </android.support.constraint.ConstraintLayout>
