@@ -60,7 +60,7 @@
         android:layout_height="74dp"
         android:layout_marginTop="32dp"
         android:gravity="center"
-        android:text="@string/header_reset_password"
+        android:text="@string/header_send_reset_code"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textSize="22sp"
