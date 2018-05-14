@@ -111,8 +111,16 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
     }
 
     public void setError(String err) {
-        TextView email = getView().findViewById(R.id.emailResend);
-        email.setError(err);
+        TextView resendEmail = getView().findViewById(R.id.emailResend);
+        TextView resetEmail = getView().findViewById(R.id.emailReset);
+        if (err.contains("Email doesn't exist.") || err.contains("Email already verified."))
+        {
+            resendEmail.setError(err);
+        }
+        else if (err.contains("Email must be confirmed in order to reset password.") || err.contains("Email doesn't belong to any account registered."))
+        {
+            resetEmail.setError(err);
+        }
     }
 
     /**
