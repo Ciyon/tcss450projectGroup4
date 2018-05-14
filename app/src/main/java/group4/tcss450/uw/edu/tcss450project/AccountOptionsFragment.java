@@ -66,10 +66,10 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
                     resendEmail();
                     break;
                 case R.id.resetPwEmailButton:
-                    resetPassword();
+                    sendResetCode();
                     break;
                 case R.id.enterCodeButton:
-                    enterCode();
+                    mListener.onPasswordCodeSubmit();
                     break;
             }
         }
@@ -92,7 +92,7 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
         }
     }
 
-    private void resetPassword() {
+    private void sendResetCode() {
         EditText email = getActivity().findViewById(R.id.emailReset);
         boolean valid = true;
 
@@ -105,26 +105,7 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
         }
 
         if (valid) {
-            mListener.onResetPasswordClick(email.getText().toString());
-        }
-    }
-
-    private void enterCode() {
-        EditText code = getActivity().findViewById(R.id.enterCode);
-        boolean valid = true;
-
-        if (code.getText().toString().isEmpty()) {
-            valid = false;
-            code.setError("Empty Field!");
-        }
-
-        else if (code.getText().toString().length() != 6) {
-            valid = false;
-            code.setError("Code must have 6 characters.");
-        }
-
-        if (valid) {
-            mListener.onPasswordCodeSubmit(code.getText().toString());
+            mListener.onSendResetCode(email.getText().toString());
         }
     }
 
@@ -145,7 +126,7 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
      */
     public interface OnFragmentInteractionListener {
         void onResendConfirmationClick(String email);
-        void onResetPasswordClick(String email);
-        void onPasswordCodeSubmit(String code);
+        void onSendResetCode(String email);
+        void onPasswordCodeSubmit();
     }
 }

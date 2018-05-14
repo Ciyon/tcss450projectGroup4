@@ -47,7 +47,8 @@ public class ResetPasswordFragment extends Fragment implements View.OnClickListe
         }
     }
     private void resetPassword() {
-        String email = getArguments().getString("email");
+        EditText email = getActivity().findViewById(R.id.emailResetPassword);
+        EditText code = getActivity().findViewById(R.id.codeResetPassword);
         EditText pw1 = getActivity().findViewById(R.id.newPassword);
         EditText pw2 = getActivity().findViewById(R.id.reenterNewPassword);
         boolean valid = true;
@@ -56,6 +57,7 @@ public class ResetPasswordFragment extends Fragment implements View.OnClickListe
             valid = false;
             pw1.setError("Empty Field!");
             pw2.setError("Empty Field!");
+
         } else if (pw1.getText().toString().length() < 5 || pw2.getText().toString().length() < 5) {
             valid = false;
             pw1.setError("Password must be at least 5 characters.");
@@ -69,8 +71,26 @@ public class ResetPasswordFragment extends Fragment implements View.OnClickListe
             pw2.setError("Passwords must be equal to each other.");
         }
 
+        if (email.getText().toString().isEmpty())
+        {
+            valid = false;
+            email.setError("Empty Field!");
+        }
+
+        else if (!email.getText().toString().contains("@"))
+        {
+            valid = false;
+            email.setError("Invalid email.");
+        }
+
+        if (code.getText().toString().length() != 6)
+        {
+            valid = false;
+            code.setError("Code must be 6 characters.");
+        }
+
         if (valid) {
-            mListener.onSubmitPassword(pw1.getEditableText(), email);
+            mListener.onSubmitPassword(pw1.getEditableText(), code.getText().toString(), email.getText().toString());
         }
     }
 
@@ -92,10 +112,24 @@ public class ResetPasswordFragment extends Fragment implements View.OnClickListe
     }
 
     public void setError(String error) {
+        EditText email = getActivity().findViewById(R.id.emailResetPassword);
+        EditText code = getActivity().findViewById(R.id.codeResetPassword);
         EditText pw1 = getActivity().findViewById(R.id.newPassword);
         EditText pw2 = getActivity().findViewById(R.id.reenterNewPassword);
-        pw1.setError(error);
-        pw2.setError(error);
+
+        if (error.toLowerCase().contains("email"))
+        {
+            email.setError(error);
+        }
+        if(error.toLowerCase().contains("code"))
+        {
+            code.setError(error);
+        }
+        if (error.toLowerCase().contains("password"))
+        {
+            pw1.setError(error);
+            pw2.setError(error);
+        }
     }
 
     /**
@@ -110,6 +144,6 @@ public class ResetPasswordFragment extends Fragment implements View.OnClickListe
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onSubmitPassword(Editable password, String email);
+        void onSubmitPassword(Editable password, String code, String email);
     }
 }

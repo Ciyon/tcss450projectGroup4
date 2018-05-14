@@ -167,7 +167,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
     }
 
     @Override
-    public void onResetPasswordClick(String email) {
+    public void onSendResetCode(String email) {
         mEmail = email;
         //build the web service URL
         Uri uri = new Uri.Builder()
@@ -193,32 +193,19 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
     }
 
     @Override
-    public void onPasswordCodeSubmit(String code) {
-        //build the web service URL
-        Uri uri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_submit_code))
-                .build();
-        //build the JSONObject
-        JSONObject msg = new JSONObject();
-        try {
-            msg.put("code", code);
-        } catch (JSONException e) {
-            Log.wtf("CODE SUBMIT", "Error creating JSON: " + e.getMessage());
-        }
-        //instantiate and execute the AsyncTask.
-        //Feel free to add a handler for onPreExecution so that a progress bar
-        //is displayed or maybe disable buttons. You would need a method in
-        //LoginFragment to perform this.
-        new SendPostAsyncTask.Builder(uri.toString(), msg)
-                .onPostExecute(this::handleCodeSubmitOnPost)
-                .onCancelled(this::handleErrorsInTask)
-                .build().execute();
+    public void onPasswordCodeSubmit()
+    {
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, new ResetPasswordFragment(),
+                        getString(R.string.keys_fragment_reset_password))
+                .addToBackStack(null);
+        // Commit the transaction
+        transaction.commit();
     }
 
     @Override
-    public void onSubmitPassword(Editable password, String email)
+    public void onSubmitPassword(Editable password, String code, String email)
     {
         //build the web service URL
         Uri uri = new Uri.Builder()
@@ -230,6 +217,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         JSONObject msg = new JSONObject();
         try {
             msg.put("password", password.toString());
+            msg.put("code", code);
             msg.put("email", email);
         } catch (JSONException e) {
             Log.wtf("PASSWORD SUBMIT", "Error creating JSON: " + e.getMessage());
@@ -382,7 +370,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
                 Toast.makeText(this,
-                        "Password reset code email sent!\nPlease enter the code on this page to reset your password.",
+                        "Password reset code email sent!\nPlease enter the code on this page within 24 hours to reset your password.",
                         Toast.LENGTH_LONG).show();
 
                 FragmentTransaction transaction = getSupportFragmentManager()
@@ -395,44 +383,6 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
             } else {
                 //Login was unsuccessful. Don’t switch fragments and inform the user
                 AccountOptionsFragment frag =
-                        (AccountOptionsFragment) getSupportFragmentManager()
-                                .findFragmentByTag(getString(R.string.keys_fragment_account_options));
-
-                String error = resultsJSON.get("error").toString();
-                frag.setError(error);
-            }
-        } catch (JSONException e) {
-            //It appears that the web service didn’t return a JSON formatted String
-            //or it didn’t have what we expected in it.
-            Log.e("JSON_PARSE_ERROR", result
-                    + System.lineSeparator()
-                    + e.getMessage());
-        }
-    }
-
-    private void handleCodeSubmitOnPost(String result) {
-        try {
-            JSONObject resultsJSON = new JSONObject(result);
-            boolean success = resultsJSON.getBoolean("success");
-            if (success) {
-                Toast.makeText(this,
-                        "You may now reset the password for your account.",
-                        Toast.LENGTH_LONG).show();
-                Bundle args = new Bundle();
-                args.putString("email", mEmail);
-                ResetPasswordFragment rp = new ResetPasswordFragment();
-                rp.setArguments(args);
-                FragmentTransaction transaction = getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragmentContainer, rp,
-                                getString(R.string.keys_fragment_reset_password))
-                        .addToBackStack(null);
-                // Commit the transaction
-                transaction.commit();
-
-            } else {
-                //Login was unsuccessful. Don’t switch fragments and inform the user
-               AccountOptionsFragment frag =
                         (AccountOptionsFragment) getSupportFragmentManager()
                                 .findFragmentByTag(getString(R.string.keys_fragment_account_options));
 
