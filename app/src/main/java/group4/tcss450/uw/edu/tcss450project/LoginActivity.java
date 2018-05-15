@@ -275,7 +275,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
             if (success) {
                 checkStayLoggedIn();
                 Intent intent = new Intent(this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.putExtra("username", mCredentials.getUsername());
                 startActivity(intent);
                 //if false pop up the toast and do nothing
             } else {

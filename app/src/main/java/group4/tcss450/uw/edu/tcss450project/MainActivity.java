@@ -24,14 +24,23 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NewConversationFragment.OnFragmentInteractionListener,
         SettingsFragment.OnFragmentInteractionListener{
 
-    private String Username;
+    private String mUsername;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        setUserTheme();
-        super.onCreate(savedInstanceState);
 
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_drawer);
+
+        String mUsername = getIntent().getStringExtra("username");
+        SharedPreferences prefs =
+                getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        prefs.edit().putString("username", mUsername)
+                .apply();
+        setUserTheme();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
