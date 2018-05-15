@@ -1,7 +1,9 @@
 package group4.tcss450.uw.edu.tcss450project.utils;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -48,7 +50,13 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         if(mDataSet[position] != null) {
-            holder.mTextView.setText(Integer.toString(position));
+            holder.mTextView.setText(mDataSet[position].toString());
+            holder.mTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("ConversionsAdapter","clicked");
+                }
+            });
         }
     }
 
