@@ -34,6 +34,8 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //just a place holder, we need to populate this 
+        myDataset = new Connection[0];
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_new_conversation, container, false);
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
