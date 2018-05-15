@@ -3,7 +3,6 @@ package group4.tcss450.uw.edu.tcss450project;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
