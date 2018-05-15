@@ -27,8 +27,7 @@ public class MainActivity extends AppCompatActivity
     private String mUsername;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
+        setUserTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_drawer);
 
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity
                         Context.MODE_PRIVATE);
         prefs.edit().putString("username", mUsername)
                 .apply();
-        setUserTheme();
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
