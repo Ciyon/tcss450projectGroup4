@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_drawer);
 
-        String mUsername = getIntent().getStringExtra("username");
+        mUsername = getIntent().getStringExtra("username");
         SharedPreferences prefs =
                 getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
@@ -177,7 +177,6 @@ public class MainActivity extends AppCompatActivity
                 getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
-        //save the username for later usage
         prefs.edit().putInt(
                 getString(R.string.keys_prefs_theme),
                 choice)
