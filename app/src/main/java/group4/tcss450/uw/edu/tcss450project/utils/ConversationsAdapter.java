@@ -47,8 +47,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     public void onBindViewHolder(ConversationsAdapter.ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.mTextView.setText(mDataSet[position].toString());
-
+        if(mDataSet[position] != null) {
+            holder.mTextView.setText(Integer.toString(position));
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)

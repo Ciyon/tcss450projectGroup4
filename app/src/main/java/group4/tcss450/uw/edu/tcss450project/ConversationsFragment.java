@@ -103,7 +103,7 @@ public class ConversationsFragment extends Fragment implements View.OnClickListe
         Connection[] connections2 = new Connection[1];
         connections[0] = new Connection("use4", "Other", "Guy");
 
-        Conversation[] conversations = new Conversation[3];
+        Conversation[] conversations = new Conversation[2];
         conversations[0] = new Conversation(connections);
         conversations[1] = new Conversation(connections2);
         return conversations;
