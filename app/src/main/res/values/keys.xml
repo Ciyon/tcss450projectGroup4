@@ -13,6 +13,9 @@
     <string name="keys_fragment_account_options">accountOptionsFragmentTag</string>
     <string name="keys_fragment_reset_password">resetPasswordFragmentTag</string>
 
+    <string name="keys_args_conversationID">conversationID</string>
+    <string name="keys_json_chats">chats</string>
+    <string name="keys_json_chatid">chatid</string>
     <string name="keys_json_username">username</string>
     <string name="keys_json_password">password</string>
     <string name="keys_json_email">email</string>

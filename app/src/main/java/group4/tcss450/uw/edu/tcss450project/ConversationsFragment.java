@@ -13,12 +13,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import group4.tcss450.uw.edu.tcss450project.model.Connection;
+import java.util.ArrayList;
+
 import group4.tcss450.uw.edu.tcss450project.model.Conversation;
 import group4.tcss450.uw.edu.tcss450project.utils.ConversationsAdapter;
 import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
@@ -27,15 +28,15 @@ import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ConversationsFragment extends Fragment implements View.OnClickListener{
-    private NewConversationFragment.OnFragmentInteractionListener mListener;
+public class ConversationsFragment extends Fragment {
+    private OnConversationViewInteractionListener mListener;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private SharedPreferences mPref;
     private String mUsername;
     private String mSendUrl;
-    private Conversation[] mDataset;
+    private ArrayList<Conversation> mDataset;
 
     public ConversationsFragment() {
         // Required empty public constructor
@@ -46,30 +47,25 @@ public class ConversationsFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_inbox, container, false);
+        View view = inflater.inflate(R.layout.fragment_conversations, container, false);
+        //Make the FAB appear on this fragment
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
-        Button b = view.findViewById(R.id.loadConversationButton);
-        b.setOnClickListener(this); //add this Fragment Object as the OnClickListener
-        //mDataset = new Conversation[0];
 
+        //Initialize recycler view with an empty dataset
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerSelectConversations);
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-
-        // specify an adapter (see also next example)
-        mAdapter = new ConversationsAdapter(mDataset);
+        //Start with an empty dataset.
+        mDataset = new ArrayList();
+        mAdapter = new ConversationsAdapter(mDataset,mListener);
         mRecyclerView.setAdapter(mAdapter);
-
-
 
         return view;
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -92,24 +88,13 @@ public class ConversationsFragment extends Fragment implements View.OnClickListe
         getConversationsList();
     }
 
-    /*
-    private SharedPreferences getSharedPreferences() {
-        SharedPreferences prefs =
-                getActivity().getSharedPreferences(
-                        getString(R.string.keys_shared_prefs),
-                        Context.MODE_PRIVATE);
-        if (!prefs.contains(getString(R.string.keys_prefs_username))) {
-            throw new IllegalStateException("No username in prefs!");
-        }
-        return prefs;
-    }
-    */
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if (context instanceof NewConversationFragment.OnFragmentInteractionListener) {
-            mListener = (NewConversationFragment.OnFragmentInteractionListener) context;
+        if (context instanceof OnConversationViewInteractionListener) {
+            mListener = (OnConversationViewInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -124,16 +109,8 @@ public class ConversationsFragment extends Fragment implements View.OnClickListe
         mListener = null;
 
     }
-    @Override
-    public void onClick(View v) {
 
-        if (mListener != null) {
-            if(v.getId() == R.id.loadConversationButton) {
-                mListener.onFragmentInteraction();
-            }
-        }
 
-    }
     private void getConversationsList() {
 
         JSONObject messageJson = new JSONObject();
@@ -159,26 +136,31 @@ public class ConversationsFragment extends Fragment implements View.OnClickListe
     private void createConversationsList(final String result) {
         try {
             JSONObject res = new JSONObject(result);
-
             if(res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
-                //
+
+                ArrayList<Conversation> conversations = new ArrayList<Conversation>();
+
+                if(res.has(getString(R.string.keys_json_chats))){
+                    JSONArray chats = res.getJSONArray(getString(R.string.keys_json_chats));
+
+                    for (int i = 0; i < chats.length(); i++) {
+                        JSONObject chat = chats.getJSONObject(i);
+                        int chatId = chat.getInt(getString(R.string.keys_json_chatid));
+                        conversations.add(new Conversation(chatId,null));
+                    }
+                    //Update the recycler view
+                    mDataset.addAll(conversations);
+                    mAdapter.notifyItemRangeInserted(0,mDataset.size() - 1);
+
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        // Make a list of connections from JSONArray?
-        Connection[] connections = new Connection[3];
-        connections[0] = new Connection("use1", "The", "Boss");
-        connections[1] = new Connection("user2","Billy", "Bob");
-        connections[2] = new Connection("user3", "Bob", "Joe");
+    }
 
-        Connection[] connections2 = new Connection[1];
-        connections[0] = new Connection("use4", "Other", "Guy");
-
-        Conversation[] conversations = new Conversation[2];
-        conversations[0] = new Conversation(1,connections);
-        conversations[1] = new Conversation(2,connections2);
-        mDataset = conversations;
+    public interface OnConversationViewInteractionListener {
+        void onConversationSelected(int conversationID);
     }
 }

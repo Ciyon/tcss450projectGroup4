@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,7 +23,7 @@ import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NewConversationFragment.OnFragmentInteractionListener,
-        SettingsFragment.OnFragmentInteractionListener{
+        SettingsFragment.OnFragmentInteractionListener, ConversationsFragment.OnConversationViewInteractionListener{
 
     private String mUsername;
     @Override
@@ -232,5 +233,22 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
 
+    }
+
+    @Override
+    public void onConversationSelected(int conversationID) {
+        ChatFragment chatFrag = new ChatFragment();
+        Bundle args = new Bundle();
+        args.putInt(getString(R.string.keys_args_conversationID), conversationID);
+        chatFrag.setArguments(args);
+
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer2, chatFrag)
+                .addToBackStack(null);
+
+
+        // Commit the transaction
+        transaction.commit();
     }
 }

@@ -7,13 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
+import group4.tcss450.uw.edu.tcss450project.ConversationsFragment;
 import group4.tcss450.uw.edu.tcss450project.R;
 import group4.tcss450.uw.edu.tcss450project.model.Connection;
 import group4.tcss450.uw.edu.tcss450project.model.Conversation;
 
 public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdapter.ViewHolder> {
 
-    Conversation[] mDataSet;
+    ArrayList<Conversation> mDataSet;
+    ConversationsFragment.OnConversationViewInteractionListener mListener;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -28,8 +32,10 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         }
     }
 
-    public ConversationsAdapter(Conversation[] connections) {
+    public ConversationsAdapter(ArrayList<Conversation> connections,
+                                ConversationsFragment.OnConversationViewInteractionListener listener) {
         mDataSet = connections;
+        mListener = listener;
     }
 
     // Create new views (invoked by the layout manager)
@@ -49,12 +55,12 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     public void onBindViewHolder(ConversationsAdapter.ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        if(mDataSet[position] != null) {
-            holder.mTextView.setText(mDataSet[position].toString());
+        if(mDataSet.get(position) != null) {
+            holder.mTextView.setText(mDataSet.get(position).toString());
             holder.mTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d("ConversionsAdapter","clicked");
+                    mListener.onConversationSelected(mDataSet.get(position).getID());
                 }
             });
         }
@@ -63,6 +69,8 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataSet.length;
+        return mDataSet.size();
     }
+
+
 }

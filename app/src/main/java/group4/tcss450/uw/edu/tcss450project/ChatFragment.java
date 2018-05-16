@@ -30,9 +30,9 @@ public class ChatFragment extends Fragment {
 
     private String mUsername;
     private String mSendUrl;
+    private int mChatID;
     private TextView mOutputTextView;
     private ListenManager mListenManager;
-    private LoginFragment.OnFragmentInteractionListener mListener;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -53,6 +53,10 @@ public class ChatFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        if( getArguments() != null) {
+            mChatID = getArguments().getInt(getString(R.string.keys_args_conversationID));
+        }
+
         SharedPreferences prefs =
                 getActivity().getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
@@ -71,7 +75,7 @@ public class ChatFragment extends Fragment {
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
                 .appendPath(getString(R.string.ep_get_message))
-                .appendQueryParameter("chatId", "1")
+                .appendQueryParameter(getString(R.string.keys_json_chat_id), Integer.toString(mChatID))
                 .build();
         if (prefs.contains(getString(R.string.keys_prefs_time_stamp))) {
             //ignore all of the seen messages. You may want to store these messages locally
@@ -122,7 +126,7 @@ public class ChatFragment extends Fragment {
         try {
             messageJson.put(getString(R.string.keys_json_username), mUsername);
             messageJson.put(getString(R.string.keys_json_message), msg);
-            messageJson.put(getString(R.string.keys_json_chat_id), 1);
+            messageJson.put(getString(R.string.keys_json_chat_id), mChatID);
         } catch (JSONException e) {
             e.printStackTrace();
         }

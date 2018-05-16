@@ -10,6 +10,10 @@ public class Conversation {
         this.members = members;
     }
 
+    public int getID() {
+        return id;
+    }
+
     public String toString() {
         /*
         StringBuilder b = new StringBuilder();
