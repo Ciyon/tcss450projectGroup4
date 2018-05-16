@@ -139,7 +139,7 @@ public class ConversationsFragment extends Fragment {
             if(res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
-                ArrayList<Conversation> conversations = new ArrayList<Conversation>();
+                ArrayList<Conversation> conversations = new ArrayList<>();
 
                 if(res.has(getString(R.string.keys_json_chats))){
                     JSONArray chats = res.getJSONArray(getString(R.string.keys_json_chats));
@@ -152,7 +152,6 @@ public class ConversationsFragment extends Fragment {
                     //Update the recycler view
                     mDataset.addAll(conversations);
                     mAdapter.notifyItemRangeInserted(0,mDataset.size() - 1);
-
                 }
             }
         } catch (JSONException e) {
@@ -161,6 +160,10 @@ public class ConversationsFragment extends Fragment {
     }
 
     public interface OnConversationViewInteractionListener {
+        void onConversationSelected(int conversationID);
+    }
+
+    public interface OnConversationDeleteInteractionListener {
         void onConversationSelected(int conversationID);
     }
 }
