@@ -28,7 +28,7 @@ import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ConversationsFragment extends Fragment {
+public class ConversationsFragment extends Fragment implements ConversationsAdapter.OnConversationDeleteInteractionListener{
     private OnConversationViewInteractionListener mListener;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -36,7 +36,9 @@ public class ConversationsFragment extends Fragment {
     private SharedPreferences mPref;
     private String mUsername;
     private String mSendUrl;
+    private String mDeleteUrl;
     private ArrayList<Conversation> mDataset;
+    private int mDeletePosition;
 
     public ConversationsFragment() {
         // Required empty public constructor
@@ -60,7 +62,7 @@ public class ConversationsFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         //Start with an empty dataset.
         mDataset = new ArrayList();
-        mAdapter = new ConversationsAdapter(mDataset,mListener);
+        mAdapter = new ConversationsAdapter(mDataset,mListener,this);
         mRecyclerView.setAdapter(mAdapter);
 
         return view;
@@ -83,6 +85,12 @@ public class ConversationsFragment extends Fragment {
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
                 .appendPath(getString(R.string.ep_get_conversations))
+                .build()
+                .toString();
+        mDeleteUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_delete_conversation))
                 .build()
                 .toString();
         getConversationsList();
@@ -159,11 +167,44 @@ public class ConversationsFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onConversationDeleted(int conversationID, int position) {
+        mDeletePosition = position;
+        JSONObject messageJson = new JSONObject();
+
+        try {
+            messageJson.put(getString(R.string.keys_json_username), mUsername);
+            messageJson.put(getString(R.string.keys_json_chat_id), conversationID);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        new SendPostAsyncTask.Builder(mDeleteUrl, messageJson)
+                .onPostExecute(this::deleteConversation)
+                .onCancelled(this::handleError)
+                .build().execute();
+
+    }
+
+    private void deleteConversation(final String result) {
+        try {
+            JSONObject res = new JSONObject(result);
+            if(res.get(getString(R.string.keys_json_success)).toString()
+                    .equals(getString(R.string.keys_json_success_value_true))) {
+
+                mDataset.remove(mDeletePosition);
+                mAdapter.notifyItemRemoved(mDeletePosition);
+                mAdapter.notifyItemRangeChanged(mDeletePosition, mDataset.size() - mDeletePosition);
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public interface OnConversationViewInteractionListener {
         void onConversationSelected(int conversationID);
     }
 
-    public interface OnConversationDeleteInteractionListener {
-        void onConversationSelected(int conversationID);
-    }
 }

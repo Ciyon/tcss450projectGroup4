@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 import group4.tcss450.uw.edu.tcss450project.ConversationsFragment;
@@ -19,7 +17,8 @@ import group4.tcss450.uw.edu.tcss450project.model.Conversation;
 public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdapter.ViewHolder> {
 
     private ArrayList<Conversation> mDataSet;
-    private ConversationsFragment.OnConversationViewInteractionListener mListener;
+    private ConversationsFragment.OnConversationViewInteractionListener mSelectListener;
+    private OnConversationDeleteInteractionListener mDeleteListener;
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
@@ -37,9 +36,11 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     }
 
     public ConversationsAdapter(ArrayList<Conversation> connections,
-                                ConversationsFragment.OnConversationViewInteractionListener listener) {
+                                ConversationsFragment.OnConversationViewInteractionListener selectListener,
+                                OnConversationDeleteInteractionListener deleteListener) {
         mDataSet = connections;
-        mListener = listener;
+        mSelectListener = selectListener;
+        mDeleteListener = deleteListener;
     }
 
     // Create new views (invoked by the layout manager)
@@ -64,24 +65,14 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         holder.mTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.onConversationSelected(mDataSet.get(position).getID());
+                mSelectListener.onConversationSelected(mDataSet.get(position).getID());
             }
         });
 
         holder.mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int id = mDataSet.get(position).getID();
-                //Does it need to get removed from the dataset?
-                mDataSet.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, mDataSet.size() - position);
-                 //Remove the item from the view
-
-
-                //make webservice call to remove user from that chat in the database
-                Log.d("Remove Conversation Testing", Integer.toString(id));
-                //mListener.onConversationSelected(mDataSet.get(position).getID());
+                mDeleteListener.onConversationDeleted(mDataSet.get(position).getID(),position);
             }
         });
 
@@ -91,6 +82,10 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     @Override
     public int getItemCount() {
         return mDataSet.size();
+    }
+
+    public interface OnConversationDeleteInteractionListener {
+        void onConversationDeleted(int conversationID, int position);
     }
 
 }
