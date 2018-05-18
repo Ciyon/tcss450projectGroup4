@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
 
-        if (prefs.getBoolean(getString(R.string.keys_prefs_stay_logged_in),
+        if (!prefs.getBoolean(getString(R.string.keys_prefs_stay_logged_in),
                 false)) {
             mUsername = getIntent().getStringExtra("username");
             prefs.edit().putString("username", mUsername)
