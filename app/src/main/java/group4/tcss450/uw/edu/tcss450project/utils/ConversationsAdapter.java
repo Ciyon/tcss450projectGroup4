@@ -20,10 +20,8 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     private ConversationsFragment.OnConversationViewInteractionListener mSelectListener;
     private OnConversationDeleteInteractionListener mDeleteListener;
     // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
+
         public View mView;
         public TextView mTextView;
         public Button mButton;
@@ -35,10 +33,10 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         }
     }
 
-    public ConversationsAdapter(ArrayList<Conversation> connections,
+    public ConversationsAdapter(ArrayList<Conversation> conversations,
                                 ConversationsFragment.OnConversationViewInteractionListener selectListener,
                                 OnConversationDeleteInteractionListener deleteListener) {
-        mDataSet = connections;
+        mDataSet = conversations;
         mSelectListener = selectListener;
         mDeleteListener = deleteListener;
     }
@@ -58,8 +56,6 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ConversationsAdapter.ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
 
         holder.mTextView.setText(mDataSet.get(position).toString());
         holder.mTextView.setOnClickListener(new View.OnClickListener() {

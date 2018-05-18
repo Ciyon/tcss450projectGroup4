@@ -10,13 +10,14 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerSelectConversations"
         layout_height="wrap_content"
-        android:layout_width="368dp"
-        android:layout_height="287dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginTop="8dp"
         android:scrollbars="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="78dp" />
 
 
 </android.support.constraint.ConstraintLayout>

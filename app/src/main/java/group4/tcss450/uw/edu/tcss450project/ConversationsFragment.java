@@ -56,6 +56,7 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
 
         //Initialize recycler view with an empty dataset
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerSelectConversations);
+        mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this.getContext());

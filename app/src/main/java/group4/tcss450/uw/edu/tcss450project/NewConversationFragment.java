@@ -13,8 +13,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import group4.tcss450.uw.edu.tcss450project.model.Connection;
-import group4.tcss450.uw.edu.tcss450project.utils.NewConversationAdapter;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,26 +33,26 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //just a place holder, we need to populate this
-        myDataset = new Connection[0];
+        //myDataset = new Connection[0];
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_new_conversation, container, false);
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.GONE);
         Button b = view.findViewById(R.id.createConversationButton);
         b.setOnClickListener(this); //add this Fragment Object as the OnClickListener
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerSelectConnections);
+        //mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerSelectConnections);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
-        mRecyclerView.setHasFixedSize(true);
+        //mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new NewConversationAdapter(myDataset);
-        mRecyclerView.setAdapter(mAdapter);
+        //mAdapter = new NewConversationAdapter(myDataset);
+       // mRecyclerView.setAdapter(mAdapter);
         return view;
     }
 

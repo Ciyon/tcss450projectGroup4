@@ -14,16 +14,18 @@ public class Connection {
     private String userName;
     private String firstName;
     private String lastName;
+    private String email;
 
     private boolean isSelected = false;
 
     /* whether or not the connection is pending */
     private boolean verified = false;
 
-    public Connection(String userName, String firstName, String lastName) {
+    public Connection(String userName, String firstName, String lastName, String email) {
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
     }
 
     public String getUserName() {
@@ -38,6 +40,9 @@ public class Connection {
         return lastName;
     }
 
+    public String getEmail() { return email; }
+
+    //Probably do not need
     public void setVerified(boolean verified) {
         this.verified = verified;
     }
