@@ -64,15 +64,12 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
         //Start with an empty dataset.
         mDataset = new ArrayList();
         mAdapter = new ConversationsAdapter(mDataset,mListener,this);
-        mRecyclerView.setAdapter(mAdapter);
 
+        loadConversations();
         return view;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
+    private void loadConversations() {
         SharedPreferences prefs =
                 getActivity().getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
@@ -95,6 +92,13 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
                 .build()
                 .toString();
         getConversationsList();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+
     }
 
 
@@ -160,7 +164,8 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
                     }
                     //Update the recycler view
                     mDataset.addAll(conversations);
-                    mAdapter.notifyItemRangeInserted(0,mDataset.size() - 1);
+                    //mAdapter.notifyItemRangeInserted(0,mDataset.size() - 1);
+                    mRecyclerView.setAdapter(mAdapter);
                 }
             }
         } catch (JSONException e) {

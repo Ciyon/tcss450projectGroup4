@@ -32,13 +32,17 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_drawer);
 
-        mUsername = getIntent().getStringExtra("username");
         SharedPreferences prefs =
                 getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
-        prefs.edit().putString("username", mUsername)
-                .apply();
+
+        if (prefs.getBoolean(getString(R.string.keys_prefs_stay_logged_in),
+                false)) {
+            mUsername = getIntent().getStringExtra("username");
+            prefs.edit().putString("username", mUsername)
+                    .apply();
+        }
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
