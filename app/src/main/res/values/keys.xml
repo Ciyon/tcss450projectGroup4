@@ -4,6 +4,7 @@
     <!-- Keys -->
     <string name="keys_shared_prefs">edu.uw.tcss450.group4.tcss450project.PREFS</string>
     <string name="keys_prefs_username">username</string>
+    <string name="keys_prefs_user_id">userid</string>
     <string name="keys_prefs_theme">theme</string>
     <string name="keys_prefs_stay_logged_in">loggedIn</string>
     <string name="keys_prefs_time_stamp">ts key</string>
@@ -21,10 +22,15 @@
     <string name="keys_json_email">email</string>
     <string name="keys_json_firstname">first</string>
     <string name="keys_json_lastname">last</string>
+    <string name="keys_json_firstname_long">firstname</string>
+    <string name="keys_json_lastname_long">lastname</string>
     <string name="keys_json_message">message</string>
     <string name="keys_json_messages">messages</string>
     <string name="keys_json_success">success</string>
     <string name="keys_json_chat_id">chatId</string>
     <string name="keys_json_success_value_true">true</string>
     <string name="keys_json_success_value_false">false</string>
+    <string name="keys_json_result">result</string>
+    <string name="keys_json_member_id">memberid</string>
+    <string name="keys_json_member_id_caps">memberId</string>
 </resources>

@@ -13,4 +13,6 @@
     <string name="ep_submit_code">submitCode</string>
     <string name="ep_reset_password">resetPassword</string>
     <string name="ep_delete_conversation">leaveChat</string>
+    <string name="ep_create_chat">createChat</string>
+    <string name="ep_add_all_to_chat">addAllToChat</string>
 </resources>

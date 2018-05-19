@@ -192,8 +192,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
     }
 
     @Override
-    public void onPasswordCodeSubmit()
-    {
+    public void onPasswordCodeSubmit() {
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentContainer, new ResetPasswordFragment(),
@@ -204,8 +203,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
     }
 
     @Override
-    public void onSubmitPassword(Editable password, String code, String email)
-    {
+    public void onSubmitPassword(Editable password, String code, String email) {
         //build the web service URL
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -271,6 +269,17 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
+                if(resultsJSON.has(getString(R.string.keys_json_member_id))) {
+                    int id = resultsJSON.getInt(getString(R.string.keys_json_member_id));
+                    SharedPreferences prefs =
+                            getSharedPreferences(
+                                    getString(R.string.keys_shared_prefs),
+                                    Context.MODE_PRIVATE);
+                    //save the username for later usage
+                    prefs.edit().putInt(
+                            getString(R.string.keys_prefs_user_id), id)
+                            .apply();
+                }
                 checkStayLoggedIn();
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("username", mCredentials.getUsername());
@@ -429,30 +438,4 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                     + e.getMessage());
         }
     }
-
-    //Probably not needed
-    private void setUserTheme() {
-        SharedPreferences prefs =
-                getSharedPreferences(
-                        getString(R.string.keys_shared_prefs),
-                        Context.MODE_PRIVATE);
-        int theme = prefs.getInt(getString(R.string.keys_prefs_theme), 1);
-        switch(theme) {
-            case 1:
-                setTheme(R.style.AppTheme);
-                break;
-            case 2:
-                setTheme(R.style.AppTheme2);
-                break;
-            case 3:
-                setTheme(R.style.AppTheme3);
-                break;
-            default:
-                setTheme(R.style.AppTheme);
-                break;
-        }
-    }
-
-
-
 }

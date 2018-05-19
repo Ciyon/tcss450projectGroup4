@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -21,8 +22,16 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import group4.tcss450.uw.edu.tcss450project.model.Connection;
+import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, NewConversationFragment.OnFragmentInteractionListener,
+        implements NavigationView.OnNavigationItemSelectedListener,
         SettingsFragment.OnFragmentInteractionListener, ConversationsFragment.OnConversationViewInteractionListener{
 
     private String mUsername;
@@ -143,12 +152,15 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void onLogout() {
+    private void onLogout() {
         SharedPreferences prefs =
                 getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
-        prefs.edit().remove(getString(R.string.keys_prefs_username));
+        //This should remove all saved user data, we will need to save the selected theme though
+        prefs.edit().clear();
+        //prefs.edit().remove(getString(R.string.keys_prefs_username));
+        //prefs.edit().remove(R.string.keys_prefs_user_id);
         prefs.edit().putBoolean(
                 getString(R.string.keys_prefs_stay_logged_in),
                 false)
@@ -169,12 +181,6 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
     }
 
-    //This is being called by the Inbox Fragment and the NewConversation Fragment and simulates
-    //either a new chat being created or an existing chat being opened
-    @Override
-    public void onFragmentInteraction() {
-        loadFragment(new ChatFragment());
-    }
 
     @Override
     public void onSettingsUpdate(int choice) {

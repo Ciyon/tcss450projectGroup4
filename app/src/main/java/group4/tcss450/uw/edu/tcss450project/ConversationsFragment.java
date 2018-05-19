@@ -33,7 +33,6 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private SharedPreferences mPref;
     private String mUsername;
     private String mSendUrl;
     private String mDeleteUrl;
@@ -65,40 +64,9 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
         mDataset = new ArrayList();
         mAdapter = new ConversationsAdapter(mDataset,mListener,this);
 
-        loadConversations();
+        setUpRequest();
+        requestConversationsList();
         return view;
-    }
-
-    private void loadConversations() {
-        SharedPreferences prefs =
-                getActivity().getSharedPreferences(
-                        getString(R.string.keys_shared_prefs),
-                        Context.MODE_PRIVATE);
-        if (!prefs.contains(getString(R.string.keys_prefs_username))) {
-            throw new IllegalStateException("No username in prefs!");
-        }
-        mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
-
-        mSendUrl = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_get_conversations))
-                .build()
-                .toString();
-        mDeleteUrl = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_delete_conversation))
-                .build()
-                .toString();
-        getConversationsList();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-
     }
 
 
@@ -123,9 +91,31 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
 
     }
 
+    private void setUpRequest() {
+        SharedPreferences prefs =
+                getActivity().getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        if (!prefs.contains(getString(R.string.keys_prefs_username))) {
+            throw new IllegalStateException("No username in prefs!");
+        }
+        mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
 
-    private void getConversationsList() {
+        mSendUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_get_conversations))
+                .build()
+                .toString();
+        mDeleteUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_delete_conversation))
+                .build()
+                .toString();
+    }
 
+    private void requestConversationsList() {
         JSONObject messageJson = new JSONObject();
 
         try {
@@ -164,7 +154,6 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
                     }
                     //Update the recycler view
                     mDataset.addAll(conversations);
-                    //mAdapter.notifyItemRangeInserted(0,mDataset.size() - 1);
                     mRecyclerView.setAdapter(mAdapter);
                 }
             }

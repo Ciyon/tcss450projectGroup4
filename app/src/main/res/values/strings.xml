@@ -32,6 +32,7 @@
 
     <!-- Labels -->
     <string name="label_color_selection">App Color Scheme</string>
+    <string name="label_select_contacts">Select Chat Members</string>
 
     <!-- Hints -->
     <string name="hint_username">Enter username</string>
@@ -44,6 +45,7 @@
     <string name="hint_enter_code">Enter password reset code</string>
     <string name="hint_enter_new_password">Enter new password</string>
     <string name="hint_reenter_new_password">Reenter new password</string>
+    <string name="hint_search">Search</string>
 
     <!-- EditText text -->
     <string name="edittext_username">test</string>

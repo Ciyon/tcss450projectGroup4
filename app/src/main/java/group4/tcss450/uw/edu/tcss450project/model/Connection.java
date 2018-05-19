@@ -15,17 +15,19 @@ public class Connection {
     private String firstName;
     private String lastName;
     private String email;
+    private int id;
 
     private boolean isSelected = false;
 
     /* whether or not the connection is pending */
     private boolean verified = false;
 
-    public Connection(String userName, String firstName, String lastName, String email) {
+    public Connection(String userName, String firstName, String lastName, String email, int id) {
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.id = id;
     }
 
     public String getUserName() {
@@ -42,16 +44,6 @@ public class Connection {
 
     public String getEmail() { return email; }
 
-    //Probably do not need
-    public void setVerified(boolean verified) {
-        this.verified = verified;
-    }
+    public int getId() {return id; }
 
-    public void setSelected(boolean selected) {
-        isSelected = selected;
-    }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
 }

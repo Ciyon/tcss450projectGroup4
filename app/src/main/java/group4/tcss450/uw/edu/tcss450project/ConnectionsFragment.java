@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import android.widget.EditText;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -58,19 +59,19 @@ public class ConnectionsFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Make an empty list to hold the data
-        mDataSet = createConnectionsList();
-
+        mDataSet = new ArrayList<>();
         mAdapter = new ConnectionsAdapter(mDataSet);
-        mRecyclerView.setAdapter(mAdapter);
+
+        setUpRequest();
+        requestConnections();
+        //mRecyclerView.setAdapter(mAdapter);
 
         return view;
 
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
 
+    private void setUpRequest() {
         SharedPreferences prefs =
                 getActivity().getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
@@ -86,33 +87,58 @@ public class ConnectionsFragment extends Fragment {
                 .appendPath(getString(R.string.ep_get_connections))
                 .build()
                 .toString();
-        // Update the connections
-       // mPref = getSharedPreferences();
-        mDataSet = createConnectionsList();
-
     }
 
+    private void requestConnections() {
+        JSONObject messageJson = new JSONObject();
+
+        try {
+            messageJson.put(getString(R.string.keys_json_username), mUsername);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        new SendPostAsyncTask.Builder(mSendUrl, messageJson)
+                .onPostExecute(this::createConnectionsList)
+                .onCancelled(this::handleError)
+                .build().execute();
+    }
 
     private void handleError(final String msg) {
         Log.e("Connections ERROR!!!", msg.toString());
     }
 
-    private ArrayList<Connection> createConnectionsList() {
+    private void createConnectionsList(final String result) {
+        try {
+            JSONObject res = new JSONObject(result);
+            if(res.get(getString(R.string.keys_json_success)).toString()
+                    .equals(getString(R.string.keys_json_success_value_true))) {
 
-        ArrayList<Connection> connections = new ArrayList<>();
-        connections.add(new Connection("user1", "The", "Boss", "boss@yahoo.com"));
-        connections.add(new Connection("user2","Billy", "Bob", "billy@gmail.com"));
-        connections.add(new Connection("user3", "Bob", "Joe", "bob@test.com"));
-        connections.add(new Connection("user1", "The", "Boss", "boss@yahoo.com"));
-        connections.add(new Connection("user2","Billy", "Bob", "billy@gmail.com"));
-        connections.add(new Connection("user3", "Bob", "Joe", "bob@test.com"));
-        connections.add(new Connection("user1", "The", "Boss", "boss@yahoo.com"));
-        connections.add(new Connection("user2","Billy", "Bob", "billy@gmail.com"));
-        connections.add(new Connection("user3", "Bob", "Joe", "bob@test.com"));
-        connections.add(new Connection("user1", "The", "Boss", "boss@yahoo.com"));
-        connections.add(new Connection("user2","Billy", "Bob", "billy@gmail.com"));
-        connections.add(new Connection("user3", "Bob", "Joe", "bob@test.com"));
-        return connections;
+                ArrayList<Connection> connections = new ArrayList<>();
+
+                if(res.has(getString(R.string.keys_json_result))){
+                    JSONArray members = res.getJSONArray(getString(R.string.keys_json_result));
+
+                    for (int i = 0; i < members.length(); i++) {
+                        JSONObject member = members.getJSONObject(i);
+                        //there should be checks here to make sure the object actually has these
+                        String uName = member.getString(getString(R.string.keys_json_username));
+                        String fName = member.getString(getString(R.string.keys_json_firstname_long));
+                        String lName = member.getString(getString(R.string.keys_json_lastname_long));
+                        String email = member.getString(getString(R.string.keys_json_email));
+                        int id = member.getInt(getString(R.string.keys_json_member_id));
+                        connections.add(new Connection(uName, fName, lName, email, id));
+                        Log.d("testing", connections.toString());
+                    }
+                    //Update the recycler view
+                    mDataSet.addAll(connections);
+                    mRecyclerView.setAdapter(mAdapter);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 }

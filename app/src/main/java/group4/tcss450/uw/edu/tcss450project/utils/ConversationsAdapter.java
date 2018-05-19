@@ -20,7 +20,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     private ConversationsFragment.OnConversationViewInteractionListener mSelectListener;
     private OnConversationDeleteInteractionListener mDeleteListener;
     // Provide a reference to the views for each data item
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         public View mView;
         public TextView mTextView;
@@ -68,6 +68,9 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
         holder.mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //disable the button so the user cannot press it twice
+                //while the task removes the item from the database and the list
+                holder.mButton.setEnabled(false);
                 mDeleteListener.onConversationDeleted(mDataSet.get(position).getID(),position);
             }
         });
