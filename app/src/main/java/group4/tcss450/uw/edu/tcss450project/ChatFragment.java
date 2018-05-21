@@ -65,6 +65,7 @@ public class ChatFragment extends Fragment {
             throw new IllegalStateException("No username in prefs!");
         }
         mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
+        getAllMessages(mUsername);
         mSendUrl = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
@@ -77,6 +78,7 @@ public class ChatFragment extends Fragment {
                 .appendPath(getString(R.string.ep_get_message))
                 .appendQueryParameter(getString(R.string.keys_json_chat_id), Integer.toString(mChatID))
                 .build();
+
         if (prefs.contains(getString(R.string.keys_prefs_time_stamp))) {
             //ignore all of the seen messages. You may want to store these messages locally
             mListenManager = new ListenManager.Builder(retrieve.toString(),
@@ -87,11 +89,12 @@ public class ChatFragment extends Fragment {
                     .build();
         } else {
             //no record of a saved timestamp. must be a first time login
-            mListenManager = new ListenManager.Builder(retrieve.toString(),
-                    this::publishProgress)
-                    .setExceptionHandler(this::handleError)
-                    .setDelay(1000)
-                    .build();
+                mListenManager = new ListenManager.Builder(retrieve.toString(),
+                this::publishProgress)
+                .setExceptionHandler(this::handleError)
+                .setDelay(1000)
+                .build();
+
         }
     }
 
@@ -163,6 +166,59 @@ public class ChatFragment extends Fragment {
         }
     }
 
+    private void getAllMessages(String mUsername) {
+        String url = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath("getAllMessages")
+                .build()
+                .toString();
+
+        JSONObject messageJson = new JSONObject();
+        try {
+            messageJson.put(getString(R.string.keys_json_chat_id), mChatID);
+        } catch(Exception e) {
+            e.getStackTrace();
+        }
+
+        new SendPostAsyncTask.Builder(url, messageJson)
+                .onPostExecute(this::storeMessages)
+                .onCancelled(this::handleError)
+                .build().execute();
+    }
+
+    private void storeMessages(String result) {
+        try {
+            JSONObject messages = new JSONObject(result);
+            if(messages.get(getString(R.string.keys_json_success)).toString()
+                    .equals(getString(R.string.keys_json_success_value_true))) {
+                String[] msgs;
+                if(messages.has(getString(R.string.keys_json_messages))) {
+                    try {
+                        JSONArray jMessages = messages.getJSONArray(getString(R.string.keys_json_messages));msgs = new String[jMessages.length()];
+                        for (int i = 0; i < jMessages.length(); i++) {
+                            JSONObject msg = jMessages.getJSONObject(i);
+                            String username = msg.get(getString(R.string.keys_json_username)).toString();
+                            String userMessage = msg.get(getString(R.string.keys_json_message)).toString();
+                            msgs[i] = username + ":" + userMessage;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    getActivity().runOnUiThread(() -> {
+                        for (String msg : msgs) {
+                            mOutputTextView.append(msg);
+                            mOutputTextView.append(System.lineSeparator());
+                        }
+                    });
+                }
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     private void endOfSendMsgTask(final String result) {
         try {
             JSONObject res = new JSONObject(result);

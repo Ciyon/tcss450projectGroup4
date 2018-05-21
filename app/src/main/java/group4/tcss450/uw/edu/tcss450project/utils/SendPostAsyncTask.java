@@ -134,7 +134,7 @@ public class SendPostAsyncTask extends AsyncTask<Void, String, String> {
      *
      * @param builder the builder used to construct this object
      */
-    private SendPostAsyncTask(final Builder builder) {
+    public SendPostAsyncTask(final Builder builder) {
         mUrl = builder.mUrl;
         mJsonMsg = builder.mJsonMsg;
 

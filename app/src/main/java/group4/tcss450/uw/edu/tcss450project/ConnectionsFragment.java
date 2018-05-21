@@ -91,7 +91,6 @@ public class ConnectionsFragment extends Fragment {
 
     private void requestConnections() {
         JSONObject messageJson = new JSONObject();
-
         try {
             messageJson.put(getString(R.string.keys_json_username), mUsername);
 
