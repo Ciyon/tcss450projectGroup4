@@ -1,12 +1,12 @@
 package group4.tcss450.uw.edu.tcss450project.utils;
 
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 
 import group4.tcss450.uw.edu.tcss450project.R;
@@ -15,7 +15,7 @@ import group4.tcss450.uw.edu.tcss450project.model.Connection;
 public class ConnectionsAdapter extends RecyclerView.Adapter<ConnectionsAdapter.ViewHolder> {
 
     private ArrayList<Connection> mDataSet;
-
+    private OnConnectionAdapterInteractionListener mListener;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -38,8 +38,9 @@ public class ConnectionsAdapter extends RecyclerView.Adapter<ConnectionsAdapter.
         }
     }
 
-    public ConnectionsAdapter(ArrayList<Connection> connections) {
+    public ConnectionsAdapter(ArrayList<Connection> connections, OnConnectionAdapterInteractionListener listener) {
         mDataSet = connections;
+        mListener = listener;
     }
 
     // Create new views (invoked by the layout manager)
@@ -59,12 +60,34 @@ public class ConnectionsAdapter extends RecyclerView.Adapter<ConnectionsAdapter.
         holder.mUsernameTextView.setText(mDataSet.get(position).getUserName());
         holder.mNameTextView.setText(mDataSet.get(position).getFirstName() + " " + mDataSet.get(position).getLastName());
         holder.mEmailTextView.setText(mDataSet.get(position).getEmail());
+        holder.mChatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //disable the button so the user cannot press it twice
+                holder.mChatButton.setEnabled(false);
+                mListener.onChatStarted(mDataSet.get(position).getUserName());
+            }
+        });
 
+        holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //disable the button so the user cannot press it twice
+                //while the task removes the item from the database and the list
+                holder.mDeleteButton.setEnabled(false);
+                mListener.onConnectionDeleted(mDataSet.get(position).getUserName(),position);
+            }
+        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return mDataSet.size();
+    }
+
+    public interface OnConnectionAdapterInteractionListener {
+        void onConnectionDeleted(String contactUsername, int position);
+        void onChatStarted(String contactUsername);
     }
 }

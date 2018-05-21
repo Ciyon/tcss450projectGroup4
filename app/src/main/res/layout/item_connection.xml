@@ -68,7 +68,7 @@ android:gravity="center">
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:text="@string/button_start_chat"
+                android:text="@string/button_new_chat"
                 card_view:layout_constraintEnd_toEndOf="parent" />
 
             <Button

@@ -66,7 +66,7 @@
     <string name="button_load_conversation">Load Conversation</string>
     <string name="button_settings_apply">Apply</string>
     <string name="button_enter_code">Enter Code</string>
-    <string name="button_newChat">New Chat</string>
+    <string name="button_new_chat">New Chat</string>
     <string name="button_deleteChat">Leave Chat</string>
     <string name="button_delete_connection">Remove</string>
     <string name="button_start_chat">Chat</string>

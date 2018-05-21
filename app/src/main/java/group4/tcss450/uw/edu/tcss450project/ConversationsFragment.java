@@ -66,6 +66,8 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
 
         setUpRequest();
         requestConversationsList();
+
+        mRecyclerView.setAdapter(mAdapter);
         return view;
     }
 
@@ -154,7 +156,7 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
                     }
                     //Update the recycler view
                     mDataset.addAll(conversations);
-                    mRecyclerView.setAdapter(mAdapter);
+                    mAdapter.notifyDataSetChanged();
                 }
             }
         } catch (JSONException e) {

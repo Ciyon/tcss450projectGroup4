@@ -178,12 +178,12 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
         }
 
         new SendPostAsyncTask.Builder(mAddMembersUrl, messageJson)
-                .onPostExecute(this::handleAddMembersOnPoat)
+                .onPostExecute(this::handleAddMembersOnPost)
                 .onCancelled(this::handleError)
                 .build().execute();
     }
 
-    private void handleAddMembersOnPoat(final String result) {
+    private void handleAddMembersOnPost(final String result) {
         mListener.onConversationSelected(mNewChatId);
     }
 
