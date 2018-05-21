@@ -39,7 +39,7 @@ public class ConnectionsFragment extends Fragment implements ConnectionsAdapter.
     private String mDeleteUrl;
     private String mCreateUrl;
     private String mAddMembersUrl;
-    private String mContactName;
+    private int mContactId;
     private int mDeletePosition;
     private int mNewChatId;
     private int mMemberId;
@@ -215,9 +215,9 @@ public class ConnectionsFragment extends Fragment implements ConnectionsAdapter.
     }
 
     @Override
-    public void onChatStarted(String contactUsername) {
+    public void onChatStarted(int contactId) {
         JSONObject messageJson = new JSONObject();
-        mContactName = contactUsername;
+        mContactId = contactId;
         try {
             messageJson.put(getString(R.string.keys_json_username), mUsername);
 
@@ -262,7 +262,7 @@ public class ConnectionsFragment extends Fragment implements ConnectionsAdapter.
             messageJson.put(key, mMemberId);
 
             key = baseKey + 2;
-            messageJson.put(key, mContactName);
+            messageJson.put(key, mContactId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -274,7 +274,17 @@ public class ConnectionsFragment extends Fragment implements ConnectionsAdapter.
     }
 
     private void handleAddMembersOnPost(final String result) {
-        mListener.onConversationSelected(mNewChatId);
+        Log.d("dssd", result);
+        try {
+            JSONObject res = new JSONObject(result);
+            if(res.get(getString(R.string.keys_json_success)).toString()
+                    .equals(getString(R.string.keys_json_success_value_true))) {
+
+                mListener.onConversationSelected(mNewChatId);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void deleteConnection(final String result) {

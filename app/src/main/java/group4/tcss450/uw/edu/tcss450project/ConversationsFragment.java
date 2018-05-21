@@ -19,6 +19,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import group4.tcss450.uw.edu.tcss450project.model.Conversation;
 import group4.tcss450.uw.edu.tcss450project.utils.ConversationsAdapter;
@@ -106,7 +110,7 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
         mSendUrl = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
-                .appendPath(getString(R.string.ep_get_conversations))
+                .appendPath(getString(R.string.ep_get_conversation_ids_and_members))
                 .build()
                 .toString();
         mDeleteUrl = new Uri.Builder()
@@ -144,16 +148,32 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
             if(res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
-                ArrayList<Conversation> conversations = new ArrayList<>();
 
-                if(res.has(getString(R.string.keys_json_chats))){
-                    JSONArray chats = res.getJSONArray(getString(R.string.keys_json_chats));
-
+                Map<Integer, ArrayList<String>> data = new HashMap<>();
+                if(res.has(getString(R.string.keys_json_chat_information))){
+                    JSONArray chats = res.getJSONArray(getString(R.string.keys_json_chat_information));
+                        int chatId;
+                        String username;
                     for (int i = 0; i < chats.length(); i++) {
                         JSONObject chat = chats.getJSONObject(i);
-                        int chatId = chat.getInt(getString(R.string.keys_json_chatid));
-                        conversations.add(new Conversation(chatId,null));
+                        chatId = chat.getInt(getString(R.string.keys_json_chatid));
+                        username = chat.getString(getString(R.string.keys_json_username));
+                        if(data.containsKey(chatId)) {
+                            data.get(chatId).add(username);
+                        } else {
+                            ArrayList<String> members = new ArrayList<>();
+                            members.add(username);
+                            data.put(chatId, members);
+                        }
                     }
+
+                    ArrayList<Conversation> conversations = new ArrayList<>();
+                    for(int key : data.keySet()) {
+                        ArrayList<String> finalMembersList = data.get(key);
+                        finalMembersList.remove(mUsername.toLowerCase());
+                        conversations.add(new Conversation(key,finalMembersList));
+                    }
+                    //conversations.add(new Conversation(chatId,null));
                     //Update the recycler view
                     mDataset.addAll(conversations);
                     mAdapter.notifyDataSetChanged();

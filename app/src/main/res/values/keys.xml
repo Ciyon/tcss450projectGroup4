@@ -16,6 +16,7 @@
 
     <string name="keys_args_conversationID">conversationID</string>
     <string name="keys_json_chats">chats</string>
+    <string name="keys_json_chat_information">chatInformation</string>
     <string name="keys_json_chatid">chatid</string>
     <string name="keys_json_username">username</string>
     <string name="keys_json_password">password</string>

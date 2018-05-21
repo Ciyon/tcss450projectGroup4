@@ -65,7 +65,7 @@ public class ConnectionsAdapter extends RecyclerView.Adapter<ConnectionsAdapter.
             public void onClick(View view) {
                 //disable the button so the user cannot press it twice
                 holder.mChatButton.setEnabled(false);
-                mListener.onChatStarted(mDataSet.get(position).getUserName());
+                mListener.onChatStarted(mDataSet.get(position).getId());
             }
         });
 
@@ -88,6 +88,6 @@ public class ConnectionsAdapter extends RecyclerView.Adapter<ConnectionsAdapter.
 
     public interface OnConnectionAdapterInteractionListener {
         void onConnectionDeleted(String contactUsername, int position);
-        void onChatStarted(String contactUsername);
+        void onChatStarted(int contactId);
     }
 }

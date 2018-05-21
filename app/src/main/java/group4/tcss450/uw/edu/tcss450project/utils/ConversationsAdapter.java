@@ -57,7 +57,7 @@ public class ConversationsAdapter extends RecyclerView.Adapter<ConversationsAdap
     @Override
     public void onBindViewHolder(ConversationsAdapter.ViewHolder holder, int position) {
 
-        holder.mTextView.setText(mDataSet.get(position).toString());
+        holder.mTextView.setText(mDataSet.get(position).getMembersLabel());
         holder.mTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

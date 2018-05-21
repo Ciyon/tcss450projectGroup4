@@ -5,6 +5,7 @@
     <string name="ep_login">login</string>
     <string name="ep_register">register</string>
     <string name="ep_get_conversations">getChatId</string>
+    <string name="ep_get_conversation_ids_and_members">getChatInformation</string>
     <string name="ep_get_connections">getConnections</string>
     <string name="ep_resend">resend</string>
     <string name="ep_send_message">sendMessages</string>
