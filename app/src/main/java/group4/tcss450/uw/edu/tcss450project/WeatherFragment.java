@@ -3,13 +3,10 @@ package group4.tcss450.uw.edu.tcss450project;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -25,10 +22,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-
-import group4.tcss450.uw.edu.tcss450project.utils.ListenManager;
-
-import static android.content.ContentValues.TAG;
 
 
 /**
@@ -250,5 +243,16 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         // onConnectionFailed.
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " +
                 connectionResult.getErrorCode());
+    }
+
+    private void getLocationKey() {
+        mLocationUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_api_base_url))
+                .appendPath(getString(R.string.ep_api_v1))
+                .appendPath(getString(R.string.ep_api_locations))
+                .appendQueryParameter(getString(R.string.keys_json_chat_id), Integer.toString(mLocationKey))
+                .build()
+                .toString();
     }
 }
