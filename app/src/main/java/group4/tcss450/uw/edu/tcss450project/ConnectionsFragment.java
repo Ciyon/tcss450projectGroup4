@@ -27,7 +27,8 @@ import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ConnectionsFragment extends Fragment implements ConnectionsAdapter.OnConnectionAdapterInteractionListener {
+public class ConnectionsFragment extends Fragment implements
+        ConnectionsAdapter.OnConnectionAdapterInteractionListener {
 
     private ConversationsFragment.OnConversationViewInteractionListener mListener;
     private RecyclerView mRecyclerView;

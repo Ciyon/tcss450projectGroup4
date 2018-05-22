@@ -32,7 +32,8 @@ import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        SettingsFragment.OnFragmentInteractionListener, ConversationsFragment.OnConversationViewInteractionListener{
+        SettingsFragment.OnFragmentInteractionListener,
+        ConversationsFragment.OnConversationViewInteractionListener{
 
     private String mUsername;
     @Override
