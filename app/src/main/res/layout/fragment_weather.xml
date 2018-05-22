@@ -1,15 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".WeatherFragment">
-
-    <!-- TODO: Update blank fragment layout -->
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_margin="10dp">
     <TextView
+        android:id="@+id/headerWeather"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/header_weather"
-        android:textSize="24sp" />
+        android:layout_height="wrap_content"
+        android:text="@string/header_weather" />
 
-</FrameLayout>
+    <SearchView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:queryHint="@string/hint_search_location"/>
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view_current"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="20dp"
+        card_view:cardCornerRadius="4dp">
+
+        <TextView
+            android:id="@+id/textCurrentConditions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/header_current_conditions" />
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view_twelve_hour"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="20dp"
+        card_view:cardCornerRadius="4dp">
+
+        <TextView
+            android:id="@+id/_textTwelveHour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/header_twelve_hour_forecast" />
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view_one_day"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="20dp"
+        card_view:cardCornerRadius="4dp">
+
+        <TextView
+            android:id="@+id/_textOneDay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/header_one_day_forecast" />
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view_five_day"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="20dp"
+        card_view:cardCornerRadius="4dp">
+
+        <TextView
+            android:id="@+id/_textFiveDay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/header_five_day_forecast" />
+    </android.support.v7.widget.CardView>
+</LinearLayout>
