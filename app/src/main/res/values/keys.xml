@@ -8,6 +8,7 @@
     <string name="keys_prefs_theme">theme</string>
     <string name="keys_prefs_stay_logged_in">loggedIn</string>
     <string name="keys_prefs_time_stamp">ts key</string>
+    <string name="keys_prefs_location">location</string>
 
     <string name="keys_fragment_login">loginFragmentTag</string>
     <string name="keys_fragment_register">registerFragmentTag</string>
