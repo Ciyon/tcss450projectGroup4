@@ -5,7 +5,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -270,71 +269,65 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     private void getCurrentLocationKey() {
 
-        // Make the location url
-        Uri.Builder locationUri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_api_base_url))
-                .appendPath(getString(R.string.ep_api_locations))
-                .appendPath(getString(R.string.ep_api_v1))
-                .appendPath(getString(R.string.ep_api_cities))
-                .appendPath(getString(R.string.ep_api_geoposition))
-                .appendPath(getString(R.string.ep_api_search));
-
         // latitude and longitude pair of current location
         String latlong = Double.toString(mCurrentLocation.getLatitude())
                 + "," + Double.toString(mCurrentLocation.getLongitude());
-        SendApiQueryAsyncTask.Builder builder = new SendApiQueryAsyncTask.Builder(locationUri)
-                .onPostExecute(this::setLocationKey)
-                .onCancelled(this::handleError);
+
+        String[] endpoints = new String[] {getString(R.string.ep_api_locations),
+                getString(R.string.ep_api_v1),
+                getString(R.string.ep_api_cities),
+                getString(R.string.ep_api_geoposition),
+                getString(R.string.ep_api_search),
+                mLocationKey};
+        SendApiQueryAsyncTask.Builder builder =
+                new SendApiQueryAsyncTask.Builder(getString(R.string.ep_api_base_url), endpoints)
+                        .onPostExecute(this::setLocationKey)
+                        .onCancelled(this::handleError);
         builder.setmParamKey("q");
         builder.setmParamValue(latlong);
         builder.build().execute();
+
 
     }
 
     private void getOneDayForecast() {
         // Make the forecast url
-        Uri.Builder forecastUri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_api_base_url))
-                .appendPath(getString(R.string.ep_api_forecasts))
-                .appendPath(getString(R.string.ep_api_v1))
-                .appendPath(getString(R.string.ep_api_daily))
-                .appendPath(getString(R.string.ep_api_one_day))
-                .appendPath(mLocationKey);
-        SendApiQueryAsyncTask.Builder builder = new SendApiQueryAsyncTask.Builder(forecastUri)
+        String[] endpoints = new String[] {getString(R.string.ep_api_forecasts),
+                getString(R.string.ep_api_v1),
+                getString(R.string.ep_api_daily),
+                getString(R.string.ep_api_one_day),
+                mLocationKey};
+        SendApiQueryAsyncTask.Builder builder =
+                new SendApiQueryAsyncTask.Builder(getString(R.string.ep_api_base_url), endpoints)
                 .onPostExecute(this::displayOneDayForecast)
                 .onCancelled(this::handleError);
         builder.build().execute();
     }
 
     private void getFiveDayForecast() {
-        // Make the forecast url
-        Uri.Builder forecastUri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_api_base_url))
-                .appendPath(getString(R.string.ep_api_forecasts))
-                .appendPath(getString(R.string.ep_api_v1))
-                .appendPath(getString(R.string.ep_api_daily))
-                .appendPath(getString(R.string.ep_api_five_day))
-                .appendPath(mLocationKey);
-        SendApiQueryAsyncTask.Builder builder = new SendApiQueryAsyncTask.Builder(forecastUri)
-                .onPostExecute(this::displayFiveDayForecast)
-                .onCancelled(this::handleError);
+
+        String[] endpoints = new String[] {getString(R.string.ep_api_forecasts),
+                getString(R.string.ep_api_v1),
+                getString(R.string.ep_api_daily),
+                getString(R.string.ep_api_five_day),
+                mLocationKey};
+        SendApiQueryAsyncTask.Builder builder =
+                new SendApiQueryAsyncTask.Builder(getString(R.string.ep_api_base_url), endpoints)
+                        .onPostExecute(this::displayFiveDayForecast)
+                        .onCancelled(this::handleError);
         builder.build().execute();
     }
 
     private void getCurrentConditions() {
-        // Make the current conditions url
-        Uri.Builder currentConditionsUri = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_api_base_url))
-                .appendPath(getString(R.string.ep_api_current_conditions))
-                .appendPath(getString(R.string.ep_api_v1))
-                .appendPath(mLocationKey);
-        SendApiQueryAsyncTask.Builder builder = new SendApiQueryAsyncTask.Builder(currentConditionsUri)
-                .onPostExecute(this::displayCurrentConditions)
-                .onCancelled(this::handleError);
+
+        String[] endpoints = new String[] {getString(R.string.ep_api_forecasts),
+                getString(R.string.ep_api_current_conditions),
+                getString(R.string.ep_api_v1),
+                mLocationKey};
+        SendApiQueryAsyncTask.Builder builder =
+                new SendApiQueryAsyncTask.Builder(getString(R.string.ep_api_base_url), endpoints)
+                        .onPostExecute(this::displayCurrentConditions)
+                        .onCancelled(this::handleError);
         builder.build().execute();
     }
 

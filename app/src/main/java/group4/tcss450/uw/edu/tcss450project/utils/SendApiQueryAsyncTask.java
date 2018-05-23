@@ -1,5 +1,6 @@
 package group4.tcss450.uw.edu.tcss450project.utils;
 
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 
@@ -10,12 +11,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.function.Consumer;
 
+import group4.tcss450.uw.edu.tcss450project.R;
+
 public class SendApiQueryAsyncTask extends AsyncTask<Void, Void, String> {
 
-    private final String mApiKey = "zyU7ox3IhJUs5FxA06MFl8uov3k1t9L3";
-
     // Required
-    private final Uri.Builder mUri;
+    private final String mUrl;
+
+    private final String[] mEndpoints;
 
     // Optional
     private final String mParamKey;
@@ -34,7 +37,8 @@ public class SendApiQueryAsyncTask extends AsyncTask<Void, Void, String> {
     public static class Builder {
 
         //Required Parameters
-        private final Uri.Builder mUri;
+        private final String mUrl;
+        private final String[] mEndpoints;
 
         private String mParamKey = null;
         private String mParamValue = null;
@@ -47,10 +51,10 @@ public class SendApiQueryAsyncTask extends AsyncTask<Void, Void, String> {
         /**
          * Constructs a new Builder.
          *
-         * @param uri partially formed url
          */
-        public Builder(final Uri.Builder uri) {
-            mUri = uri;
+        public Builder(final String url, final String[] endpoints) {
+            mUrl = url;
+            mEndpoints = endpoints;
         }
 
         public void setmParamKey(String paramKey) {
@@ -114,7 +118,8 @@ public class SendApiQueryAsyncTask extends AsyncTask<Void, Void, String> {
      * @param builder the builder used to construct this object
      */
     public SendApiQueryAsyncTask(final SendApiQueryAsyncTask.Builder builder) {
-        mUri = builder.mUri;
+        mUrl = builder.mUrl;
+        mEndpoints = builder.mEndpoints;
         mParamKey = builder.mParamKey;
         mParamValue = builder.mParamValue;
 
@@ -145,11 +150,17 @@ public class SendApiQueryAsyncTask extends AsyncTask<Void, Void, String> {
         */
         String response = "";
         HttpURLConnection urlConnection = null;
-        mUri.appendQueryParameter("apikey", mApiKey);
-        if (mParamKey != null && mParamValue != null) {
-            mUri.appendQueryParameter(mParamKey, mParamValue);
+        Uri.Builder uriBuild = new Uri.Builder()
+                .scheme("https")
+                .appendPath(mUrl);
+        for (String s : mEndpoints) {
+            uriBuild.appendPath(s);
         }
-        Uri uri = mUri.build();
+        uriBuild.appendQueryParameter("apikey", Resources.getSystem().getString(R.string.accuweather_key));
+        if (mParamKey != null && mParamValue != null) {
+            uriBuild.appendQueryParameter(mParamKey, mParamValue);
+        }
+        Uri uri = uriBuild.build();
         try {
             URL urlObject = new URL(uri.toString());
             urlConnection = (HttpURLConnection) urlObject.openConnection();
