@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +32,8 @@ import group4.tcss450.uw.edu.tcss450project.utils.SentRequestsAdapter;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RequestsFragment extends Fragment implements PendingRequestsAdapter.OnPendingRequestsAdapterInteractionListener{
+public class RequestsFragment extends Fragment implements PendingRequestsAdapter.OnPendingRequestsAdapterInteractionListener,
+                                                        View.OnClickListener {
     private RecyclerView mPendingRecyclerView;
     private LinearLayoutManager mPendingLayoutManager;
     private PendingRequestsAdapter mPendingAdapter;
@@ -46,10 +49,14 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
     private String mGetSentUrl;
     private String mAcceptUrl;
     private String mDeleteUrl;
+    private String mSendRequestUrl;
 
     private int mPendingAcceptPosition;
     private int mPendingDeletePosition;
     private int mSentDeletePosition;
+
+    private EditText mConnectionNameEdit;
+    private Button mRequestConnectionButton;
 
     public RequestsFragment() {
         // Required empty public constructor
@@ -64,6 +71,12 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
+        mConnectionNameEdit = view.findViewById(R.id.contactUsernameEdit);
+        mRequestConnectionButton = view.findViewById(R.id.sendRequestButton);
+        mRequestConnectionButton.setOnClickListener(this);
+
+        setUpRequests();
+
         mPendingRecyclerView = view.findViewById(R.id.recyclerPendingConnections);
         // size should stay the same regardless of data
         mPendingLayoutManager = new LinearLayoutManager(this.getContext());
@@ -73,7 +86,7 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         mPendingDataSet = new ArrayList<>();
         mPendingAdapter = new PendingRequestsAdapter(mPendingDataSet, this);
 
-        setUpRequests();
+
         requestPendingConnections();
 
         mPendingRecyclerView.setAdapter(mPendingAdapter);
@@ -216,6 +229,13 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
                 .build()
                 .toString();
 
+        mSendRequestUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_add_connection))
+                .build()
+                .toString();
+
 
     }
 
@@ -325,6 +345,8 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
                         connections.add(new Connection(uName, fName, lName, email, id));
                     }
                     //Update the recycler view
+                    //remove any items in it
+                    mSentDataSet.clear();
                     mSentDataSet.addAll(connections);
                     mSentAdapter.notifyDataSetChanged();
                 }
@@ -334,4 +356,61 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.sendRequestButton) {
+            mRequestConnectionButton.setEnabled(false);
+            String contactUsername = mConnectionNameEdit.getText().toString();
+
+            if(!contactUsername.isEmpty()) {
+                JSONObject messageJson = new JSONObject();
+
+                try {
+                    messageJson.put(getString(R.string.keys_json_username), mUsername);
+                    messageJson.put(getString(R.string.keys_json_contactname), contactUsername);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                new SendPostAsyncTask.Builder(mSendRequestUrl, messageJson)
+                        .onPostExecute(this::acceptSentRequestOnPost)
+                        .onCancelled(this::handleSendRequestError)
+                        .build().execute();
+            } else {
+                mConnectionNameEdit.setError("Empty Field");
+            }
+        }
+    }
+
+    private void handleSendRequestError(final String msg) {
+        mRequestConnectionButton.setEnabled(true);
+        mConnectionNameEdit.setError("Request Failed");
+        Log.e("Requests ERROR!!!", msg.toString());
+    }
+
+    private void acceptSentRequestOnPost(final String result) {
+        mRequestConnectionButton.setEnabled(true);
+        try {
+            JSONObject res = new JSONObject(result);
+            if(res.get(getString(R.string.keys_json_success)).toString()
+                    .equals(getString(R.string.keys_json_success_value_true))) {
+
+                mConnectionNameEdit.setText("");
+                //Reload the sent Connections List
+                requestSentConnections();
+            } else {
+                String error = res.get("error").toString();
+                if(error.equals("Connection already exists.")) {
+                    mConnectionNameEdit.setError(error);
+                } else {
+                    mConnectionNameEdit.setError("User Not Found");
+                }
+
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }
