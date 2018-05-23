@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -58,6 +59,8 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     private SearchView mSearchBar;
 
     private TextView currentConditionsTemp;
+    private TextView weatherCurrentConditions;
+    private ImageView iconCurrentConditions;
 
     private GoogleApiClient mGoogleApiClient;
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
@@ -81,6 +84,8 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         mSearchBar = view.findViewById(R.id.search_bar_location);
 
         currentConditionsTemp = view.findViewById(R.id.tempCurrentCondtions);
+        iconCurrentConditions = view.findViewById(R.id.iconCurrentConditions);
+        weatherCurrentConditions = view.findViewById(R.id.weatherCurrentCondtions);
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -354,6 +359,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             JSONObject fTemp = temp.getJSONObject("Imperial");
             currentTemp = fTemp.getInt("Value");
             currentConditionsTemp.setText(Integer.toString(currentTemp) + (char) 0x00B0 + "F");
+            weatherCurrentConditions.setText(resObj.getString("WeatherText"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
