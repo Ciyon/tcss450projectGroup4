@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 
 /**
@@ -21,6 +22,7 @@ import android.widget.EditText;
 public class ResetPasswordFragment extends Fragment implements View.OnClickListener {
 
     private OnFragmentInteractionListener mListener;
+    private ProgressBar mProgressBar;
 
     public ResetPasswordFragment() {
         // Required empty public constructor
@@ -31,8 +33,12 @@ public class ResetPasswordFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_reset_password, container, false);
+
         Button b = v.findViewById(R.id.submitPasswordButton);
         b.setOnClickListener(this);
+
+        mProgressBar = v.findViewById(R.id.progressBarReset);
+        mProgressBar.setVisibility(View.GONE);
         return v;
     }
 
@@ -90,6 +96,7 @@ public class ResetPasswordFragment extends Fragment implements View.OnClickListe
         }
 
         if (valid) {
+            mProgressBar.setVisibility(View.VISIBLE);
             mListener.onSubmitPassword(pw1.getEditableText(), code.getText().toString(), email.getText().toString());
         }
     }
@@ -112,6 +119,7 @@ public class ResetPasswordFragment extends Fragment implements View.OnClickListe
     }
 
     public void setError(String error) {
+        mProgressBar.setVisibility(View.GONE);
         EditText email = getActivity().findViewById(R.id.emailResetPassword);
         EditText code = getActivity().findViewById(R.id.codeResetPassword);
         EditText pw1 = getActivity().findViewById(R.id.newPassword);

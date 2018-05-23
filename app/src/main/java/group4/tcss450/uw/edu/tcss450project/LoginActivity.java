@@ -11,7 +11,9 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckBox;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -31,7 +33,6 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         if (savedInstanceState == null) {
             if (findViewById(R.id.fragmentContainer) != null) {
                 SharedPreferences prefs =
@@ -204,6 +205,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
 
     @Override
     public void onSubmitPassword(Editable password, String code, String email) {
+
         //build the web service URL
         Uri uri = new Uri.Builder()
                 .scheme("https")

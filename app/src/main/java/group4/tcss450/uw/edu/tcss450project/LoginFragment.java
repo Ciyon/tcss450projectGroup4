@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import group4.tcss450.uw.edu.tcss450project.model.Credentials;
@@ -24,7 +25,7 @@ import group4.tcss450.uw.edu.tcss450project.model.Credentials;
 public class LoginFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
 
     private OnFragmentInteractionListener mListener;
-
+    private ProgressBar mProgressBar;
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -41,7 +42,17 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
         b = v.findViewById(R.id.registerButton);
         b.setOnClickListener(this);
 
+        mProgressBar = v.findViewById(R.id.progressBarLogin);
+        mProgressBar.setVisibility(View.GONE);
+
         return v;
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+
     }
 
     @Override
@@ -103,6 +114,7 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
         }
 
         if(valid) {
+            mProgressBar.setVisibility(View.VISIBLE);
             Credentials c = new Credentials.Builder(un,password.getText())
                     .build();
             mListener.onLoginAttempt(c);
@@ -117,6 +129,7 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
      the error message to display.
      */
     public void setError(String err) {
+        mProgressBar.setVisibility(View.GONE);
         TextView username = getView().findViewById(R.id.usernameLogin);
         TextView pass = getView().findViewById(R.id.passwordEdit);
         username.setError(null);
