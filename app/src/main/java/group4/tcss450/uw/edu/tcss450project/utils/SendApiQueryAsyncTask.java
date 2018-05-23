@@ -3,6 +3,7 @@ package group4.tcss450.uw.edu.tcss450project.utils;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -11,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.function.Consumer;
 
+import group4.tcss450.uw.edu.tcss450project.BuildConfig;
 import group4.tcss450.uw.edu.tcss450project.R;
 
 public class SendApiQueryAsyncTask extends AsyncTask<Void, Void, String> {
@@ -156,7 +158,8 @@ public class SendApiQueryAsyncTask extends AsyncTask<Void, Void, String> {
         for (String s : mEndpoints) {
             uriBuild.appendPath(s);
         }
-        uriBuild.appendQueryParameter("apikey", Resources.getSystem().getString(R.string.accuweather_key));
+        String key = BuildConfig.accuweather_key;
+        uriBuild.appendQueryParameter("apikey", BuildConfig.accuweather_key);
         if (mParamKey != null && mParamValue != null) {
             uriBuild.appendQueryParameter(mParamKey, mParamValue);
         }

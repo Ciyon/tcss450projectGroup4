@@ -14,6 +14,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -36,7 +39,8 @@ import group4.tcss450.uw.edu.tcss450project.utils.SendApiQueryAsyncTask;
  */
 public class WeatherFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        View.OnClickListener {
 
     private static final String TAG = "MyLocationsActivity";
     /**
@@ -50,19 +54,22 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
+
+    private static final int MY_PERMISSIONS_LOCATIONS = 814;
+
     private String mLocationKey = "351409";
     private String mLocationUrl;
     private String mSearchLocationUrl;
     private String mForecastUrl;
     private String mCurrentConditionsUrl;
-    private SearchView mSearchBar;
 
+    private AutoCompleteTextView mSearchView;
+    private ImageButton mSearchButton;
     private TextView currentConditionsTemp;
     private TextView weatherCurrentConditions;
     private ImageView iconCurrentConditions;
 
     private GoogleApiClient mGoogleApiClient;
-    private static final int MY_PERMISSIONS_LOCATIONS = 814;
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
 
@@ -80,11 +87,17 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
-        mSearchBar = view.findViewById(R.id.search_bar_location);
 
         currentConditionsTemp = view.findViewById(R.id.tempCurrentCondtions);
         iconCurrentConditions = view.findViewById(R.id.iconCurrentConditions);
         weatherCurrentConditions = view.findViewById(R.id.weatherCurrentCondtions);
+
+        mSearchView = view.findViewById(R.id.searchLocation);
+        mSearchButton = view.findViewById(R.id.searchButton);
+        mSearchButton.setOnClickListener(this);
+
+        // TODO: Set up a list of saved locations to autocomplete
+        //mSearchView.setCompletionHint();
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -290,6 +303,8 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     }
 
+
+
     private void getOneDayForecast() {
         // Make the forecast url
         String[] endpoints = new String[] {getString(R.string.ep_api_forecasts),
@@ -320,7 +335,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     private void getCurrentConditions() {
 
-        String[] endpoints = new String[] {getString(R.string.ep_api_forecasts),
+        String[] endpoints = new String[] {
                 getString(R.string.ep_api_current_conditions),
                 getString(R.string.ep_api_v1),
                 mLocationKey};
@@ -382,4 +397,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     }
 
+    @Override
+    public void onClick(View view) {
+    }
 }

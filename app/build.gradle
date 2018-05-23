@@ -9,7 +9,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        resValue "string", "accuweather_key", (project.findProperty("ACCUWEATHER_API_KEY") ?: "not found")
+        buildConfigField 'String', "accuweather_key", ACCUWEATHER_API_KEY
     }
     buildTypes {
         release {

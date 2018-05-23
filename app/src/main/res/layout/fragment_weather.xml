@@ -5,20 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="10dp">
 
-    <TextView
-        android:id="@+id/headerWeather"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/header_weather" />
+        android:layout_height="wrap_content">
 
-    <SearchView
-        android:id="@+id/search_bar_location"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text"
-        android:queryHint="@string/hint_search_location" />
+        <AutoCompleteTextView
+            android:id="@+id/searchLocation"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_search_location"
+            android:layout_width="300dp" />
+
+        <ImageButton
+            android:id="@+id/searchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_search_icon" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textCurrentConditions"
@@ -47,6 +53,7 @@
                 android:id="@+id/tempCurrentCondtions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+
             <TextView
                 android:id="@+id/weatherCurrentCondtions"
                 android:layout_width="wrap_content"
@@ -70,18 +77,11 @@
         card_view:cardCornerRadius="4dp">
 
         <LinearLayout
+            android:id="@+id/one_day_linear_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/minTempOneDay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/maxTempOneDay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 
@@ -100,7 +100,11 @@
         card_view:cardCornerRadius="4dp">
 
         <LinearLayout
+            android:id="@+id/five_day_linear_layout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></LinearLayout>
+            android:layout_height="wrap_content">
+
+
+        </LinearLayout>
     </android.support.v7.widget.CardView>
 </LinearLayout>
