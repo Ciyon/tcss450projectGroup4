@@ -17,6 +17,11 @@
     <string name="ep_create_chat">createChat</string>
     <string name="ep_add_all_to_chat">addAllToChat</string>
     <string name="ep_delete_connection">removeConnection</string>
+    <string name="ep_add_connection">addConnection</string>
+    <string name="ep_accept_request">acceptRequest</string>
+    <string name="ep_get_received_requests">getReceivedRequests</string>
+    <string name="ep_get_sent_requests">getSentRequests</string>
+
 
     <!-- Weather API Endpoints -->
     <string name="ep_api_base_url">dataservice.accuweather.com</string>

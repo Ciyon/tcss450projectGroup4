@@ -25,11 +25,11 @@
     <string name="header_one_day_forecast">1-Day Forecast</string>
     <string name="header_five_day_forecast">5-Day Forecast</string>
 
-    <!-- Temporary headers -->
+    <!-- headers -->
     <string name="header_chat">Chat</string>
     <string name="header_home">Home</string>
     <string name="header_connections">Connections</string>
-    <string name="header_requests">Requests</string>
+    <string name="header_requests">Connection Requests</string>
     <string name="header_conversations">Conversations</string>
     <string name="header_inbox">Inbox</string>
     <string name="header_new_conversation">New Conversation</string>
@@ -37,6 +37,8 @@
     <!-- Labels -->
     <string name="label_color_selection">App Color Scheme</string>
     <string name="label_select_contacts">Select Chat Members</string>
+    <string name="label_pending_connections">Awaiting Your Response</string>
+    <string name="label_sent_connections">Requests You\'ve Sent</string>
 
     <!-- Hints -->
     <string name="hint_username">Enter username</string>
@@ -74,6 +76,9 @@
     <string name="button_deleteChat">Leave Chat</string>
     <string name="button_delete_connection">Remove</string>
     <string name="button_start_chat">Chat</string>
+    <string name="button_accept_request">Accept Request</string>
+    <string name="button_deny_request">Deny Request</string>
+    <string name="button_delete_request">Remove Request</string>
 
     <!-- Radiobutton Text -->
     <string name="radio_theme1">Blue and Red</string>
