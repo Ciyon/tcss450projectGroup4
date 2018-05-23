@@ -292,10 +292,12 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         // latitude and longitude pair of current location
         String latlong = Double.toString(mCurrentLocation.getLatitude())
                 + "," + Double.toString(mCurrentLocation.getLongitude());
-        new SendGetAsyncTask.Builder(mLocationUrl, "q", latlong)
+        SendGetAsyncTask.Builder builder = new SendGetAsyncTask.Builder(mLocationUrl)
                 .onPostExecute(this::setLocationKey)
-                .onCancelled(this::handleError)
-                .build().execute();
+                .onCancelled(this::handleError);
+        builder.setmParamKey("q");
+        builder.setmParamValue(latlong);
+        builder.build().execute();
 
     }
 

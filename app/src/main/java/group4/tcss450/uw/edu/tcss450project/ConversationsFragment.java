@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,6 +43,7 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
     private String mDeleteUrl;
     private ArrayList<Conversation> mDataset;
     private int mDeletePosition;
+    private ProgressBar mProgressBar;
 
     public ConversationsFragment() {
         // Required empty public constructor
@@ -61,6 +63,8 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerSelectConversations);
         mRecyclerView.setHasFixedSize(true);
 
+        mProgressBar = view.findViewById(R.id.progressBarConversations);
+
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -73,6 +77,13 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
 
         mRecyclerView.setAdapter(mAdapter);
         return view;
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        mProgressBar.setVisibility(View.GONE);
     }
 
 
@@ -122,6 +133,7 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
     }
 
     private void requestConversationsList() {
+        mProgressBar.setVisibility(View.VISIBLE);
         JSONObject messageJson = new JSONObject();
 
         try {
@@ -139,11 +151,13 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
     }
 
     private void handleError(final String msg) {
+        mProgressBar.setVisibility(View.GONE);
         Log.e("Conversation ERROR!!!", msg.toString());
     }
 
     private void createConversationsList(final String result) {
         try {
+            mProgressBar.setVisibility(View.GONE);
             JSONObject res = new JSONObject(result);
             if(res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {

@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -44,6 +46,7 @@ public class ConnectionsFragment extends Fragment implements
     private int mDeletePosition;
     private int mNewChatId;
     private int mMemberId;
+    private ProgressBar mProgressBar;
 
 
     public ConnectionsFragment() {
@@ -58,6 +61,8 @@ public class ConnectionsFragment extends Fragment implements
         View view = inflater.inflate(R.layout.fragment_connections, container, false);
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
+
+        mProgressBar = view.findViewById(R.id.progressBarConnections);
 
         mRecyclerView = view.findViewById(R.id.connectionsList);
 
@@ -77,6 +82,13 @@ public class ConnectionsFragment extends Fragment implements
 
         return view;
 
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -103,7 +115,6 @@ public class ConnectionsFragment extends Fragment implements
     private void setUpRequest() {
         SharedPreferences prefs =
                 getActivity().getSharedPreferences(
-                        getString(R.string.keys_shared_prefs),
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
         if (!prefs.contains(getString(R.string.keys_prefs_username))) {
@@ -146,6 +157,7 @@ public class ConnectionsFragment extends Fragment implements
     }
 
     private void requestConnections() {
+        mProgressBar.setVisibility(View.VISIBLE);
         JSONObject messageJson = new JSONObject();
         try {
             messageJson.put(getString(R.string.keys_json_username), mUsername);
@@ -161,11 +173,13 @@ public class ConnectionsFragment extends Fragment implements
     }
 
     private void handleError(final String msg) {
+        mProgressBar.setVisibility(View.GONE);
         Log.e("Connections ERROR!!!", msg.toString());
     }
 
     private void createConnectionsList(final String result) {
         try {
+            mProgressBar.setVisibility(View.GONE);
             JSONObject res = new JSONObject(result);
             if(res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
