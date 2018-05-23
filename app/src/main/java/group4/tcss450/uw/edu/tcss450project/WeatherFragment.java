@@ -251,7 +251,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
                 .appendPath(getString(R.string.ep_api_base_url))
                 .appendPath(getString(R.string.ep_api_v1))
                 .appendPath(getString(R.string.ep_api_locations))
-                .appendQueryParameter(getString(R.string.keys_json_chat_id), Integer.toString(mLocationKey))
+                .appendQueryParameter(getString(R.string.keys_json_chat_id), mLocationKey)
                 .build()
                 .toString();
     }

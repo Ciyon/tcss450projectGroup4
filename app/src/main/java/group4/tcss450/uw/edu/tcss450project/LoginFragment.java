@@ -26,6 +26,7 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
 
     private OnFragmentInteractionListener mListener;
     private ProgressBar mProgressBar;
+    private Button mLoginButton;
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -36,14 +37,14 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_login, container, false);
 
-        Button b = v.findViewById(R.id.loginButton);
-        b.setOnClickListener(this); //add this Fragment Object as the OnClickListener
+        mLoginButton = v.findViewById(R.id.loginButton);
+        mLoginButton.setOnClickListener(this); //add this Fragment Object as the OnClickListener
 
-        b = v.findViewById(R.id.registerButton);
+        Button b = v.findViewById(R.id.registerButton);
         b.setOnClickListener(this);
 
         mProgressBar = v.findViewById(R.id.progressBarLogin);
-        mProgressBar.setVisibility(View.GONE);
+
 
         return v;
     }
@@ -52,7 +53,8 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
     public void onStart()
     {
         super.onStart();
-
+        mProgressBar.setVisibility(View.GONE);
+        mLoginButton.setEnabled(true);
     }
 
     @Override
@@ -115,6 +117,7 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
 
         if(valid) {
             mProgressBar.setVisibility(View.VISIBLE);
+            mLoginButton.setEnabled(false);
             Credentials c = new Credentials.Builder(un,password.getText())
                     .build();
             mListener.onLoginAttempt(c);
@@ -130,6 +133,7 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
      */
     public void setError(String err) {
         mProgressBar.setVisibility(View.GONE);
+        mLoginButton.setEnabled(true);
         TextView username = getView().findViewById(R.id.usernameLogin);
         TextView pass = getView().findViewById(R.id.passwordEdit);
         username.setError(null);

@@ -63,7 +63,6 @@ public class ConnectionsFragment extends Fragment implements
         fab.setVisibility(View.VISIBLE);
 
         mProgressBar = view.findViewById(R.id.progressBarConnections);
-        mProgressBar.setVisibility(View.GONE);
 
         mRecyclerView = view.findViewById(R.id.connectionsList);
 
@@ -83,6 +82,13 @@ public class ConnectionsFragment extends Fragment implements
 
         return view;
 
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override

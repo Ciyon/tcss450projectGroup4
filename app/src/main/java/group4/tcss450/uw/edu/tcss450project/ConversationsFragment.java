@@ -64,7 +64,6 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
         mRecyclerView.setHasFixedSize(true);
 
         mProgressBar = view.findViewById(R.id.progressBarConversations);
-        mProgressBar.setVisibility(View.GONE);
 
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this.getContext());
@@ -78,6 +77,13 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
 
         mRecyclerView.setAdapter(mAdapter);
         return view;
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        mProgressBar.setVisibility(View.GONE);
     }
 
 
