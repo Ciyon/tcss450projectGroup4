@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -24,6 +26,9 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main_drawer"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <meta-data
+            android:name=".API_KEY"
+            android:value="@string/accuweather_key" />
     </application>
 
 </manifest>

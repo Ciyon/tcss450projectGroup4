@@ -23,6 +23,9 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import group4.tcss450.uw.edu.tcss450project.utils.SendGetAsyncTask;
+import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,7 +48,10 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     private String mLocationKey;
     private String mLocationUrl;
+    private String mForecastUrl;
+    private String mCurrentConditionsUrl;
     private SearchView mSearchBar;
+
     private GoogleApiClient mGoogleApiClient;
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
     private LocationRequest mLocationRequest;
@@ -87,6 +93,39 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+        // Make the location url
+        mLocationUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_api_base_url))
+                .appendPath(getString(R.string.ep_api_locations))
+                .appendPath(getString(R.string.ep_api_v1))
+                .appendPath(getString(R.string.ep_api_cities))
+                .appendPath(getString(R.string.ep_api_geoposition))
+                .appendPath(getString(R.string.ep_api_search))
+                .build()
+                .toString();
+
+        // Make the forecast url
+        mForecastUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_api_base_url))
+                .appendPath(getString(R.string.ep_api_locations))
+                .appendPath(getString(R.string.ep_api_v1))
+                .appendPath(getString(R.string.ep_api_cities))
+                .appendPath(getString(R.string.ep_api_geoposition))
+                .appendPath(getString(R.string.ep_api_search))
+                .build()
+                .toString();
+
+        // Make the current conditions url
+        mCurrentConditionsUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_api_base_url))
+                .appendPath(getString(R.string.ep_api_current_conditions))
+                .appendPath(getString(R.string.ep_api_v1))
+                .build()
+                .toString();
+
         return view;
     }
 
@@ -97,6 +136,8 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         }
         super.onStart();
 
+        // update location key
+        getCurrentLocationKey();
         // TODO: check for last location searched?
         /*
         SharedPreferences prefs =
@@ -136,7 +177,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Log.d("Permission denie", "Nothing");
+                    Log.d("Permission denied", "Nothing");
 
                     //Shut down the app. In production release, you would let the user
                     //know why the app is shutting down…maybe ask for permission again?
@@ -230,6 +271,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         mCurrentLocation = location;
         Log.d(TAG, mCurrentLocation.toString());
     }
+
     @Override
     public void onConnectionSuspended(int cause) {
         // The connection to Google Play services was lost for some reason. We call connect() to
@@ -237,6 +279,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         Log.i(TAG, "Connection suspended");
         mGoogleApiClient.connect();
     }
+
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
@@ -245,14 +288,32 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
                 connectionResult.getErrorCode());
     }
 
-    private void getLocationKey() {
-        mLocationUrl = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_api_base_url))
-                .appendPath(getString(R.string.ep_api_v1))
-                .appendPath(getString(R.string.ep_api_locations))
-                .appendQueryParameter(getString(R.string.keys_json_chat_id), Integer.toString(mLocationKey))
-                .build()
-                .toString();
+    private void getCurrentLocationKey() {
+        // latitude and longitude pair of current location
+        String latlong = Double.toString(mCurrentLocation.getLatitude())
+                + "," + Double.toString(mCurrentLocation.getLongitude());
+        new SendGetAsyncTask.Builder(mLocationUrl, "q", latlong)
+                .onPostExecute(this::setLocationKey)
+                .onCancelled(this::handleError)
+                .build().execute();
+
+    }
+
+    private void displayCurrentConditions(String result) {
+        //parse the json
+    }
+
+    private void setLocationKey(String result) {
+        //parse the json
+        //mLocationKey = result;
+    }
+
+    private void handleError(final String msg) {
+        Log.e("Connections ERROR!!!", msg.toString());
+    }
+
+    private void getSearchLocationKey() {
+        //TODO
+
     }
 }
