@@ -359,10 +359,10 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.sendRequestButton) {
-            mRequestConnectionButton.setEnabled(false);
             String contactUsername = mConnectionNameEdit.getText().toString();
 
             if(!contactUsername.isEmpty()) {
+                mRequestConnectionButton.setEnabled(false);
                 JSONObject messageJson = new JSONObject();
 
                 try {
