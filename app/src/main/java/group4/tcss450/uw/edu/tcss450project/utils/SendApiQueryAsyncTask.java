@@ -2,9 +2,6 @@ package group4.tcss450.uw.edu.tcss450project.utils;
 
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.widget.EditText;
-
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -13,12 +10,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.function.Consumer;
 
-public class SendGetAsyncTask extends AsyncTask<Void, Void, String> {
+public class SendApiQueryAsyncTask extends AsyncTask<Void, Void, String> {
 
     private final String mApiKey = "zyU7ox3IhJUs5FxA06MFl8uov3k1t9L3";
 
     // Required
-    private final String mUrl;
+    private final Uri.Builder mUri;
 
     // Optional
     private final String mParamKey;
@@ -37,7 +34,7 @@ public class SendGetAsyncTask extends AsyncTask<Void, Void, String> {
     public static class Builder {
 
         //Required Parameters
-        private final String mUrl;
+        private final Uri.Builder mUri;
 
         private String mParamKey = null;
         private String mParamValue = null;
@@ -50,10 +47,10 @@ public class SendGetAsyncTask extends AsyncTask<Void, Void, String> {
         /**
          * Constructs a new Builder.
          *
-         * @param url the fully-formed url of the web service this task will connect to
+         * @param uri partially formed url
          */
-        public Builder(final String url) {
-            mUrl = url;
+        public Builder(final Uri.Builder uri) {
+            mUri = uri;
         }
 
         public void setmParamKey(String paramKey) {
@@ -70,7 +67,7 @@ public class SendGetAsyncTask extends AsyncTask<Void, Void, String> {
          * @param val a action to perform during AsyncTask onPreExecute
          * @return
          */
-        public SendGetAsyncTask.Builder onPreExecute(final Runnable val) {
+        public SendApiQueryAsyncTask.Builder onPreExecute(final Runnable val) {
             onPre = val;
             return this;
         }
@@ -81,7 +78,7 @@ public class SendGetAsyncTask extends AsyncTask<Void, Void, String> {
          * @param val a action to perform during AsyncTask onPostExecute
          * @return
          */
-        public SendGetAsyncTask.Builder onPostExecute(final Consumer<String> val) {
+        public SendApiQueryAsyncTask.Builder onPostExecute(final Consumer<String> val) {
             onPost = val;
             return this;
         }
@@ -95,7 +92,7 @@ public class SendGetAsyncTask extends AsyncTask<Void, Void, String> {
          * @param val a action to perform during AsyncTask onCancelled
          * @return
          */
-        public SendGetAsyncTask.Builder onCancelled(final Consumer<String> val) {
+        public SendApiQueryAsyncTask.Builder onCancelled(final Consumer<String> val) {
             onCancel = val;
             return this;
         }
@@ -105,8 +102,8 @@ public class SendGetAsyncTask extends AsyncTask<Void, Void, String> {
          *
          * @return a SendPostAsyncTask with the current attributes
          */
-        public SendGetAsyncTask build() {
-            return new SendGetAsyncTask(this);
+        public SendApiQueryAsyncTask build() {
+            return new SendApiQueryAsyncTask(this);
         }
 
     }
@@ -116,8 +113,8 @@ public class SendGetAsyncTask extends AsyncTask<Void, Void, String> {
      *
      * @param builder the builder used to construct this object
      */
-    public SendGetAsyncTask(final SendGetAsyncTask.Builder builder) {
-        mUrl = builder.mUrl;
+    public SendApiQueryAsyncTask(final SendApiQueryAsyncTask.Builder builder) {
+        mUri = builder.mUri;
         mParamKey = builder.mParamKey;
         mParamValue = builder.mParamValue;
 
@@ -148,14 +145,11 @@ public class SendGetAsyncTask extends AsyncTask<Void, Void, String> {
         */
         String response = "";
         HttpURLConnection urlConnection = null;
-        Uri.Builder uriBuilder = new Uri.Builder()
-                .scheme("https")
-                .appendPath(mUrl)
-                .appendQueryParameter("apikey", mApiKey);
+        mUri.appendQueryParameter("apikey", mApiKey);
         if (mParamKey != null && mParamValue != null) {
-            uriBuilder.appendQueryParameter(mParamKey, mParamValue);
+            mUri.appendQueryParameter(mParamKey, mParamValue);
         }
-        Uri uri = uriBuilder.build();
+        Uri uri = mUri.build();
         try {
             URL urlObject = new URL(uri.toString());
             urlConnection = (HttpURLConnection) urlObject.openConnection();

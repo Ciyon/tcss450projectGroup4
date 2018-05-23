@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -23,8 +24,11 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import group4.tcss450.uw.edu.tcss450project.utils.SendGetAsyncTask;
-import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import group4.tcss450.uw.edu.tcss450project.utils.SendApiQueryAsyncTask;
 
 
 /**
@@ -46,11 +50,14 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
-    private String mLocationKey;
+    private String mLocationKey = "351409";
     private String mLocationUrl;
+    private String mSearchLocationUrl;
     private String mForecastUrl;
     private String mCurrentConditionsUrl;
     private SearchView mSearchBar;
+
+    private TextView currentConditionsTemp;
 
     private GoogleApiClient mGoogleApiClient;
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
@@ -71,7 +78,9 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
-        mSearchBar = getActivity().findViewById(R.id.search_bar_location);
+        mSearchBar = view.findViewById(R.id.search_bar_location);
+
+        currentConditionsTemp = view.findViewById(R.id.tempCurrentCondtions);
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -83,48 +92,16 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         }
 
         mLocationRequest = new LocationRequest();
-// Sets the desired interval for active location updates. This interval is
-// inexact. You may not receive updates at all if no location sources are available, or
-// you may receive them slower than requested. You may also receive updates faster than
-// requested if other applications are requesting location at a faster interval.
+        // Sets the desired interval for active location updates. This interval is
+        // inexact. You may not receive updates at all if no location sources are available, or
+        // you may receive them slower than requested. You may also receive updates faster than
+        // requested if other applications are requesting location at a faster interval.
         mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-// Sets the fastest rate for active location updates. This interval is exact, and your
-// application will never receive updates faster than this value.
+        // Sets the fastest rate for active location updates. This interval is exact, and your
+        // application will never receive updates faster than this value.
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        // Make the location url
-        mLocationUrl = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_api_base_url))
-                .appendPath(getString(R.string.ep_api_locations))
-                .appendPath(getString(R.string.ep_api_v1))
-                .appendPath(getString(R.string.ep_api_cities))
-                .appendPath(getString(R.string.ep_api_geoposition))
-                .appendPath(getString(R.string.ep_api_search))
-                .build()
-                .toString();
-
-        // Make the forecast url
-        mForecastUrl = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_api_base_url))
-                .appendPath(getString(R.string.ep_api_locations))
-                .appendPath(getString(R.string.ep_api_v1))
-                .appendPath(getString(R.string.ep_api_cities))
-                .appendPath(getString(R.string.ep_api_geoposition))
-                .appendPath(getString(R.string.ep_api_search))
-                .build()
-                .toString();
-
-        // Make the current conditions url
-        mCurrentConditionsUrl = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_api_base_url))
-                .appendPath(getString(R.string.ep_api_current_conditions))
-                .appendPath(getString(R.string.ep_api_v1))
-                .build()
-                .toString();
 
         return view;
     }
@@ -137,7 +114,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         super.onStart();
 
         // update location key
-        getCurrentLocationKey();
+        //getCurrentLocationKey();
         // TODO: check for last location searched?
         /*
         SharedPreferences prefs =
@@ -149,19 +126,13 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         }
         */
 
-        // Get the location of the device
-        /*
-        mLocationUrl = new Uri.Builder()
-                .scheme("https")
-                .appendPath(getString(R.string.ep_api_base_url))
-                .appendPath(getString(R.string.ep_api_v1))
-                .appendPath(getString(R.string.ep_api_locations))
-                .appendQueryParameter(getString(R.string.keys_json_chat_id), Integer.toString(mLocationKey))
-                .build()
-                .toString();
-*/
 
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getCurrentConditions();
     }
 
     @Override
@@ -204,6 +175,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
                     mGoogleApiClient, mLocationRequest, this);
         }
     }
+
     /**
      * Removes location updates from the FusedLocationApi.
      */
@@ -217,6 +189,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -244,8 +217,9 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         // user launches the activity,
         // moves to a new location, and then changes the device orientation, the original location
         // is displayed as the activity is re-created.
-
+        System.out.println("We're connected?");
         if (mCurrentLocation == null) {
+            System.out.println("Location is null");
             if (ActivityCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED
                     &&
@@ -256,6 +230,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
                         LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
                 if (mCurrentLocation != null) {
+                    System.out.println("Got the location.");
                     Log.i(TAG, mCurrentLocation.toString());
                 }
                 startLocationUpdates();
@@ -289,10 +264,21 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     }
 
     private void getCurrentLocationKey() {
+
+        // Make the location url
+        Uri.Builder locationUri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_api_base_url))
+                .appendPath(getString(R.string.ep_api_locations))
+                .appendPath(getString(R.string.ep_api_v1))
+                .appendPath(getString(R.string.ep_api_cities))
+                .appendPath(getString(R.string.ep_api_geoposition))
+                .appendPath(getString(R.string.ep_api_search));
+
         // latitude and longitude pair of current location
         String latlong = Double.toString(mCurrentLocation.getLatitude())
                 + "," + Double.toString(mCurrentLocation.getLongitude());
-        SendGetAsyncTask.Builder builder = new SendGetAsyncTask.Builder(mLocationUrl)
+        SendApiQueryAsyncTask.Builder builder = new SendApiQueryAsyncTask.Builder(locationUri)
                 .onPostExecute(this::setLocationKey)
                 .onCancelled(this::handleError);
         builder.setmParamKey("q");
@@ -301,14 +287,92 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     }
 
+    private void getOneDayForecast() {
+        // Make the forecast url
+        Uri.Builder forecastUri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_api_base_url))
+                .appendPath(getString(R.string.ep_api_forecasts))
+                .appendPath(getString(R.string.ep_api_v1))
+                .appendPath(getString(R.string.ep_api_daily))
+                .appendPath(getString(R.string.ep_api_one_day))
+                .appendPath(mLocationKey);
+        SendApiQueryAsyncTask.Builder builder = new SendApiQueryAsyncTask.Builder(forecastUri)
+                .onPostExecute(this::displayOneDayForecast)
+                .onCancelled(this::handleError);
+        builder.build().execute();
+    }
+
+    private void getFiveDayForecast() {
+        // Make the forecast url
+        Uri.Builder forecastUri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_api_base_url))
+                .appendPath(getString(R.string.ep_api_forecasts))
+                .appendPath(getString(R.string.ep_api_v1))
+                .appendPath(getString(R.string.ep_api_daily))
+                .appendPath(getString(R.string.ep_api_five_day))
+                .appendPath(mLocationKey);
+        SendApiQueryAsyncTask.Builder builder = new SendApiQueryAsyncTask.Builder(forecastUri)
+                .onPostExecute(this::displayFiveDayForecast)
+                .onCancelled(this::handleError);
+        builder.build().execute();
+    }
+
+    private void getCurrentConditions() {
+        // Make the current conditions url
+        Uri.Builder currentConditionsUri = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_api_base_url))
+                .appendPath(getString(R.string.ep_api_current_conditions))
+                .appendPath(getString(R.string.ep_api_v1))
+                .appendPath(mLocationKey);
+        SendApiQueryAsyncTask.Builder builder = new SendApiQueryAsyncTask.Builder(currentConditionsUri)
+                .onPostExecute(this::displayCurrentConditions)
+                .onCancelled(this::handleError);
+        builder.build().execute();
+    }
+
+    private void displayOneDayForecast(String result) {
+        //parse json and display the weather
+
+    }
+
+    private void displayFiveDayForecast(String result) {
+        //parse json and display the weather
+
+    }
+
     private void displayCurrentConditions(String result) {
-        //parse the json
+        //parse json and display the weather
+        JSONArray resArray = null;
+        int currentTemp = 0;
+        try {
+            resArray = new JSONArray(result);
+            JSONObject resObj = resArray.getJSONObject(0);
+            JSONObject temp = resObj.getJSONObject("Temperature");
+            JSONObject fTemp = temp.getJSONObject("Imperial");
+            currentTemp = fTemp.getInt("Value");
+            currentConditionsTemp.setText(Integer.toString(currentTemp) + (char) 0x00B0 + "F");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setLocationKey(String result) {
         //parse the json
-        //mLocationKey = result;
+        JSONObject res = null;
+        try {
+            res = new JSONObject(result);
+
+            if (res.has(getString(R.string.keys_json_key))) {
+                mLocationKey = res.getString(getString(R.string.keys_json_key));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
+
 
     private void handleError(final String msg) {
         Log.e("Connections ERROR!!!", msg.toString());
@@ -318,4 +382,5 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         //TODO
 
     }
+
 }

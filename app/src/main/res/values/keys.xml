@@ -36,4 +36,5 @@
     <string name="keys_json_member_id">memberid</string>
     <string name="keys_json_member_id_caps">memberId</string>
     <string name="keys_json_contactname">contactname</string>
+    <string name="keys_json_key">Key</string>
 </resources>
