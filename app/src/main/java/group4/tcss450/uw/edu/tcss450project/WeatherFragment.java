@@ -63,11 +63,14 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     private String mForecastUrl;
     private String mCurrentConditionsUrl;
 
+    private String mLocationString;
+
     private AutoCompleteTextView mSearchView;
     private ImageButton mSearchButton;
-    private TextView currentConditionsTemp;
-    private TextView weatherCurrentConditions;
-    private ImageView iconCurrentConditions;
+    private TextView mCurrentLocationText;
+    private TextView mCurrentConditionsTemp;
+    private TextView mWeatherCurrentConditions;
+    private ImageView mIconCurrentConditions;
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -88,13 +91,15 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         fab.setVisibility(View.VISIBLE);
 
 
-        currentConditionsTemp = view.findViewById(R.id.tempCurrentCondtions);
-        iconCurrentConditions = view.findViewById(R.id.iconCurrentConditions);
-        weatherCurrentConditions = view.findViewById(R.id.weatherCurrentCondtions);
+        mCurrentConditionsTemp = view.findViewById(R.id.tempCurrentCondtions);
+        mIconCurrentConditions = view.findViewById(R.id.iconCurrentConditions);
+        mWeatherCurrentConditions = view.findViewById(R.id.weatherCurrentCondtions);
 
         mSearchView = view.findViewById(R.id.searchLocation);
         mSearchButton = view.findViewById(R.id.searchButton);
         mSearchButton.setOnClickListener(this);
+        mCurrentLocationText = view.findViewById(R.id.textLocation);
+
 
         // TODO: Set up a list of saved locations to autocomplete
         //mSearchView.setCompletionHint();
@@ -303,7 +308,22 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     }
 
+    private void getSearchLocationKey() {
+        //TODO
+        String postalcode = mSearchView.getText().toString();
 
+        String[] endpoints = new String[] {getString(R.string.ep_api_locations),
+                getString(R.string.ep_api_v1),
+                getString(R.string.ep_api_postalcodes),
+                getString(R.string.ep_api_search)};
+        SendApiQueryAsyncTask.Builder builder =
+                new SendApiQueryAsyncTask.Builder(getString(R.string.ep_api_base_url), endpoints)
+                        .onPostExecute(this::setLocationKey)
+                        .onCancelled(this::handleError);
+        builder.setmParamKey("q");
+        builder.setmParamValue(postalcode);
+        builder.build().execute();
+    }
 
     private void getOneDayForecast() {
         // Make the forecast url
@@ -366,25 +386,41 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             JSONObject temp = resObj.getJSONObject("Temperature");
             JSONObject fTemp = temp.getJSONObject("Imperial");
             currentTemp = fTemp.getInt("Value");
-            currentConditionsTemp.setText(Integer.toString(currentTemp) + (char) 0x00B0 + "F");
-            weatherCurrentConditions.setText(resObj.getString("WeatherText"));
+            mCurrentConditionsTemp.setText(Integer.toString(currentTemp) + (char) 0x00B0 + "F");
+            mWeatherCurrentConditions.setText(resObj.getString("WeatherText"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
     private void setLocationKey(String result) {
-        //parse the json
-        JSONObject res = null;
+        //parse json and display the weather
+        JSONArray resArray = null;
+        String locationKey = "";
+        String cityName = "";
+        String stateName = "";
         try {
-            res = new JSONObject(result);
+            resArray = new JSONArray(result);
+            JSONObject resObj = resArray.getJSONObject(0);
+            cityName = resObj.getString("EnglishName");
+            locationKey = resObj.getString("Key");
+            JSONObject administrativeArea = resObj.getJSONObject("AdministrativeArea");
+            stateName = administrativeArea.getString("EnglishName");
+            mLocationKey = locationKey;
 
-            if (res.has(getString(R.string.keys_json_key))) {
-                mLocationKey = res.getString(getString(R.string.keys_json_key));
-            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        if (locationKey != "") {
+            mLocationKey = locationKey;
+        } else {
+            // notify?
+        }
+        setLocationName(cityName + ", " + stateName);
+    }
+
+    private void setLocationName(String name) {
+        mCurrentLocationText.setText(name);
     }
 
 
@@ -392,12 +428,14 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         Log.e("Connections ERROR!!!", msg.toString());
     }
 
-    private void getSearchLocationKey() {
-        //TODO
-
+    private void updateWeather() {
+        getCurrentConditions();
+        getFiveDayForecast();
+        getOneDayForecast();
     }
 
     @Override
     public void onClick(View view) {
+        getSearchLocationKey();
     }
 }
