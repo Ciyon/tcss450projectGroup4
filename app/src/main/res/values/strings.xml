@@ -53,6 +53,7 @@
     <string name="hint_reenter_new_password">Reenter new password</string>
     <string name="hint_search">Search</string>
     <string name="hint_search_location">Enter a location...</string>
+    <string name="hint_add_connection">Enter a Username</string>
 
     <!-- EditText text -->
     <string name="edittext_username">test</string>
@@ -81,6 +82,8 @@
     <string name="button_deny_request">Deny Request</string>
     <string name="button_delete_request">Remove Request</string>
     <string name="button_save_location">Save Location</string>
+    <string name="button_send_request">Send Request</string>
+
 
     <!-- Radiobutton Text -->
     <string name="radio_theme1">Blue and Red</string>

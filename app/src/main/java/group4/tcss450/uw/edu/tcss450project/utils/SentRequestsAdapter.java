@@ -52,6 +52,7 @@ public class SentRequestsAdapter extends RecyclerView.Adapter<SentRequestsAdapte
     @Override
     public void onBindViewHolder(SentRequestsAdapter.ViewHolder holder, int position) {
         holder.mUsernameTextView.setText(mDataSet.get(position).getUserName());
+        holder.mDeleteButton.setEnabled(true);
         holder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
