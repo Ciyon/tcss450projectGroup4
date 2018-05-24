@@ -81,6 +81,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     private AutoCompleteTextView mSearchView;
     private ImageButton mSearchButton;
+    private ImageButton mCurrentLocationButton;
     private Button mSaveLocationButton;
     private Spinner mSavedLocationsSpinner;
     private TextView mCurrentLocationText;
@@ -161,6 +162,9 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
                             , Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_LOCATIONS);
         }
+
+        mCurrentLocationButton = view.findViewById(R.id.currentLocationButton);
+        mCurrentLocationButton.setOnClickListener(this::onClickCurrent);
         return view;
     }
 
@@ -360,6 +364,17 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         builder.build().execute();
     }
 
+    private void getLocationName(String key) {
+        String[] endpoints = new String[] {getString(R.string.ep_api_locations),
+                getString(R.string.ep_api_v1),
+                key};
+        SendApiQueryAsyncTask.Builder builder =
+                new SendApiQueryAsyncTask.Builder(getString(R.string.ep_api_base_url), endpoints)
+                        .onPostExecute(this::insertLocationInMap)
+                        .onCancelled(this::handleError);
+        builder.build().execute();
+    }
+
     private void getOneDayForecast() {
         // Make the forecast url
         String[] endpoints = new String[] {getString(R.string.ep_api_forecasts),
@@ -428,6 +443,27 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         }
     }
 
+
+    private void insertLocationInMap(String result) {
+        //parse json and display the weather
+        JSONArray resArray = null;
+        String locationKey = "";
+        String cityName = "";
+        String stateName = "";
+        try {
+            resArray = new JSONArray(result);
+            JSONObject resObj = resArray.getJSONObject(0);
+            cityName = resObj.getString("EnglishName");
+            locationKey = resObj.getString("Key");
+            JSONObject administrativeArea = resObj.getJSONObject("AdministrativeArea");
+            stateName = administrativeArea.getString("EnglishName");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mLocationNames.put(locationKey, cityName + ", " + stateName);
+    }
+
     private void setLocationKey(String result) {
         //parse json and display the weather
         JSONArray resArray = null;
@@ -462,7 +498,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             mSaveLocationButton.setEnabled(true);
         }
         updateWeather();
-        mSearchView.setText(mLocationNames.get(locationKey));
+        mCurrentLocationText.setText(mLocationNames.get(locationKey));
     }
 
     private void setLocationName(String name) {
@@ -483,8 +519,13 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
                         ""));
                 for (int i = 0; i < list.length(); i++) {
                     String s = list.getString(i);
+                    // Check to see if it's in the list
                     if (!(mSavedLocations.contains(s))) {
                         mSavedLocations.add(s);
+                    }
+                    // Check to see if it's in the map with a name
+                    if (!mLocationNames.containsKey(s)) {
+                        getLocationName(s);
                     }
                 }
             }
@@ -492,6 +533,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             e.printStackTrace();
         }
     }
+
 
     private void handleError(final String msg) {
         Log.e("Connections ERROR!!!", msg.toString());
@@ -503,6 +545,9 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         getOneDayForecast();
     }
 
+    public void onClickCurrent(View view) {
+        getCurrentLocationKey();
+    }
 
     public void onClickSave(View view) {
         // get shared prefs
