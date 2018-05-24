@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -67,23 +68,19 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
 
-    private String mLocationKey = "351409";
-    private String mLocationUrl;
-    private String mSearchLocationUrl;
-    private String mForecastUrl;
-    private String mCurrentConditionsUrl;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
+    private Location mCurrentLocation;
 
+
+    private String mLocationKey = "";
+    private String mLocationName = "";
     private ArrayAdapter<String> mArrayAdapter;
+    private List<String> mSavedLocationNames;
+    private Map<String, String> mLocationKeyMap;
 
-    private String mLocationString;
-    private List<String> mSavedLocations;
-    private Map<String, String> mLocationNames;
-
-    private AutoCompleteTextView mSearchView;
-    private ImageButton mSearchButton;
-    private ImageButton mCurrentLocationButton;
-    private Button mSaveLocationButton;
-    private Spinner mSavedLocationsSpinner;
+    // UI components
+    private EditText mSearchView;
     private TextView mCurrentLocationText;
     private TextView mCurrentConditionsTemp;
     private TextView mWeatherCurrentConditions;
@@ -91,10 +88,11 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     private TextView mOneDayMaxTemp;
     private TextView mOneDayDate;
     private ImageView mIconCurrentConditions;
+    private ImageButton mSearchButton;
+    private ImageButton mCurrentLocationButton;
+    private Button mSaveLocationButton;
+    private Spinner mSavedLocationsSpinner;
 
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
-    private Location mCurrentLocation;
 
     public WeatherFragment() {
         // Required empty public constructor
@@ -110,6 +108,10 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
+        mSavedLocationNames = new ArrayList<String>();
+        mLocationKeyMap = new HashMap<String, String>();
+
+        // Initialize UI Components
         mCurrentConditionsTemp = view.findViewById(R.id.tempCurrentCondtions);
         mIconCurrentConditions = view.findViewById(R.id.iconCurrentConditions);
         mWeatherCurrentConditions = view.findViewById(R.id.weatherCurrentCondtions);
@@ -119,23 +121,21 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
         mSearchView = view.findViewById(R.id.searchLocation);
         mSearchButton = view.findViewById(R.id.searchButton);
-        mSearchButton.setOnClickListener(this);
         mSaveLocationButton = view.findViewById(R.id.saveButton);
-        mSaveLocationButton.setOnClickListener(this::onClickSave);
         mCurrentLocationText = view.findViewById(R.id.textLocation);
         mSavedLocationsSpinner = view.findViewById(R.id.saveLocationsSpinner);
+        mCurrentLocationButton = view.findViewById(R.id.currentLocationButton);
 
-        mSavedLocations = new ArrayList<String>();
-        mLocationNames = new HashMap<String, String>();
-        populateSavedLocationsList();
+        // Initialize adapter
         mArrayAdapter = new ArrayAdapter<String>(this.getContext(),
-                R.layout.adapter_array_text, mSavedLocations);
+                R.layout.adapter_array_text, mSavedLocationNames);
         mSavedLocationsSpinner.setAdapter(mArrayAdapter);
+
+        // Set on click listeners
+        mCurrentLocationButton.setOnClickListener(this::onClickCurrent);
+        mSaveLocationButton.setOnClickListener(this::onClickSave);
+        mSearchButton.setOnClickListener(this);
         mSavedLocationsSpinner.setOnItemSelectedListener(this);
-
-
-        // TODO: Set up a list of saved locations to autocomplete
-        //mSearchView.setCompletionHint();
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -157,7 +157,6 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-
         if (ActivityCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this.getActivity(),
@@ -169,10 +168,9 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
                     MY_PERMISSIONS_LOCATIONS);
         }
 
-        mCurrentLocationButton = view.findViewById(R.id.currentLocationButton);
-        mCurrentLocationButton.setOnClickListener(this::onClickCurrent);
         return view;
     }
+
 
     @Override
     public void onStart() {
@@ -181,25 +179,16 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         }
         super.onStart();
 
-        // update location key
-        //getCurrentLocationKey();
-        // TODO: check for last location searched?
-        /*
-        SharedPreferences prefs =
-                getActivity().getSharedPreferences(
-                        getString(R.string.keys_shared_prefs),
-                        Context.MODE_PRIVATE);
-        if (!prefs.contains(getString(R.string.keys_prefs_location))) {
-            throw new IllegalStateException("No location in prefs!");
-        }
-        */
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getCurrentConditions();
+
+        // Update data and weather displays
+        getCurrentLocationKey();
+        populateSavedLocationsListAndMap();
+        updateWeather();
     }
 
     @Override
@@ -336,7 +325,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         String latlong = Double.toString(mCurrentLocation.getLatitude())
                 + "," + Double.toString(mCurrentLocation.getLongitude());
 
-        String[] endpoints = new String[] {getString(R.string.ep_api_locations),
+        String[] endpoints = new String[]{getString(R.string.ep_api_locations),
                 getString(R.string.ep_api_v1),
                 getString(R.string.ep_api_cities),
                 getString(R.string.ep_api_geoposition),
@@ -356,7 +345,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         //TODO
         String postalcode = mSearchView.getText().toString();
 
-        String[] endpoints = new String[] {getString(R.string.ep_api_locations),
+        String[] endpoints = new String[]{getString(R.string.ep_api_locations),
                 getString(R.string.ep_api_v1),
                 getString(R.string.ep_api_postalcodes),
                 getString(R.string.ep_api_search)};
@@ -370,7 +359,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     }
 
     private void getLocationName(String key) {
-        String[] endpoints = new String[] {getString(R.string.ep_api_locations),
+        String[] endpoints = new String[]{getString(R.string.ep_api_locations),
                 getString(R.string.ep_api_v1),
                 key};
         SendApiQueryAsyncTask.Builder builder =
@@ -382,21 +371,21 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     private void getOneDayForecast() {
         // Make the forecast url
-        String[] endpoints = new String[] {getString(R.string.ep_api_forecasts),
+        String[] endpoints = new String[]{getString(R.string.ep_api_forecasts),
                 getString(R.string.ep_api_v1),
                 getString(R.string.ep_api_daily),
                 getString(R.string.ep_api_one_day),
                 mLocationKey};
         SendApiQueryAsyncTask.Builder builder =
                 new SendApiQueryAsyncTask.Builder(getString(R.string.ep_api_base_url), endpoints)
-                .onPostExecute(this::displayOneDayForecast)
-                .onCancelled(this::handleError);
+                        .onPostExecute(this::displayOneDayForecast)
+                        .onCancelled(this::handleError);
         builder.build().execute();
     }
 
     private void getFiveDayForecast() {
 
-        String[] endpoints = new String[] {getString(R.string.ep_api_forecasts),
+        String[] endpoints = new String[]{getString(R.string.ep_api_forecasts),
                 getString(R.string.ep_api_v1),
                 getString(R.string.ep_api_daily),
                 getString(R.string.ep_api_five_day),
@@ -410,7 +399,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     private void getCurrentConditions() {
 
-        String[] endpoints = new String[] {
+        String[] endpoints = new String[]{
                 getString(R.string.ep_api_current_conditions),
                 getString(R.string.ep_api_v1),
                 mLocationKey};
@@ -487,7 +476,10 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        mLocationNames.put(locationKey, cityName + ", " + stateName);
+        mLocationKeyMap.put(cityName + ", " + stateName, locationKey);
+        if (mLocationKey == locationKey) {
+            mCurrentLocationText.setText(cityName + ", " + stateName);
+        }
     }
 
     private void setLocationKey(String result) {
@@ -507,64 +499,71 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        setLocationName(cityName + ", " + stateName);
-        mLocationNames.put(locationKey, cityName + ", " + stateName);
-        selectLocationKey(locationKey);
+        mCurrentLocationText.setText(cityName + ", " + stateName);
+        mLocationKeyMap.put(cityName + ", " + stateName, locationKey);
+        selectLocationKey(locationKey, cityName + ", " + stateName);
     }
 
-    private void selectLocationKey(String locationKey) {
-        if (locationKey != "") {
+    /**
+     * Change mLocationKey, enable or disable save button, update text and weather.
+     * @param locationKey
+     * @param locationName
+     */
+    private void selectLocationKey(String locationKey, String locationName) {
+        if (locationKey != "" && locationName != "") {
             mLocationKey = locationKey;
+            mLocationName = locationName;
         } else {
             // notify?
         }
-        if (mSavedLocations.contains(mLocationKey)) {
+        if (mSavedLocationNames.contains(locationName)) {
+            mSaveLocationButton.setEnabled(false);
             mSaveLocationButton.setEnabled(false);
         } else {
             mSaveLocationButton.setEnabled(true);
         }
         updateWeather();
-        if (mLocationNames.get(locationKey) != null) {
-            mCurrentLocationText.setText(mLocationNames.get(locationKey));
-        } else {
-            getLocationName(locationKey);
+        mCurrentLocationText.setText(locationName);
+
+    }
+
+    private void populateSavedLocationsListAndMap() {
+        JSONArray list = getSavedLocationPrefs();
+        for (int i = 0; i < list.length(); i++) {
+            String s = null;
+            try {
+                s = list.getString(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            // Check to see if it's in the list
+            if (!(mSavedLocationNames.contains(s))) {
+                mSavedLocationNames.add(s);
+            }
+            if (!(mLocationKeyMap.containsKey(s))) {
+
+            }
         }
 
     }
 
-    private void setLocationName(String name) {
-        mCurrentLocationText.setText(name);
-    }
-
-    private void populateSavedLocationsList() {
+    private JSONArray getSavedLocationPrefs() {
+        JSONArray list = new JSONArray();
         SharedPreferences prefs =
                 getActivity().getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
         // add the location to the JSONArray
         try {
-            String array = prefs.getString(getString(R.string.keys_prefs_saved_locations),
-                    "");
-            if (array != "") {
-                JSONArray list = new JSONArray(prefs.getString(getString(R.string.keys_prefs_saved_locations),
-                        ""));
-                for (int i = 0; i < list.length(); i++) {
-                    String s = list.getString(i);
-                    // Check to see if it's in the list
-                    if (!(mSavedLocations.contains(s))) {
-                        mSavedLocations.add(s);
-                    }
-                    // Check to see if it's in the map with a name
-                    if (!mLocationNames.containsKey(s)) {
-                        getLocationName(s);
-                    }
-                }
-            }
+            String temp = prefs.getString(getString(R.string.keys_prefs_saved_locations), "");
+            list = new JSONArray(prefs.getString(getString(R.string.keys_prefs_saved_locations),
+                    ""));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
 
+        return list;
+    }
 
     private void handleError(final String msg) {
         Log.e("Connections ERROR!!!", msg.toString());
@@ -581,12 +580,14 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     }
 
     public void onClickSave(View view) {
+
+
         // get shared prefs
         SharedPreferences prefs =
                 getActivity().getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
-        // add the location to the JSONArray
+        // add the location and key to the JSONArray
         try {
             String arr = prefs.getString(getString(R.string.keys_prefs_saved_locations),
                     "");
@@ -606,7 +607,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             e.printStackTrace();
         }
         mSaveLocationButton.setEnabled(false);
-        populateSavedLocationsList();
+        populateSavedLocationsListAndMap();
     }
 
 
@@ -618,8 +619,8 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String key = (String) parent.getItemAtPosition(position);
-        selectLocationKey(key);
+        String name = (String) parent.getItemAtPosition(position);
+        selectLocationKey(mLocationKeyMap.get(name), name);
 
     }
 

@@ -12,11 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <AutoCompleteTextView
+        <EditText
             android:id="@+id/searchLocation"
             android:layout_width="270dp"
             android:layout_height="wrap_content"
-            android:hint="@string/hint_search_location" />
+            android:hint="@string/hint_search_location"
+            android:inputType="text" />
 
         <ImageButton
             android:id="@+id/searchButton"
