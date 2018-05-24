@@ -9,6 +9,18 @@
 
     <!-- TODO: Update blank fragment layout -->
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="39dp"
+        android:layout_height="42dp"
+        android:layout_marginBottom="16dp"
+        android:src="@android:drawable/stat_notify_chat"
+        android:tint="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/linearLayout"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="0dp"

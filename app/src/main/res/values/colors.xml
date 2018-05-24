@@ -2,7 +2,7 @@
 <resources>
     <!-- Color scheme 1 Blue and Red -->
     <color name="colorPrimary">#1976D2</color>
-    <color name="colorPrimaryDark">#004BA0</color>
+    <color name="colorPrimaryDark">#004ba0</color>
     <color name="colorAccent">#D32F3F</color>
 
     <!-- Color scheme 2 Pink and Brown -->
