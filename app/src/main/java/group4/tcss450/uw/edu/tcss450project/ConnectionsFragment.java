@@ -13,9 +13,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,13 +35,17 @@ import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
  * A simple {@link Fragment} subclass.
  */
 public class ConnectionsFragment extends Fragment implements
-        ConnectionsAdapter.OnConnectionAdapterInteractionListener {
+        ConnectionsAdapter.OnConnectionAdapterInteractionListener,
+        View.OnClickListener{
 
     private ConversationsFragment.OnConversationViewInteractionListener mListener;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private ConnectionsAdapter mAdapter;
-    private ArrayList<Connection> mDataSet;
+    private ArrayAdapter<String> mSearchAdapter;
+    private ArrayList<Connection> mMasterDataSet;
+    private ArrayList<Connection> mDisplayDataSet;
+    private List<String> mSearchDataSet;
     private String mUsername;
     private String mSendUrl;
     private String mDeleteUrl;
@@ -47,6 +56,8 @@ public class ConnectionsFragment extends Fragment implements
     private int mNewChatId;
     private int mMemberId;
     private ProgressBar mProgressBar;
+    private Button mSearchButton;
+    private AutoCompleteTextView mSearchText;
 
 
     public ConnectionsFragment() {
@@ -62,6 +73,20 @@ public class ConnectionsFragment extends Fragment implements
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
+        mSearchDataSet = new ArrayList<>();
+
+        mSearchAdapter =
+                new ArrayAdapter<String>(getActivity(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        mSearchDataSet);
+        mSearchText = (AutoCompleteTextView) view.findViewById(R.id.connectionsSearchText);
+        mSearchText.setAdapter(mSearchAdapter);
+        mSearchText.setThreshold(2);
+
+        mSearchButton = view.findViewById(R.id.searchConnectionsButton);
+        mSearchButton.setOnClickListener(this);
+        mSearchButton.setEnabled(false);
+
         mProgressBar = view.findViewById(R.id.progressBarConnections);
 
         mRecyclerView = view.findViewById(R.id.connectionsList);
@@ -73,8 +98,9 @@ public class ConnectionsFragment extends Fragment implements
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Make an empty list to hold the data
-        mDataSet = new ArrayList<>();
-        mAdapter = new ConnectionsAdapter(mDataSet, this);
+        mMasterDataSet = new ArrayList<>();
+        mDisplayDataSet = new ArrayList<>();
+        mAdapter = new ConnectionsAdapter(mDisplayDataSet, this);
 
         setUpRequest();
         requestConnections();
@@ -201,7 +227,10 @@ public class ConnectionsFragment extends Fragment implements
                         Log.d("testing", connections.toString());
                     }
                     //Update the recycler view
-                    mDataSet.addAll(connections);
+                    mMasterDataSet.addAll(connections);
+                    mDisplayDataSet.addAll(connections);
+                    populateSearchAdapter();
+                    mSearchButton.setEnabled(true);
                     mAdapter.notifyDataSetChanged();
                 }
             }
@@ -210,10 +239,35 @@ public class ConnectionsFragment extends Fragment implements
         }
     }
 
+    private void populateSearchAdapter() {
+        for(int j = 0; j < mMasterDataSet.size(); j++) {
+            String searchValue = mMasterDataSet.get(j).getUserName();
+            if(!mSearchDataSet.contains(searchValue)) {
+                mSearchDataSet.add(searchValue);
+            }
+            searchValue = mMasterDataSet.get(j).getFirstName();
+
+            if(!mSearchDataSet.contains(searchValue)) {
+                mSearchDataSet.add(searchValue);
+            }
+            searchValue = mMasterDataSet.get(j).getLastName();
+            if(!mSearchDataSet.contains(searchValue)) {
+                mSearchDataSet.add(searchValue);
+            }
+            searchValue = mMasterDataSet.get(j).getEmail();
+            if(!mSearchDataSet.contains(searchValue)) {
+                mSearchDataSet.add(searchValue);
+            }
+        }
+        Collections.sort(mSearchDataSet, String.CASE_INSENSITIVE_ORDER);
+        mSearchAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onConnectionDeleted(String contactUsername, int position) {
         mDeletePosition = position;
         JSONObject messageJson = new JSONObject();
+        mSearchButton.setEnabled(false);
 
         try {
             messageJson.put(getString(R.string.keys_json_username), mUsername);
@@ -309,13 +363,61 @@ public class ConnectionsFragment extends Fragment implements
             if(res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
-                mDataSet.remove(mDeletePosition);
+                mMasterDataSet.remove(mDeletePosition);
+                mDisplayDataSet.remove(mDeletePosition);
+                mSearchDataSet.clear();
+                populateSearchAdapter();
                 mAdapter.notifyItemRemoved(mDeletePosition);
-                mAdapter.notifyItemRangeChanged(mDeletePosition, mDataSet.size() - mDeletePosition);
+                mAdapter.notifyItemRangeChanged(mDeletePosition, mDisplayDataSet.size() - mDeletePosition);
 
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+        mSearchButton.setEnabled(true);
+    }
+
+    @Override
+    public void onClick(View v) {
+        //User attempting to search
+        if(mSearchButton.getText().toString().equals(getString(R.string.button_search))) {
+            if(!mSearchText.getText().toString().equals("")) {
+                Log.d("dssdf", "made it");
+                mSearchButton.setEnabled(false);
+                mSearchText.setEnabled(false);
+                String text = mSearchText.getText().toString();
+                text = text.toLowerCase();
+                mDisplayDataSet.clear();
+
+                for (int i = 0; i < mMasterDataSet.size(); i++) {
+                    Connection c = mMasterDataSet.get(i);
+                    if (c.getUserName().toLowerCase().equals(text)
+                            || c.getUserName().toLowerCase().startsWith(text)
+                            || c.getFirstName().toLowerCase().equals(text)
+                            || c.getFirstName().toLowerCase().startsWith(text)
+                            || c.getLastName().toLowerCase().equals(text)
+                            || c.getLastName().toLowerCase().startsWith(text)
+                            || (c.getFirstName() + " " + c.getLastName()).toLowerCase().equals(text)
+                            || c.getEmail().toLowerCase().equals(text)
+                            || c.getEmail().toLowerCase().startsWith(text)) {
+                        mDisplayDataSet.add(c);
+                    }
+                }
+
+                mAdapter.notifyDataSetChanged();
+                mSearchText.setText("No Results Found");
+                mSearchButton.setText(R.string.button_clear_results);
+                mSearchButton.setEnabled(true);
+            }
+        } else { //User wants restore full contact list
+            mSearchButton.setEnabled(false);
+            mDisplayDataSet.clear();
+            mDisplayDataSet.addAll(mMasterDataSet);
+            mAdapter.notifyDataSetChanged();
+            mSearchButton.setText(R.string.button_search);
+            mSearchText.setText("");
+            mSearchText.setEnabled(true);
+            mSearchButton.setEnabled(true);
         }
     }
 }
