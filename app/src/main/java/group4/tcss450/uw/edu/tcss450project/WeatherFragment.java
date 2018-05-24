@@ -3,6 +3,8 @@ package group4.tcss450.uw.edu.tcss450project;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,11 +16,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -31,6 +35,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import group4.tcss450.uw.edu.tcss450project.utils.SendApiQueryAsyncTask;
 
 
@@ -40,7 +49,8 @@ import group4.tcss450.uw.edu.tcss450project.utils.SendApiQueryAsyncTask;
 public class WeatherFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        View.OnClickListener {
+        View.OnClickListener,
+        AdapterView.OnItemSelectedListener {
 
     private static final String TAG = "MyLocationsActivity";
     /**
@@ -63,10 +73,16 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     private String mForecastUrl;
     private String mCurrentConditionsUrl;
 
+    private ArrayAdapter<String> mArrayAdapter;
+
     private String mLocationString;
+    private List<String> mSavedLocations;
+    private Map<String, String> mLocationNames;
 
     private AutoCompleteTextView mSearchView;
     private ImageButton mSearchButton;
+    private Button mSaveLocationButton;
+    private Spinner mSavedLocationsSpinner;
     private TextView mCurrentLocationText;
     private TextView mCurrentConditionsTemp;
     private TextView mWeatherCurrentConditions;
@@ -90,7 +106,6 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
-
         mCurrentConditionsTemp = view.findViewById(R.id.tempCurrentCondtions);
         mIconCurrentConditions = view.findViewById(R.id.iconCurrentConditions);
         mWeatherCurrentConditions = view.findViewById(R.id.weatherCurrentCondtions);
@@ -98,7 +113,18 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         mSearchView = view.findViewById(R.id.searchLocation);
         mSearchButton = view.findViewById(R.id.searchButton);
         mSearchButton.setOnClickListener(this);
+        mSaveLocationButton = view.findViewById(R.id.saveButton);
+        mSaveLocationButton.setOnClickListener(this::onClickSave);
         mCurrentLocationText = view.findViewById(R.id.textLocation);
+        mSavedLocationsSpinner = view.findViewById(R.id.saveLocationsSpinner);
+
+        mSavedLocations = new ArrayList<String>();
+        mLocationNames = new HashMap<String, String>();
+        populateSavedLocationsList();
+        mArrayAdapter = new ArrayAdapter<String>(this.getContext(),
+                R.layout.adapter_array_text, mSavedLocations);
+        mSavedLocationsSpinner.setAdapter(mArrayAdapter);
+        mSavedLocationsSpinner.setOnItemSelectedListener(this);
 
 
         // TODO: Set up a list of saved locations to autocomplete
@@ -147,7 +173,6 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             throw new IllegalStateException("No location in prefs!");
         }
         */
-
 
     }
 
@@ -406,23 +431,57 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             locationKey = resObj.getString("Key");
             JSONObject administrativeArea = resObj.getJSONObject("AdministrativeArea");
             stateName = administrativeArea.getString("EnglishName");
-            mLocationKey = locationKey;
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        setLocationName(cityName + ", " + stateName);
+        mLocationNames.put(locationKey, cityName + ", " + stateName);
+        selectLocationKey(locationKey);
+    }
+
+    private void selectLocationKey(String locationKey) {
         if (locationKey != "") {
             mLocationKey = locationKey;
         } else {
             // notify?
         }
-        setLocationName(cityName + ", " + stateName);
+        if (mSavedLocations.contains(mLocationKey)) {
+            mSaveLocationButton.setEnabled(false);
+        } else {
+            mSaveLocationButton.setEnabled(true);
+        }
+        updateWeather();
+        mSearchView.setText(mLocationNames.get(locationKey));
     }
 
     private void setLocationName(String name) {
         mCurrentLocationText.setText(name);
     }
 
+    private void populateSavedLocationsList() {
+        SharedPreferences prefs =
+                getActivity().getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        // add the location to the JSONArray
+        try {
+            String array = prefs.getString(getString(R.string.keys_prefs_saved_locations),
+                    "");
+            if (array != "") {
+                JSONArray list = new JSONArray(prefs.getString(getString(R.string.keys_prefs_saved_locations),
+                        ""));
+                for (int i = 0; i < list.length(); i++) {
+                    String s = list.getString(i);
+                    if (!(mSavedLocations.contains(s))) {
+                        mSavedLocations.add(s);
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void handleError(final String msg) {
         Log.e("Connections ERROR!!!", msg.toString());
@@ -434,8 +493,52 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         getOneDayForecast();
     }
 
+
+    public void onClickSave(View view) {
+        // get shared prefs
+        SharedPreferences prefs =
+                getActivity().getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
+        // add the location to the JSONArray
+        try {
+            String arr = prefs.getString(getString(R.string.keys_prefs_saved_locations),
+                    "");
+            JSONArray list;
+            if (arr == "") {
+                list = new JSONArray();
+            } else {
+                list = new JSONArray(arr);
+            }
+            list.put(mLocationKey);
+            // save the new list
+            prefs.edit().putString(
+                    getString(R.string.keys_prefs_saved_locations),
+                    list.toString())
+                    .apply();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSaveLocationButton.setEnabled(false);
+        populateSavedLocationsList();
+    }
+
+
     @Override
     public void onClick(View view) {
         getSearchLocationKey();
+    }
+
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String key = (String) parent.getItemAtPosition(position);
+        selectLocationKey(key);
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

@@ -54,6 +54,7 @@
     <string name="hint_search">Search</string>
     <string name="hint_search_location">Enter a location...</string>
     <string name="hint_add_connection">Enter a Username</string>
+    <string name="hint_choose_saved_location">Saved locations...</string>
 
     <!-- EditText text -->
     <string name="edittext_username">test</string>
