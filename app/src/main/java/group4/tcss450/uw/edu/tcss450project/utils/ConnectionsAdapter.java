@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import group4.tcss450.uw.edu.tcss450project.R;
 import group4.tcss450.uw.edu.tcss450project.model.Connection;
