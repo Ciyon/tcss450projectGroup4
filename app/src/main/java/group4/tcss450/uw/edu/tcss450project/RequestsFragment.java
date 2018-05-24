@@ -13,17 +13,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import group4.tcss450.uw.edu.tcss450project.model.Connection;
-import group4.tcss450.uw.edu.tcss450project.utils.ConnectionsAdapter;
 import group4.tcss450.uw.edu.tcss450project.utils.PendingRequestsAdapter;
 import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 import group4.tcss450.uw.edu.tcss450project.utils.SentRequestsAdapter;
@@ -43,19 +45,23 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
     private LinearLayoutManager mSentLayoutManager;
     private SentRequestsAdapter mSentAdapter;
     private ArrayList<Connection> mSentDataSet;
+    private ArrayAdapter<String> mSearchAdapter;
+    private List<String> mSearchDataSet;
 
     private String mUsername;
+    private int mMemberId;
     private String mGetReceivedUrl;
     private String mGetSentUrl;
     private String mAcceptUrl;
     private String mDeleteUrl;
     private String mSendRequestUrl;
+    private String mGetUnconnectedUrl;
 
     private int mPendingAcceptPosition;
     private int mPendingDeletePosition;
     private int mSentDeletePosition;
 
-    private EditText mConnectionNameEdit;
+    private AutoCompleteTextView mConnectionSearchText;
     private Button mRequestConnectionButton;
 
     public RequestsFragment() {
@@ -71,11 +77,22 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
-        mConnectionNameEdit = view.findViewById(R.id.contactUsernameEdit);
+        mSearchDataSet = new ArrayList<>();
+        mSearchAdapter =
+                new ArrayAdapter<String>(getActivity(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        mSearchDataSet);
+        mConnectionSearchText = view.findViewById(R.id.searchContactEdit);
+        mConnectionSearchText.setAdapter(mSearchAdapter);
+        mConnectionSearchText.setThreshold(2);
+
         mRequestConnectionButton = view.findViewById(R.id.sendRequestButton);
         mRequestConnectionButton.setOnClickListener(this);
+        mRequestConnectionButton.setEnabled(false);
 
         setUpRequests();
+
+        requestUnconnectedMembers();
 
         mPendingRecyclerView = view.findViewById(R.id.recyclerPendingConnections);
         // size should stay the same regardless of data
@@ -198,6 +215,7 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
             throw new IllegalStateException("No user Id in prefs!");
         }
         mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
+        mMemberId = prefs.getInt(getString(R.string.keys_prefs_user_id), 0);
 
         mGetReceivedUrl = new Uri.Builder()
                 .scheme("https")
@@ -236,6 +254,12 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
                 .build()
                 .toString();
 
+        mGetUnconnectedUrl = new Uri.Builder()
+                .scheme("https")
+                .appendPath(getString(R.string.ep_base_url))
+                .appendPath(getString(R.string.ep_get_unconnected))
+                .build()
+                .toString();
 
     }
 
@@ -253,6 +277,52 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
                 .onCancelled(this::handleError)
                 .build().execute();
 
+    }
+
+    private void requestUnconnectedMembers() {
+        JSONObject messageJson = new JSONObject();
+        try {
+            messageJson.put(getString(R.string.keys_json_member_id_caps), mMemberId);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        new SendPostAsyncTask.Builder(mGetUnconnectedUrl, messageJson)
+                .onPostExecute(this::populateSearchView)
+                .onCancelled(this::handleError)
+                .build().execute();
+
+    }
+
+    private void populateSearchView(final String result) {
+        Log.d("testing", Integer.toString(mMemberId));
+        try {
+            JSONObject res = new JSONObject(result);
+            if(res.get(getString(R.string.keys_json_success)).toString()
+                    .equals(getString(R.string.keys_json_success_value_true))) {
+                ArrayList<String> connections = new ArrayList<>();
+
+                if(res.has(getString(R.string.keys_json_result))){
+                    JSONArray members = res.getJSONArray(getString(R.string.keys_json_result));
+                    Log.d("testing", Integer.toString(members.length()));
+                    for (int i = 0; i < members.length(); i++) {
+                        JSONObject member = members.getJSONObject(i);
+                        //there should be checks here to make sure the object actually has these
+                        String uName = member.getString(getString(R.string.keys_json_username));
+                        connections.add(uName);
+                    }
+                    Collections.sort(mSearchDataSet, String.CASE_INSENSITIVE_ORDER);
+                    mSearchDataSet.addAll(connections);
+                    mSearchAdapter.notifyDataSetChanged();
+
+                }
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mRequestConnectionButton.setEnabled(true);
     }
 
     private void requestSentConnections() {
@@ -314,6 +384,7 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
                         connections.add(new Connection(uName, fName, lName, email, id));
                     }
                     //Update the recycler view
+                    mPendingDataSet.clear();
                     mPendingDataSet.addAll(connections);
                     mPendingAdapter.notifyDataSetChanged();
                 }
@@ -359,7 +430,7 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.sendRequestButton) {
-            String contactUsername = mConnectionNameEdit.getText().toString();
+            String contactUsername = mConnectionSearchText.getText().toString();
 
             if(!contactUsername.isEmpty()) {
                 mRequestConnectionButton.setEnabled(false);
@@ -378,14 +449,14 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
                         .onCancelled(this::handleSendRequestError)
                         .build().execute();
             } else {
-                mConnectionNameEdit.setError("Empty Field");
+                mConnectionSearchText.setError("Empty Field");
             }
         }
     }
 
     private void handleSendRequestError(final String msg) {
         mRequestConnectionButton.setEnabled(true);
-        mConnectionNameEdit.setError("Request Failed");
+        mConnectionSearchText.setError("Request Failed");
         Log.e("Requests ERROR!!!", msg.toString());
     }
 
@@ -396,15 +467,16 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
             if(res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
-                mConnectionNameEdit.setText("");
+                mConnectionSearchText.setText("");
                 //Reload the sent Connections List
                 requestSentConnections();
+                requestUnconnectedMembers();
             } else {
                 String error = res.get("error").toString();
                 if(error.equals("Connection already exists.")) {
-                    mConnectionNameEdit.setError(error);
+                    mConnectionSearchText.setError(error);
                 } else {
-                    mConnectionNameEdit.setError("User Not Found");
+                    mConnectionSearchText.setError("User Not Found");
                 }
 
             }

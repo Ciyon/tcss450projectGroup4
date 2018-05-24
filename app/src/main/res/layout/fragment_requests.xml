@@ -18,15 +18,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/contactUsernameEdit"
+    <AutoCompleteTextView
+        android:id="@+id/searchContactEdit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:hint="@string/hint_add_connection"
-        android:inputType="text"
         android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@+id/sendRequestButton"
         app:layout_constraintStart_toStartOf="parent"

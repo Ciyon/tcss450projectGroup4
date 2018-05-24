@@ -405,7 +405,9 @@ public class ConnectionsFragment extends Fragment implements
                 }
 
                 mAdapter.notifyDataSetChanged();
-                mSearchText.setText("No Results Found");
+                if(mDisplayDataSet.size() == 0) {
+                    mSearchText.setText("No Results Found");
+                }
                 mSearchButton.setText(R.string.button_clear_results);
                 mSearchButton.setEnabled(true);
             }
