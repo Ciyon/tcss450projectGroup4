@@ -87,6 +87,9 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     private TextView mCurrentLocationText;
     private TextView mCurrentConditionsTemp;
     private TextView mWeatherCurrentConditions;
+    private TextView mOneDayMinTemp;
+    private TextView mOneDayMaxTemp;
+    private TextView mOneDayDate;
     private ImageView mIconCurrentConditions;
 
     private GoogleApiClient mGoogleApiClient;
@@ -110,6 +113,9 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         mCurrentConditionsTemp = view.findViewById(R.id.tempCurrentCondtions);
         mIconCurrentConditions = view.findViewById(R.id.iconCurrentConditions);
         mWeatherCurrentConditions = view.findViewById(R.id.weatherCurrentCondtions);
+        mOneDayDate = view.findViewById(R.id.date);
+        mOneDayMaxTemp = view.findViewById(R.id.maxTemp);
+        mOneDayMinTemp = view.findViewById(R.id.minTemp);
 
         mSearchView = view.findViewById(R.id.searchLocation);
         mSearchButton = view.findViewById(R.id.searchButton);
@@ -334,8 +340,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
                 getString(R.string.ep_api_v1),
                 getString(R.string.ep_api_cities),
                 getString(R.string.ep_api_geoposition),
-                getString(R.string.ep_api_search),
-                mLocationKey};
+                getString(R.string.ep_api_search)};
         SendApiQueryAsyncTask.Builder builder =
                 new SendApiQueryAsyncTask.Builder(getString(R.string.ep_api_base_url), endpoints)
                         .onPostExecute(this::setLocationKey)
@@ -418,7 +423,28 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     private void displayOneDayForecast(String result) {
         //parse json and display the weather
-
+        //parse json and display the weather
+        JSONObject res = null;
+        String date = "";
+        String minTemp = "";
+        String maxTemp = "";
+        int currentTemp = 0;
+        try {
+            res = new JSONObject(result);
+            JSONArray forecasts = res.getJSONArray("DailyForecasts");
+            JSONObject forecastObj = forecasts.getJSONObject(0);
+            date = forecastObj.getString("Date");
+            JSONObject temp = forecastObj.getJSONObject("Temperature");
+            JSONObject min = temp.getJSONObject("Minimum");
+            JSONObject max = temp.getJSONObject("Maximum");
+            minTemp = min.getString("Value");
+            maxTemp = max.getString("Value");
+            mOneDayDate.setText(date);
+            mOneDayMinTemp.setText(minTemp + (char) 0x00B0 + "F");
+            mOneDayMaxTemp.setText(maxTemp + (char) 0x00B0 + "F");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void displayFiveDayForecast(String result) {
@@ -498,7 +524,12 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             mSaveLocationButton.setEnabled(true);
         }
         updateWeather();
-        mCurrentLocationText.setText(mLocationNames.get(locationKey));
+        if (mLocationNames.get(locationKey) != null) {
+            mCurrentLocationText.setText(mLocationNames.get(locationKey));
+        } else {
+            getLocationName(locationKey);
+        }
+
     }
 
     private void setLocationName(String name) {

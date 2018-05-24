@@ -14,7 +14,7 @@
 
         <AutoCompleteTextView
             android:id="@+id/searchLocation"
-            android:layout_width="275dp"
+            android:layout_width="270dp"
             android:layout_height="wrap_content"
             android:hint="@string/hint_search_location" />
 
@@ -23,6 +23,7 @@
             android:layout_width="35dp"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_search_icon" />
+
         <ImageButton
             android:id="@+id/currentLocationButton"
             android:layout_width="35dp"
@@ -52,8 +53,8 @@
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/button_save_location"
-            android:paddingLeft="20dp"/>
+            android:paddingLeft="20dp"
+            android:text="@string/button_save_location" />
 
     </LinearLayout>
 
@@ -84,13 +85,13 @@
                 android:id="@+id/tempCurrentCondtions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp"/>
+                android:padding="10dp" />
 
             <TextView
                 android:id="@+id/weatherCurrentCondtions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp"/>
+                android:padding="10dp" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 
@@ -111,29 +112,44 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/minTemp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="-"/>
-            <TextView
-                android:id="@+id/maxTemp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/minTemp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-" />
+
+                <TextView
+                    android:id="@+id/maxTemp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp" />
+
+            </LinearLayout>
         </LinearLayout>
 
         <TextView
             android:id="@+id/conditions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"/>
+            android:padding="10dp" />
     </android.support.v7.widget.CardView>
 
     <TextView
