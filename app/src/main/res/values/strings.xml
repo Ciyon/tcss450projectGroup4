@@ -84,6 +84,8 @@
     <string name="button_delete_request">Remove Request</string>
     <string name="button_save_location">Save Location</string>
     <string name="button_send_request">Send Request</string>
+    <string name="button_search">Search</string>
+    <string name="button_clear_results">Clear Search</string>
 
 
     <!-- Radiobutton Text -->

@@ -7,6 +7,7 @@
     <string name="ep_get_conversations">getChatId</string>
     <string name="ep_get_conversation_ids_and_members">getChatInformation</string>
     <string name="ep_get_connections">getConnections</string>
+    <string name="ep_get_unconnected">getUnconnectedMembers</string>
     <string name="ep_resend">resend</string>
     <string name="ep_send_message">sendMessages</string>
     <string name="ep_get_message">getMessages</string>
