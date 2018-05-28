@@ -8,13 +8,22 @@
     android:orientation="vertical"
     android:padding="10dp">
 
+    <ImageView
+        android:id="@+id/imageView4"
+        android:scaleType="centerCrop"
+        android:scaleY=".5"
+        android:scaleX=".5"
+        card_view:srcCompat="@drawable/accuweatherlogo"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/searchLocation"
-            android:layout_width="270dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:hint="@string/hint_search_location"
             android:inputType="text" />
@@ -117,7 +126,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/date"
+                android:id="@+id/oneDayDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="10dp" />
@@ -127,7 +136,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/minTemp"
+                    android:id="@+id/oneDayMinTemp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="10dp" />
@@ -138,7 +147,13 @@
                     android:text="-" />
 
                 <TextView
-                    android:id="@+id/maxTemp"
+                    android:id="@+id/oneDayMaxTemp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp" />
+
+                <TextView
+                    android:id="@+id/oneDayConditions"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="10dp" />
@@ -167,13 +182,228 @@
         android:padding="20dp"
         card_view:cardCornerRadius="4dp">
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
         <LinearLayout
             android:id="@+id/five_day_linear_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
+            // day 1
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/dayOneDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/dayOneMinTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-" />
+
+                    <TextView
+                        android:id="@+id/dayOneMaxTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:id="@+id/dayOneConditions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            //day two
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/dayTwoDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/dayTwoMinTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-" />
+
+                    <TextView
+                        android:id="@+id/dayTwoMaxTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:id="@+id/dayTwoConditions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            // day 3
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/dayThreeDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/dayThreeMinTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-" />
+
+                    <TextView
+                        android:id="@+id/dayThreeMaxTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:id="@+id/dayThreeConditions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            // day 4
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/dayFourDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/dayFourMinTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-" />
+
+                    <TextView
+                        android:id="@+id/dayFourMaxTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:id="@+id/dayFourConditions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            // day5
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/dayFiveDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/dayFiveMinTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-" />
+
+                    <TextView
+                        android:id="@+id/dayFiveMaxTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:id="@+id/dayFiveConditions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp" />
+
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
+        </ScrollView>
     </android.support.v7.widget.CardView>
+
 </LinearLayout>
