@@ -10,12 +10,12 @@
 
     <ImageView
         android:id="@+id/imageView4"
-        android:scaleType="centerCrop"
-        android:scaleY=".5"
-        android:scaleX=".5"
-        card_view:srcCompat="@drawable/accuweatherlogo"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent" />
+        android:scaleType="centerCrop"
+        android:scaleX=".3"
+        android:scaleY=".3"
+        card_view:srcCompat="@drawable/accuweatherlogo" />
 
     <LinearLayout
         android:layout_width="match_parent"
