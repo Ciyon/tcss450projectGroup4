@@ -64,6 +64,7 @@ public class ChatFragment extends Fragment {
         if (!prefs.contains(getString(R.string.keys_prefs_username))) {
             throw new IllegalStateException("No username in prefs!");
         }
+
         mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
         getAllMessages(mUsername);
         mSendUrl = new Uri.Builder()
@@ -207,6 +208,7 @@ public class ChatFragment extends Fragment {
                         return;
                     }
                     getActivity().runOnUiThread(() -> {
+                        mOutputTextView.setText("");
                         for (String msg : msgs) {
                             mOutputTextView.append(msg);
                             mOutputTextView.append(System.lineSeparator());
