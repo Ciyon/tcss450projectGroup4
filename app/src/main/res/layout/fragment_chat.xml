@@ -7,57 +7,40 @@
     android:layout_height="match_parent"
     tools:context=".ChatFragment">
 
-    <LinearLayout
-        android:id="@+id/messageContainer"
-        android:layout_width="match_parent"
+    <EditText
+        android:id="@+id/chatInputEditText"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@id/horizontalContainer"
-        app:layout_constraintTop_toTopOf="@id/constraintLayoutLayout">
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:hint="@string/hint_enter_message"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/chatSendButton"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/chatOutputTextView"
-            android:layout_width="match_parent"
-            android:layout_height="475dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            app:layout_constraintBottom_toBottomOf="@id/messageContainer"
-            app:layout_constraintTop_toTopOf="@id/messageContainer" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/horizontalContainer"
-        android:layout_width="match_parent"
+    <ImageButton
+        android:id="@+id/chatSendButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/constraintLayoutLayout"
-        app:layout_constraintTop_toBottomOf="@+id/messageContainer">
+        android:contentDescription="@string/send_message"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_menu_send"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <EditText
-            android:id="@+id/chatInputEditText"
-            android:layout_width="275dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="8dp"
-            android:hint="@string/hint_enter_message"
+    <TextView
+        android:id="@+id/chatOutputTextView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/chatInputEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-            android:inputType="text"
-            app:layout_constraintBottom_toBottomOf="@id/horizontalContainer"
-            app:layout_constraintLeft_toLeftOf="@id/horizontalContainer" />
-
-
-        <ImageButton
-            android:id="@+id/chatSendButton"
-            android:layout_width="123dp"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="0dp"
-            android:layout_marginEnd="0dp"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="0dp"
-            android:contentDescription="@string/send_message"
-            android:src="@drawable/ic_menu_send" />
-    </LinearLayout>
 </android.support.constraint.ConstraintLayout>
