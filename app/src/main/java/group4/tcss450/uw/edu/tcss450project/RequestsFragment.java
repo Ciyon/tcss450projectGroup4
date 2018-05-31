@@ -84,7 +84,7 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
                         mSearchDataSet);
         mConnectionSearchText = view.findViewById(R.id.searchContactEdit);
         mConnectionSearchText.setAdapter(mSearchAdapter);
-        mConnectionSearchText.setThreshold(2);
+        mConnectionSearchText.setThreshold(4);
 
         mRequestConnectionButton = view.findViewById(R.id.sendRequestButton);
         mRequestConnectionButton.setOnClickListener(this);
