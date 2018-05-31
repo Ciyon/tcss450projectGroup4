@@ -15,8 +15,8 @@ import java.util.Objects;
 
 
 /**
- * Fragment that handles account options available prior to login.
- * <p>
+ * {@link Fragment} that handles account options available prior to login.
+ *
  * Activities that contain this fragment must implement the
  * {@link AccountOptionsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.

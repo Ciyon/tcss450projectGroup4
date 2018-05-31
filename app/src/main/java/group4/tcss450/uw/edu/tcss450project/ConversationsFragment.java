@@ -31,9 +31,9 @@ import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * {@link Fragment} that handles conversation functionality
  */
-public class ConversationsFragment extends Fragment implements ConversationsAdapter.OnConversationDeleteInteractionListener{
+public class ConversationsFragment extends Fragment implements ConversationsAdapter.OnConversationDeleteInteractionListener {
     private OnConversationViewInteractionListener mListener;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -48,8 +48,7 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
     public ConversationsFragment() {
         // Required empty public constructor
     }
-
-
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -70,7 +69,7 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
         mRecyclerView.setLayoutManager(mLayoutManager);
         //Start with an empty dataset.
         mDataset = new ArrayList();
-        mAdapter = new ConversationsAdapter(mDataset,mListener,this);
+        mAdapter = new ConversationsAdapter(mDataset, mListener, this);
 
         setUpRequest();
         requestConversationsList();
@@ -80,8 +79,7 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
         mProgressBar.setVisibility(View.GONE);
     }
@@ -159,20 +157,20 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
         try {
             mProgressBar.setVisibility(View.GONE);
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
 
                 Map<Integer, ArrayList<String>> data = new HashMap<>();
-                if(res.has(getString(R.string.keys_json_chat_information))){
+                if (res.has(getString(R.string.keys_json_chat_information))) {
                     JSONArray chats = res.getJSONArray(getString(R.string.keys_json_chat_information));
-                        int chatId;
-                        String username;
+                    int chatId;
+                    String username;
                     for (int i = 0; i < chats.length(); i++) {
                         JSONObject chat = chats.getJSONObject(i);
                         chatId = chat.getInt(getString(R.string.keys_json_chatid));
                         username = chat.getString(getString(R.string.keys_json_username));
-                        if(data.containsKey(chatId)) {
+                        if (data.containsKey(chatId)) {
                             data.get(chatId).add(username);
                         } else {
                             ArrayList<String> members = new ArrayList<>();
@@ -182,10 +180,10 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
                     }
 
                     ArrayList<Conversation> conversations = new ArrayList<>();
-                    for(int key : data.keySet()) {
+                    for (int key : data.keySet()) {
                         ArrayList<String> finalMembersList = data.get(key);
                         finalMembersList.remove(mUsername.toLowerCase());
-                        conversations.add(new Conversation(key,finalMembersList));
+                        conversations.add(new Conversation(key, finalMembersList));
                     }
                     //conversations.add(new Conversation(chatId,null));
                     //Update the recycler view
@@ -221,7 +219,7 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
     private void deleteConversation(final String result) {
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
                 mDataset.remove(mDeletePosition);

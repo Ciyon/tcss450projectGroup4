@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,13 +19,13 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import group4.tcss450.uw.edu.tcss450project.model.Connection;
 import group4.tcss450.uw.edu.tcss450project.utils.ConnectionsAdapter;
@@ -32,15 +33,13 @@ import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * {@link Fragment} that handles connections functionality.
  */
 public class ConnectionsFragment extends Fragment implements
         ConnectionsAdapter.OnConnectionAdapterInteractionListener,
-        View.OnClickListener{
+        View.OnClickListener {
 
     private ConversationsFragment.OnConversationViewInteractionListener mListener;
-    private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLayoutManager;
     private ConnectionsAdapter mAdapter;
     private ArrayAdapter<String> mSearchAdapter;
     private ArrayList<Connection> mMasterDataSet;
@@ -59,42 +58,41 @@ public class ConnectionsFragment extends Fragment implements
     private Button mSearchButton;
     private AutoCompleteTextView mSearchText;
 
-
     public ConnectionsFragment() {
         // Required empty public constructor
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_connections, container, false);
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        FloatingActionButton fab = Objects.requireNonNull(getActivity()).findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
+        // Data set for recycler view for searching for connections
         mSearchDataSet = new ArrayList<>();
 
+        // Initialize UI components
         mSearchAdapter =
-                new ArrayAdapter<String>(getActivity(),
+                new ArrayAdapter<>(getActivity(),
                         android.R.layout.simple_dropdown_item_1line,
                         mSearchDataSet);
-        mSearchText = (AutoCompleteTextView) view.findViewById(R.id.connectionsSearchText);
+        mSearchText = view.findViewById(R.id.connectionsSearchText);
         mSearchText.setAdapter(mSearchAdapter);
         mSearchText.setThreshold(2);
-
         mSearchButton = view.findViewById(R.id.searchConnectionsButton);
         mSearchButton.setOnClickListener(this);
         mSearchButton.setEnabled(false);
-
         mProgressBar = view.findViewById(R.id.progressBarConnections);
 
-        mRecyclerView = view.findViewById(R.id.connectionsList);
+        // Initialize recycler view
+        RecyclerView mRecyclerView = view.findViewById(R.id.connectionsList);
 
-        // size should stay the same regardless of data
+        // Size should stay the same regardless of data
         mRecyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(this.getContext());
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Make an empty list to hold the data
@@ -102,18 +100,18 @@ public class ConnectionsFragment extends Fragment implements
         mDisplayDataSet = new ArrayList<>();
         mAdapter = new ConnectionsAdapter(mDisplayDataSet, this);
 
-        setUpRequest();
+        // Set up all of the data
+        setUpRequestUrls();
         requestConnections();
         mRecyclerView.setAdapter(mAdapter);
 
         return view;
-
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
+        // We shouldn't see the progress bar initially
         mProgressBar.setVisibility(View.GONE);
     }
 
@@ -135,12 +133,17 @@ public class ConnectionsFragment extends Fragment implements
         super.onDetach();
 
         mListener = null;
-
     }
 
-    private void setUpRequest() {
+    /**
+     * Sets up parameters/urls for making a connection request,
+     * removing a connection, creating a new chat with a connection,
+     * and adding multiple connections to a chat.
+     */
+    private void setUpRequestUrls() {
+        // Get the user's shared preferences
         SharedPreferences prefs =
-                getActivity().getSharedPreferences(
+                Objects.requireNonNull(getActivity()).getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
         if (!prefs.contains(getString(R.string.keys_prefs_username))) {
@@ -149,9 +152,11 @@ public class ConnectionsFragment extends Fragment implements
         if (!prefs.contains(getString(R.string.keys_prefs_user_id))) {
             throw new IllegalStateException("No user Id in prefs!");
         }
+        // Get their username and memberid
         mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
         mMemberId = prefs.getInt(getString(R.string.keys_prefs_user_id), 0);
 
+        // Prepare send urls
         mSendUrl = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
@@ -182,6 +187,9 @@ public class ConnectionsFragment extends Fragment implements
 
     }
 
+    /**
+     * Starts an AsyncTask to request a new connection.
+     */
     private void requestConnections() {
         mProgressBar.setVisibility(View.VISIBLE);
         JSONObject messageJson = new JSONObject();
@@ -198,21 +206,31 @@ public class ConnectionsFragment extends Fragment implements
                 .build().execute();
     }
 
+    /**
+     * Gets rid of progress bar if there is an error.
+     *
+     * @param msg error message
+     */
     private void handleError(final String msg) {
         mProgressBar.setVisibility(View.GONE);
-        Log.e("Connections ERROR!!!", msg.toString());
+        Log.e("Connections ERROR!!!", msg);
     }
 
+    /**
+     * Creates a list of connects from JSON result
+     *
+     * @param result JSON result
+     */
     private void createConnectionsList(final String result) {
         try {
             mProgressBar.setVisibility(View.GONE);
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
                 ArrayList<Connection> connections = new ArrayList<>();
 
-                if(res.has(getString(R.string.keys_json_result))){
+                if (res.has(getString(R.string.keys_json_result))) {
                     JSONArray members = res.getJSONArray(getString(R.string.keys_json_result));
 
                     for (int i = 0; i < members.length(); i++) {
@@ -239,33 +257,46 @@ public class ConnectionsFragment extends Fragment implements
         }
     }
 
+    /**
+     * Populate the search data set, so that a user can see the
+     * potential connections they're searching for.
+     */
     private void populateSearchAdapter() {
-        for(int j = 0; j < mMasterDataSet.size(); j++) {
+        for (int j = 0; j < mMasterDataSet.size(); j++) {
             String searchValue = mMasterDataSet.get(j).getUserName();
-            if(!mSearchDataSet.contains(searchValue)) {
+            if (!mSearchDataSet.contains(searchValue)) {
                 mSearchDataSet.add(searchValue);
             }
             searchValue = mMasterDataSet.get(j).getFirstName();
 
-            if(!mSearchDataSet.contains(searchValue)) {
+            if (!mSearchDataSet.contains(searchValue)) {
                 mSearchDataSet.add(searchValue);
             }
             searchValue = mMasterDataSet.get(j).getLastName();
-            if(!mSearchDataSet.contains(searchValue)) {
+            if (!mSearchDataSet.contains(searchValue)) {
                 mSearchDataSet.add(searchValue);
             }
             searchValue = mMasterDataSet.get(j).getEmail();
-            if(!mSearchDataSet.contains(searchValue)) {
+            if (!mSearchDataSet.contains(searchValue)) {
                 mSearchDataSet.add(searchValue);
             }
         }
-        Collections.sort(mSearchDataSet, String.CASE_INSENSITIVE_ORDER);
+
+        mSearchDataSet.sort(String.CASE_INSENSITIVE_ORDER);
         mSearchAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Deletes a connection when it is selected from the recycler view for deletion.
+     *
+     * @param contactUsername The contact to be deleted.
+     * @param position        The position in the recycler view.
+     */
     @Override
     public void onConnectionDeleted(String contactUsername, int position) {
         mDeletePosition = position;
+
+        // Build the JSON message to send to the webservice
         JSONObject messageJson = new JSONObject();
         mSearchButton.setEnabled(false);
 
@@ -277,6 +308,7 @@ public class ConnectionsFragment extends Fragment implements
             e.printStackTrace();
         }
 
+        // Start the async task to remove the connection
         new SendPostAsyncTask.Builder(mDeleteUrl, messageJson)
                 .onPostExecute(this::deleteConnection)
                 .onCancelled(this::handleError)
@@ -284,8 +316,14 @@ public class ConnectionsFragment extends Fragment implements
 
     }
 
+    /**
+     * Starts an async task to create a new conversation with a connection.
+     *
+     * @param contactId Id of the connection to start a chat with
+     */
     @Override
     public void onChatStarted(int contactId) {
+        // Build the JSON message to send to the webservice
         JSONObject messageJson = new JSONObject();
         mContactId = contactId;
         try {
@@ -295,6 +333,7 @@ public class ConnectionsFragment extends Fragment implements
             e.printStackTrace();
         }
 
+        // Start the async task
         new SendPostAsyncTask.Builder(mCreateUrl, messageJson)
                 .onPostExecute(this::handleCreateConversationOnPost)
                 .onCancelled(this::handleServiceError)
@@ -305,13 +344,19 @@ public class ConnectionsFragment extends Fragment implements
         Log.d("Fail", result);
     }
 
+    /**
+     * If a conversation is successfully created with connection,
+     * handle the result.
+     *
+     * @param result JSON message to parse
+     */
     private void handleCreateConversationOnPost(final String result) {
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
-                if(res.has(getString(R.string.keys_json_chatid))){
+                if (res.has(getString(R.string.keys_json_chatid))) {
                     mNewChatId = res.getInt(getString(R.string.keys_json_chatid));
                     addChatMembers();
                 }
@@ -321,14 +366,18 @@ public class ConnectionsFragment extends Fragment implements
         }
     }
 
+    /**
+     * Add connections to a conversation.
+     */
     private void addChatMembers() {
+        // Build the JSON message to send to the webservice
         JSONObject messageJson = new JSONObject();
 
         try {
             messageJson.put(getString(R.string.keys_json_chat_id), mNewChatId);
             //add in your member id
             String baseKey = getString(R.string.keys_json_member_id_caps);
-            String key =  baseKey + 1;
+            String key = baseKey + 1;
             messageJson.put(key, mMemberId);
 
             key = baseKey + 2;
@@ -337,17 +386,24 @@ public class ConnectionsFragment extends Fragment implements
             e.printStackTrace();
         }
 
+        // Start the asynctask
         new SendPostAsyncTask.Builder(mAddMembersUrl, messageJson)
                 .onPostExecute(this::handleAddMembersOnPost)
                 .onCancelled(this::handleError)
                 .build().execute();
     }
 
+    /**
+     * If connections are successfully added to a conversation,
+     * handle the result.
+     *
+     * @param result JSON message to parse
+     */
     private void handleAddMembersOnPost(final String result) {
         Log.d("dssd", result);
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
                 mListener.onConversationSelected(mNewChatId);
@@ -357,10 +413,16 @@ public class ConnectionsFragment extends Fragment implements
         }
     }
 
+    /**
+     * If a connection was successfully delected from the database,
+     * delete the connection from our datasets as well.
+     *
+     * @param result JSON message to parse
+     */
     private void deleteConnection(final String result) {
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
                 mMasterDataSet.remove(mDeletePosition);
@@ -377,11 +439,16 @@ public class ConnectionsFragment extends Fragment implements
         mSearchButton.setEnabled(true);
     }
 
+    /**
+     * On click for search and clear buttons.
+     *
+     * @param v the button
+     */
     @Override
     public void onClick(View v) {
         //User attempting to search
-        if(mSearchButton.getText().toString().equals(getString(R.string.button_search))) {
-            if(!mSearchText.getText().toString().equals("")) {
+        if (mSearchButton.getText().toString().equals(getString(R.string.button_search))) {
+            if (!mSearchText.getText().toString().equals("")) {
                 Log.d("dssdf", "made it");
                 mSearchButton.setEnabled(false);
                 mSearchText.setEnabled(false);
@@ -389,6 +456,7 @@ public class ConnectionsFragment extends Fragment implements
                 text = text.toLowerCase();
                 mDisplayDataSet.clear();
 
+                // Parse search results
                 for (int i = 0; i < mMasterDataSet.size(); i++) {
                     Connection c = mMasterDataSet.get(i);
                     if (c.getUserName().toLowerCase().equals(text)
@@ -405,8 +473,8 @@ public class ConnectionsFragment extends Fragment implements
                 }
 
                 mAdapter.notifyDataSetChanged();
-                if(mDisplayDataSet.size() == 0) {
-                    mSearchText.setText("No Results Found");
+                if (mDisplayDataSet.size() == 0) {
+                    mSearchText.setText(R.string.no_results);
                 }
                 mSearchButton.setText(R.string.button_clear_results);
                 mSearchButton.setEnabled(true);

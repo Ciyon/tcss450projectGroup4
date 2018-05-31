@@ -26,7 +26,7 @@ import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 
 
 /**
- * Fragment that handles a chat between users.
+ * {@link Fragment} that handles a chat between users.
  */
 public class ChatFragment extends Fragment {
 

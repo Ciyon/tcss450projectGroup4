@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -21,7 +22,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import group4.tcss450.uw.edu.tcss450project.utils.SendApiQueryAsyncTask;
 
@@ -139,16 +140,16 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     @SuppressLint("RestrictedApi")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_weather, container, false);
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        FloatingActionButton fab = Objects.requireNonNull(getActivity()).findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
         // Initialize saved location list and map
-        mSavedLocationNames = new ArrayList<String>();
-        mLocationKeyMap = new HashMap<String, String>();
+        mSavedLocationNames = new ArrayList<>();
+        mLocationKeyMap = new HashMap<>();
 
         // Initialize UI Components
         mCurrentConditionsTemp = view.findViewById(R.id.tempCurrentCondtions);
@@ -191,7 +192,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         ImageButton mCurrentLocationButton = view.findViewById(R.id.currentLocationButton);
 
         // Initialize spinner and adapter for saved locations
-        ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<>(this.getContext(),
+        ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<>(Objects.requireNonNull(this.getContext()),
                 R.layout.adapter_array_text, mSavedLocationNames);
         mSavedLocationsSpinner.setAdapter(mArrayAdapter);
 
@@ -261,24 +262,22 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_LOCATIONS: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // locations-related task you need to do.
-                } else {
+                if (grantResults.length <= 0
+                        || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                     Log.d("Permission denied", "Nothing");
 
                     //Shut down the app. In production release, you would let the user
                     //know why the app is shutting down…maybe ask for permission again?
-                    getActivity().finishAndRemoveTask();
+                    Objects.requireNonNull(getActivity()).finishAndRemoveTask();
                 }
-                return;
+                // else permission was granted, yay! Do the // locations-related task you need to do.
+
             }
             // other 'case' lines to check for other
             // permissions this app might request
@@ -291,7 +290,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     protected void startLocationUpdates() {
         // The final argument to {@code requestLocationUpdates()} is a LocationListener
         //(http://developer.android.com/reference/com/google/android/gms/location/LocationListener.html).
-        if (ActivityCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(this.getActivity()), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED) {
@@ -344,7 +343,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         System.out.println("We're connected?");
         if (mCurrentLocation == null) {
             System.out.println("Location is null");
-            if (ActivityCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+            if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(this.getActivity()), Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED
                     &&
                     ActivityCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -380,7 +379,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
         // onConnectionFailed.
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " +
@@ -418,7 +417,6 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
      * based on a search parameter entered by the user.
      */
     private void getSearchLocationKey() {
-        //TODO
         String postalcode = mSearchView.getText().toString();
 
         String[] endpoints = new String[]{getString(R.string.ep_api_locations),
@@ -437,6 +435,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     /**
      * Starts an AsyncTask to get a location name from Accuweather
      * based on a provided location key.
+     *
      * @param key The location key
      */
     private void getLocationName(String key) {
@@ -447,26 +446,6 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
                 new SendApiQueryAsyncTask.Builder(getString(R.string.ep_api_base_url), endpoints)
                         .onPostExecute(this::insertLocationInMap)
                         .onCancelled(this::handleError);
-        builder.build().execute();
-    }
-
-    /**
-     * Starts an AsyncTask to get a location name from Accuweather
-     * based on a provided location name.
-     * @param key The location key
-     */
-    private void getLocationKey(String name) {
-        String[] nameArray = name.split(",");
-        String city = nameArray[0];
-        String[] endpoints = new String[]{getString(R.string.ep_api_locations),
-                getString(R.string.ep_api_v1),
-                getString(R.string.ep_api_cities)};
-        SendApiQueryAsyncTask.Builder builder =
-                new SendApiQueryAsyncTask.Builder(getString(R.string.ep_api_base_url), endpoints)
-                        .onPostExecute(this::insertLocationInMap)
-                        .onCancelled(this::handleError);
-        builder.setmParamKey("q");
-        builder.setmParamValue(name);
         builder.build().execute();
     }
 
@@ -526,16 +505,17 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     /**
      * Parses a JSON string result and updates the one day forecast
      * UI components.
+     *
      * @param result The JSON string to be parsed
      */
     private void displayOneDayForecast(String result) {
         //parse json and display the weather
         //parse json and display the weather
-        JSONObject res = null;
-        String date = "";
-        String minTemp = "";
-        String maxTemp = "";
-        String conditions = "";
+        JSONObject res;
+        String date;
+        String minTemp;
+        String maxTemp;
+        String conditions;
         try {
             res = new JSONObject(result);
             JSONArray forecasts = res.getJSONArray("DailyForecasts");
@@ -549,8 +529,10 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             maxTemp = max.getString("Value");
             conditions = day.getString("IconPhrase");
             mOneDayDate.setText(date);
-            mOneDayMinTemp.setText(minTemp + (char) 0x00B0 + "F");
-            mOneDayMaxTemp.setText(maxTemp + (char) 0x00B0 + "F");
+            mOneDayMinTemp.setText(new StringBuilder().append(minTemp)
+                    .append((char) 0x00B0).append("F").toString());
+            mOneDayMaxTemp.setText(new StringBuilder()
+                    .append(maxTemp).append((char) 0x00B0).append("F").toString());
             mOneDayConditions.setText(conditions);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -560,6 +542,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     /**
      * Parses a JSON string result and updates the five day forecast
      * UI components.
+     *
      * @param result The JSON string to be parsed
      */
     private void displayFiveDayForecast(String result) {
@@ -651,6 +634,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     /**
      * Parses a JSON string result and updates the current conditions
      * UI components.
+     *
      * @param result The JSON string to be parsed
      */
     private void displayCurrentConditions(String result) {
@@ -673,6 +657,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     /**
      * Parses a JSON string with location information, and saves it
      * for reference
+     *
      * @param result The JSON string to be parsed.
      */
     private void insertLocationInMap(String result) {
@@ -742,6 +727,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     /**
      * Change mLocationKey, enable or disable save button, update text and weather.
+     *
      * @param locationKey
      * @param locationName
      */
@@ -750,7 +736,6 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             mLocationKey = locationKey;
             mLocationName = locationName;
             if (mSavedLocationNames.contains(locationName)) {
-                mSaveLocationButton.setEnabled(false);
                 mSaveLocationButton.setEnabled(false);
             } else {
                 mSaveLocationButton.setEnabled(true);
@@ -793,6 +778,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     /**
      * Get the user's saved locations from prefs.
+     *
      * @return a list of locations
      */
     private JSONArray getSavedLocationPrefs() {
