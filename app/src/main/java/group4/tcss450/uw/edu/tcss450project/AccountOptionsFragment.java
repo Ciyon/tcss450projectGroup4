@@ -2,18 +2,21 @@ package group4.tcss450.uw.edu.tcss450project;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.util.Objects;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * Fragment that handles account options available prior to login.
+ * <p>
  * Activities that contain this fragment must implement the
  * {@link AccountOptionsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
@@ -26,12 +29,13 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
         // Required empty public constructor
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_account_options, container, false);
+
+        // Initialize buttons and set on click listeners
         Button b = v.findViewById(R.id.resendConfirmationButton);
         b.setOnClickListener(this);
         b = v.findViewById(R.id.resetPwEmailButton);
@@ -40,7 +44,6 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
         b.setOnClickListener(this);
         return v;
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -59,9 +62,15 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
         mListener = null;
     }
 
+    /**
+     * On click method for account options buttons
+     *
+     * @param v view/ button clicked
+     */
     @Override
     public void onClick(View v) {
         if (mListener != null) {
+            // Depending on which button was clicked, perform the right action
             switch (v.getId()) {
                 case R.id.resendConfirmationButton:
                     resendEmail();
@@ -76,10 +85,14 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
         }
     }
 
+    /**
+     * Resends a confirmation email after verification of user information.
+     */
     private void resendEmail() {
-        EditText email = getActivity().findViewById(R.id.emailResend);
+        EditText email = Objects.requireNonNull(getActivity()).findViewById(R.id.emailResend);
         boolean valid = true;
 
+        // Check user information
         if (email.getText().toString().isEmpty()) {
             valid = false;
             email.setError("Empty Field!");
@@ -88,15 +101,22 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
             email.setError("Email is invalid.");
         }
 
+        // Resend the e-mail (the login activity does this)
         if (valid) {
             mListener.onResendConfirmationClick(email.getText().toString());
         }
     }
 
+    /**
+     * Sends the user a code allowing them to reset their password
+     * (the login activity does this)
+     */
     private void sendResetCode() {
-        EditText email = getActivity().findViewById(R.id.emailReset);
+        EditText email = Objects.requireNonNull(getActivity()).
+                findViewById(R.id.emailReset);
         boolean valid = true;
 
+        // Check user information
         if (email.getText().toString().isEmpty()) {
             valid = false;
             email.setError("Empty Field!");
@@ -105,20 +125,23 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
             email.setError("Email is invalid.");
         }
 
+        // Send the e-mail
         if (valid) {
             mListener.onSendResetCode(email.getText().toString());
         }
     }
 
+    /**
+     * Notifies a user if their given information doesn't pass client side checks.
+     *
+     * @param err The error
+     */
     public void setError(String err) {
-        TextView resendEmail = getView().findViewById(R.id.emailResend);
+        TextView resendEmail = Objects.requireNonNull(getView()).findViewById(R.id.emailResend);
         TextView resetEmail = getView().findViewById(R.id.emailReset);
-        if (err.contains("Email doesn't exist.") || err.contains("Email already verified."))
-        {
+        if (err.contains("Email doesn't exist.") || err.contains("Email already verified.")) {
             resendEmail.setError(err);
-        }
-        else if (err.contains("Email must be confirmed in order to reset password.") || err.contains("Email doesn't belong to any account registered."))
-        {
+        } else if (err.contains("Email must be confirmed in order to reset password.") || err.contains("Email doesn't belong to any account registered.")) {
             resetEmail.setError(err);
         }
     }
@@ -135,7 +158,9 @@ public class AccountOptionsFragment extends Fragment implements View.OnClickList
      */
     public interface OnFragmentInteractionListener {
         void onResendConfirmationClick(String email);
+
         void onSendResetCode(String email);
+
         void onPasswordCodeSubmit();
     }
 }
