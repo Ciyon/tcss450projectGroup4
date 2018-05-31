@@ -51,13 +51,13 @@
 
         <ImageButton
             android:id="@+id/chatSendButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="123dp"
+            android:layout_height="match_parent"
             android:layout_marginBottom="0dp"
             android:layout_marginEnd="0dp"
             android:layout_marginStart="0dp"
             android:layout_marginTop="0dp"
             android:contentDescription="@string/send_message"
-            android:src="@mipmap/send_round" />
+            android:src="@drawable/ic_menu_send" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
