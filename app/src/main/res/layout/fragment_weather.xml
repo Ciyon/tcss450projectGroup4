@@ -8,14 +8,11 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <ImageView
-        android:id="@+id/imageView4"
+    <ImageButton
+        android:id="@+id/imageButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleType="centerCrop"
-        android:scaleX=".3"
-        android:scaleY=".3"
-        card_view:srcCompat="@drawable/accuweatherlogo" />
+        card_view:srcCompat="@drawable/ic_accuweatherlogo" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -405,5 +402,7 @@
         </LinearLayout>
         </ScrollView>
     </android.support.v7.widget.CardView>
+
+
 
 </LinearLayout>
