@@ -159,6 +159,7 @@ public class ChatFragment extends Fragment {
                 return;
             }
             getActivity().runOnUiThread(() -> {
+                mOutputTextView.setText("");
                 for (String msg : msgs) {
                     mOutputTextView.append(msg);
                     mOutputTextView.append(System.lineSeparator());
