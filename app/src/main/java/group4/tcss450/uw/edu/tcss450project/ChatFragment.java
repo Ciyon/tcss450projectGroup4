@@ -175,8 +175,11 @@ public class ChatFragment extends Fragment {
                 e.printStackTrace();
                 return;
             }
+
+            
             // Update the text view of messages (display the conversation)
             Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                mOutputTextView.setText("");
                 for (String msg : msgs) {
                     mOutputTextView.append(msg);
                     mOutputTextView.append(System.lineSeparator());
