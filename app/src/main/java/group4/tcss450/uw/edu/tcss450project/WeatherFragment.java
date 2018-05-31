@@ -451,6 +451,26 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     }
 
     /**
+     * Starts an AsyncTask to get a location name from Accuweather
+     * based on a provided location name.
+     * @param key The location key
+     */
+    private void getLocationKey(String name) {
+        String[] nameArray = name.split(",");
+        String city = nameArray[0];
+        String[] endpoints = new String[]{getString(R.string.ep_api_locations),
+                getString(R.string.ep_api_v1),
+                getString(R.string.ep_api_cities)};
+        SendApiQueryAsyncTask.Builder builder =
+                new SendApiQueryAsyncTask.Builder(getString(R.string.ep_api_base_url), endpoints)
+                        .onPostExecute(this::insertLocationInMap)
+                        .onCancelled(this::handleError);
+        builder.setmParamKey("q");
+        builder.setmParamValue(name);
+        builder.build().execute();
+    }
+
+    /**
      * Starts an AsyncTask to get a one day forecast from Accuweather
      * based on the location key saved in mLocationKey.
      */
@@ -748,6 +768,9 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     }
 
+    /**
+     * Update the user's saved locations based on their prefs.
+     */
     private void populateSavedLocationsListAndMap() {
         JSONArray list = getSavedLocationPrefs();
         for (int i = 0; i < list.length(); i++) {
@@ -762,12 +785,16 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
                 mSavedLocationNames.add(s);
             }
             if (!(mLocationKeyMap.containsKey(s))) {
-
+                getLocationName(s);
             }
         }
 
     }
 
+    /**
+     * Get the user's saved locations from prefs.
+     * @return a list of locations
+     */
     private JSONArray getSavedLocationPrefs() {
         JSONArray list = new JSONArray();
         SharedPreferences prefs =
