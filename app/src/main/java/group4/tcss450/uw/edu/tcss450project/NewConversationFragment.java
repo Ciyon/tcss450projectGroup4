@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,25 +21,34 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import group4.tcss450.uw.edu.tcss450project.model.Connection;
 import group4.tcss450.uw.edu.tcss450project.utils.NewConversationAdapter;
 import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 
 /**
- * A simple {@link Fragment} subclass.
+ * {@link Fragment} that handles new conversation functionality
  */
-public class NewConversationFragment extends Fragment implements View.OnClickListener, NewConversationAdapter.OnConnectionSelectedInteractionListener{
+public class NewConversationFragment extends Fragment implements View.OnClickListener, NewConversationAdapter.OnConnectionSelectedInteractionListener {
     private ConversationsFragment.OnConversationViewInteractionListener mListener;
+
+    /**
+     * Recycler view and data to display connections a user can start a conversation with
+     */
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<Connection> mDataSet;
     private ArrayList<Connection> mSelectedDataSet;
     private ArrayList<Integer> mSelectedItems;
-    private Button mLoadConversationButton;
+
+    /**
+     * User's information
+     */
     private String mUsername;
     private int mMemberId;
+
+
     private String mGetConnectionsUrl;
     private String mAddMembersUrl;
     private int mNewChatId;
@@ -49,24 +59,24 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_new_conversation, container, false);
         //Hide the FAB
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        FloatingActionButton fab = Objects.requireNonNull(getActivity()).findViewById(R.id.fab);
         fab.setVisibility(View.GONE);
 
         //This may need to be tweaked
-        mLoadConversationButton = view.findViewById(R.id.createConversationButton);
+        Button mLoadConversationButton = view.findViewById(R.id.createConversationButton);
         mLoadConversationButton.setOnClickListener(this); //add this Fragment Object as the OnClickListener
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerSelectConnections);
+        mRecyclerView = view.findViewById(R.id.recyclerSelectConnections);
         mRecyclerView.setHasFixedSize(true);
 
 
         // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this.getContext());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mDataSet = new ArrayList<>();
@@ -74,7 +84,7 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
         mSelectedItems = new ArrayList<>();
 
         // specify an adapter (see also next example)
-        mAdapter = new NewConversationAdapter(mDataSet,this);
+        mAdapter = new NewConversationAdapter(mDataSet, this);
 
         setUpRequest();
         requestConnections();
@@ -99,38 +109,44 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
         mListener = null;
     }
 
+    /**
+     * On click starts an async task to start a new conversation
+     *
+     * @param v the button
+     */
     @Override
     public void onClick(View v) {
 
-        if(v.getId() == R.id.createConversationButton) {
-                //Get all selected contacts
-                ArrayList<Connection> selectedContacts = new ArrayList<>();
-                for(Integer i : mSelectedItems) {
-                    selectedContacts.add(mDataSet.get(i));
-                }
-                mSelectedDataSet.addAll(selectedContacts);
-
-                //build the web service URL
-                String sendUrl = new Uri.Builder()
-                        .scheme("https")
-                        .appendPath(getString(R.string.ep_base_url))
-                        .appendPath(getString(R.string.ep_create_chat))
-                        .build()
-                        .toString();
-
-                JSONObject messageJson = new JSONObject();
-                try {
-                    messageJson.put(getString(R.string.keys_json_username), mUsername);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                new SendPostAsyncTask.Builder(sendUrl, messageJson)
-                        .onPostExecute(this::handleCreateConversationOnPost)
-                        .onCancelled(this::handleServiceError)
-                        .build().execute();
+        if (v.getId() == R.id.createConversationButton) {
+            //Get all selected contacts
+            ArrayList<Connection> selectedContacts = new ArrayList<>();
+            for (Integer i : mSelectedItems) {
+                selectedContacts.add(mDataSet.get(i));
             }
+            mSelectedDataSet.addAll(selectedContacts);
+
+            //build the web service URL
+            String sendUrl = new Uri.Builder()
+                    .scheme("https")
+                    .appendPath(getString(R.string.ep_base_url))
+                    .appendPath(getString(R.string.ep_create_chat))
+                    .build()
+                    .toString();
+
+            JSONObject messageJson = new JSONObject();
+            try {
+                messageJson.put(getString(R.string.keys_json_username), mUsername);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            // Start the async task
+            new SendPostAsyncTask.Builder(sendUrl, messageJson)
+                    .onPostExecute(this::handleCreateConversationOnPost)
+                    .onCancelled(this::handleServiceError)
+                    .build().execute();
+        }
 
     }
 
@@ -139,13 +155,18 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
         Log.d("Load Fail", result);
     }
 
+    /**
+     * Handles result of creating a new conversation
+     *
+     * @param result JSON message to parse
+     */
     private void handleCreateConversationOnPost(final String result) {
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
-                if(res.has(getString(R.string.keys_json_chatid))){
+                if (res.has(getString(R.string.keys_json_chatid))) {
                     mNewChatId = res.getInt(getString(R.string.keys_json_chatid));
                     Log.d("SUCCESS", Integer.toString(mNewChatId));
                     addChatMembers();
@@ -156,6 +177,9 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
         }
     }
 
+    /**
+     * Starts a {@link SendPostAsyncTask} to add members to a conversation
+     */
     private void addChatMembers() {
         JSONObject messageJson = new JSONObject();
 
@@ -164,10 +188,10 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
             int count = 1;
             //add in your member id
             String baseKey = getString(R.string.keys_json_member_id_caps);
-            String key =  baseKey + count;
+            String key = baseKey + count;
             messageJson.put(key, mMemberId);
             count++;
-            for(Connection c : mSelectedDataSet) {
+            for (Connection c : mSelectedDataSet) {
                 key = baseKey + count;
                 messageJson.put(key, c.getId());
                 count++;
@@ -183,13 +207,23 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
                 .build().execute();
     }
 
+    /**
+     * Handle the result of adding members
+     *
+     * @param result JSON message
+     */
     private void handleAddMembersOnPost(final String result) {
+        // mNewChatId was prevously saved
         mListener.onConversationSelected(mNewChatId);
     }
 
+    /**
+     * Set up urls to make requests to the webservice
+     */
     private void setUpRequest() {
+        // Get the user's username and memberid
         SharedPreferences prefs =
-                getActivity().getSharedPreferences(
+                Objects.requireNonNull(getActivity()).getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
         if (!prefs.contains(getString(R.string.keys_prefs_username))) {
@@ -216,6 +250,9 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
                 .toString();
     }
 
+    /**
+     * Start a {@link SendPostAsyncTask} to get the user's connections
+     */
     private void requestConnections() {
         JSONObject messageJson = new JSONObject();
 
@@ -233,20 +270,26 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
     }
 
     private void handleError(final String msg) {
-        Log.e("Connections ERROR!!!", msg.toString());
+        Log.e("Connections ERROR!!!", msg);
     }
 
+    /**
+     * Make the list of connections a user can make a new conversation with
+     *
+     * @param result JSON to parse
+     */
     private void createConnectionsList(final String result) {
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
                 ArrayList<Connection> connections = new ArrayList<>();
 
-                if(res.has(getString(R.string.keys_json_result))){
+                if (res.has(getString(R.string.keys_json_result))) {
                     JSONArray members = res.getJSONArray(getString(R.string.keys_json_result));
 
+                    // Parse each entry in the connections list
                     for (int i = 0; i < members.length(); i++) {
                         JSONObject member = members.getJSONObject(i);
                         //there should be checks here to make sure the object actually has these
@@ -268,6 +311,11 @@ public class NewConversationFragment extends Fragment implements View.OnClickLis
         }
     }
 
+    /**
+     * Listener for the connections recyclerview
+     *
+     * @param selectedItems item that was selected
+     */
     @Override
     public void onConnectionSelected(ArrayList<Integer> selectedItems) {
         mSelectedItems = selectedItems;

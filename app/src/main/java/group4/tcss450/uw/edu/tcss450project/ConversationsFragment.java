@@ -1,10 +1,12 @@
 package group4.tcss450.uw.edu.tcss450project;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,8 +24,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Objects;
 
 import group4.tcss450.uw.edu.tcss450project.model.Conversation;
 import group4.tcss450.uw.edu.tcss450project.utils.ConversationsAdapter;
@@ -35,43 +36,41 @@ import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
  */
 public class ConversationsFragment extends Fragment implements ConversationsAdapter.OnConversationDeleteInteractionListener {
     private OnConversationViewInteractionListener mListener;
-    private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
     private String mUsername;
     private String mSendUrl;
     private String mDeleteUrl;
-    private ArrayList<Conversation> mDataset;
+    private ArrayList<Conversation> mDataSet;
     private int mDeletePosition;
     private ProgressBar mProgressBar;
 
     public ConversationsFragment() {
         // Required empty public constructor
     }
-    
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_conversations, container, false);
         //Make the FAB appear on this fragment
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        FloatingActionButton fab = Objects.requireNonNull(getActivity()).findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
         //Initialize recycler view with an empty dataset
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerSelectConversations);
+        RecyclerView mRecyclerView = view.findViewById(R.id.recyclerSelectConversations);
         mRecyclerView.setHasFixedSize(true);
 
         mProgressBar = view.findViewById(R.id.progressBarConversations);
 
         // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this.getContext());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         //Start with an empty dataset.
-        mDataset = new ArrayList();
-        mAdapter = new ConversationsAdapter(mDataset, mListener, this);
+        mDataSet = new ArrayList<>();
+        mAdapter = new ConversationsAdapter(mDataSet, mListener, this);
 
-        setUpRequest();
+        setUpRequestUrls();
         requestConversationsList();
 
         mRecyclerView.setAdapter(mAdapter);
@@ -106,9 +105,14 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
 
     }
 
-    private void setUpRequest() {
+    /**
+     * Sets up parameters/urls for making a connection request,
+     * removing a connection, creating a new chat with a connection,
+     * and adding multiple connections to a chat.
+     */
+    private void setUpRequestUrls() {
         SharedPreferences prefs =
-                getActivity().getSharedPreferences(
+                Objects.requireNonNull(getActivity()).getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
         if (!prefs.contains(getString(R.string.keys_prefs_username))) {
@@ -130,10 +134,14 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
                 .toString();
     }
 
+    /**
+     * Start an async task to get the user's list of conversations.
+     */
     private void requestConversationsList() {
         mProgressBar.setVisibility(View.VISIBLE);
-        JSONObject messageJson = new JSONObject();
 
+        // Build the JSON message
+        JSONObject messageJson = new JSONObject();
         try {
             messageJson.put(getString(R.string.keys_json_username), mUsername);
 
@@ -141,6 +149,7 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
             e.printStackTrace();
         }
 
+        // Start async task
         new SendPostAsyncTask.Builder(mSendUrl, messageJson)
                 .onPostExecute(this::createConversationsList)
                 .onCancelled(this::handleError)
@@ -150,9 +159,14 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
 
     private void handleError(final String msg) {
         mProgressBar.setVisibility(View.GONE);
-        Log.e("Conversation ERROR!!!", msg.toString());
+        Log.e("Conversation ERROR!!!", msg);
     }
 
+    /**
+     * Sets up and formats the user's list of conversations
+     *
+     * @param result JSON result to parse
+     */
     private void createConversationsList(final String result) {
         try {
             mProgressBar.setVisibility(View.GONE);
@@ -160,8 +174,7 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
             if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
-
-                Map<Integer, ArrayList<String>> data = new HashMap<>();
+                @SuppressLint("UseSparseArrays") Map<Integer, ArrayList<String>> data = new HashMap<>();
                 if (res.has(getString(R.string.keys_json_chat_information))) {
                     JSONArray chats = res.getJSONArray(getString(R.string.keys_json_chat_information));
                     int chatId;
@@ -187,7 +200,7 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
                     }
                     //conversations.add(new Conversation(chatId,null));
                     //Update the recycler view
-                    mDataset.addAll(conversations);
+                    mDataSet.addAll(conversations);
                     mAdapter.notifyDataSetChanged();
                 }
             }
@@ -196,11 +209,16 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
         }
     }
 
+    /**
+     * Starts a {@link SendPostAsyncTask} to delete a conversation.
+     *
+     * @param conversationID the conversation to be deleted
+     * @param position       the conversation's position in the recycler view
+     */
     @Override
     public void onConversationDeleted(int conversationID, int position) {
         mDeletePosition = position;
         JSONObject messageJson = new JSONObject();
-
         try {
             messageJson.put(getString(R.string.keys_json_username), mUsername);
             messageJson.put(getString(R.string.keys_json_chat_id), conversationID);
@@ -208,24 +226,26 @@ public class ConversationsFragment extends Fragment implements ConversationsAdap
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         new SendPostAsyncTask.Builder(mDeleteUrl, messageJson)
                 .onPostExecute(this::deleteConversation)
                 .onCancelled(this::handleError)
                 .build().execute();
-
     }
 
+    /**
+     * If the webservice has successfully deleted a conversation, remove
+     * it from our dataset as well.
+     *
+     * @param result
+     */
     private void deleteConversation(final String result) {
         try {
             JSONObject res = new JSONObject(result);
             if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
-
-                mDataset.remove(mDeletePosition);
+                mDataSet.remove(mDeletePosition);
                 mAdapter.notifyItemRemoved(mDeletePosition);
-                mAdapter.notifyItemRangeChanged(mDeletePosition, mDataset.size() - mDeletePosition);
-
+                mAdapter.notifyItemRangeChanged(mDeletePosition, mDataSet.size() - mDeletePosition);
             }
         } catch (JSONException e) {
             e.printStackTrace();

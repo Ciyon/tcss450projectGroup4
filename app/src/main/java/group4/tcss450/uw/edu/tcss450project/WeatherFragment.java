@@ -54,8 +54,6 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         View.OnClickListener,
         AdapterView.OnItemSelectedListener {
 
-    /*====== CONSTANTS FOR DEVICE LOCATION =====*/
-
     private static final String TAG = "MyLocationsActivity";
 
     /**
@@ -72,9 +70,6 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
 
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
-
-
-    /* ===== INSTANCE FIELDS ===== */
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -287,6 +282,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     /**
      * Requests location updates from the FusedLocationApi.
      */
+    @SuppressWarnings("deprecation")
     protected void startLocationUpdates() {
         // The final argument to {@code requestLocationUpdates()} is a LocationListener
         //(http://developer.android.com/reference/com/google/android/gms/location/LocationListener.html).
@@ -302,6 +298,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     /**
      * Removes location updates from the FusedLocationApi.
      */
+    @SuppressWarnings("deprecation")
     protected void stopLocationUpdates() {
         // It is a good practice to remove location requests when the activity is in a paused or
         // stopped state. Doing so helps battery performance and is especially
@@ -328,6 +325,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         super.onStop();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         // If the initial location was never previously requested, we use
@@ -508,6 +506,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
      *
      * @param result The JSON string to be parsed
      */
+    @SuppressLint("SetTextI18n")
     private void displayOneDayForecast(String result) {
         //parse json and display the weather
         //parse json and display the weather
@@ -529,10 +528,8 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             maxTemp = max.getString("Value");
             conditions = day.getString("IconPhrase");
             mOneDayDate.setText(date);
-            mOneDayMinTemp.setText(new StringBuilder().append(minTemp)
-                    .append((char) 0x00B0).append("F").toString());
-            mOneDayMaxTemp.setText(new StringBuilder()
-                    .append(maxTemp).append((char) 0x00B0).append("F").toString());
+            mOneDayMinTemp.setText(minTemp + (char) 0x00B0 + "F");
+            mOneDayMaxTemp.setText(maxTemp + (char) 0x00B0 + "F");
             mOneDayConditions.setText(conditions);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -545,15 +542,17 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
      *
      * @param result The JSON string to be parsed
      */
+    @SuppressLint("SetTextI18n")
     private void displayFiveDayForecast(String result) {
         //parse json and display the weather
         //parse json and display the weather
-        JSONObject res = null;
-        String date = "";
-        String minTemp = "";
-        String maxTemp = "";
-        String conditions = "";
+        JSONObject res;
+        String date;
+        String minTemp;
+        String maxTemp;
+        String conditions;
         try {
+            // Parse JSON and update UI components
             res = new JSONObject(result);
             JSONArray forecasts = res.getJSONArray("DailyForecasts");
             JSONObject forecastObj0 = forecasts.getJSONObject(0);
@@ -622,8 +621,10 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             maxTemp = max4.getString("Value");
             conditions = day4.getString("IconPhrase");
             mDayFiveDate.setText(date);
-            mDayFiveMinTemp.setText(minTemp + (char) 0x00B0 + "F");
-            mDayFiveMaxTemp.setText(maxTemp + (char) 0x00B0 + "F");
+            mDayFiveMinTemp.setText(minTemp +
+                    (char) 0x00B0 + "F");
+            mDayFiveMaxTemp.setText(maxTemp +
+                    (char) 0x00B0 + "F");
             mDayFiveConditions.setText(conditions);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -637,10 +638,11 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
      *
      * @param result The JSON string to be parsed
      */
+    @SuppressLint("SetTextI18n")
     private void displayCurrentConditions(String result) {
         //parse json and display the weather
-        JSONArray resArray = null;
-        int currentTemp = 0;
+        JSONArray resArray;
+        int currentTemp;
         try {
             resArray = new JSONArray(result);
             JSONObject resObj = resArray.getJSONObject(0);
@@ -660,8 +662,9 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
      *
      * @param result The JSON string to be parsed.
      */
+    @SuppressLint("SetTextI18n")
     private void insertLocationInMap(String result) {
-        JSONObject res = null;
+        JSONObject res;
         String locationKey = "";
         String cityName = "";
         String stateName = "";
@@ -676,11 +679,12 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             e.printStackTrace();
         }
         mLocationKeyMap.put(cityName + ", " + stateName, locationKey);
-        if (mLocationKey == locationKey) {
+        if (mLocationKey.equals(locationKey)) {
             mCurrentLocationText.setText(cityName + ", " + stateName);
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void getLocationKeyFromJSONArray(String result) {
         //parse json and display the weather
         JSONObject resObj;
@@ -704,6 +708,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         selectLocationKey(locationKey, cityName + ", " + stateName);
     }
 
+    @SuppressLint("SetTextI18n")
     private void getLocationKeyFromJSONObject(String result) {
         //parse json and display the weather
         JSONObject resObj;
@@ -728,11 +733,11 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     /**
      * Change mLocationKey, enable or disable save button, update text and weather.
      *
-     * @param locationKey
-     * @param locationName
+     * @param locationKey  the location key
+     * @param locationName the location name
      */
     private void selectLocationKey(String locationKey, String locationName) {
-        if (locationKey != "" && locationName != "") {
+        if (!Objects.equals(locationKey, "") && !Objects.equals(locationName, "")) {
             mLocationKey = locationKey;
             mLocationName = locationName;
             if (mSavedLocationNames.contains(locationName)) {
@@ -743,7 +748,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             mCurrentLocationText.setText(locationName);
             updateWeather();
         } else {
-            Context context = this.getActivity().getApplicationContext();
+            Context context = Objects.requireNonNull(this.getActivity()).getApplicationContext();
             CharSequence text = "No location";
             int duration = Toast.LENGTH_SHORT;
 
@@ -784,12 +789,11 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     private JSONArray getSavedLocationPrefs() {
         JSONArray list = new JSONArray();
         SharedPreferences prefs =
-                getActivity().getSharedPreferences(
+                Objects.requireNonNull(getActivity()).getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
         // add the location to the JSONArray
         try {
-            String temp = prefs.getString(getString(R.string.keys_prefs_saved_locations), "");
             list = new JSONArray(prefs.getString(getString(R.string.keys_prefs_saved_locations),
                     ""));
         } catch (JSONException e) {
@@ -800,20 +804,28 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     }
 
     private void handleError(final String msg) {
-        Log.e("Connections ERROR!!!", msg.toString());
+        Log.e("Connections ERROR!!!", msg);
     }
 
+    /**
+     * Update all weather displays
+     */
     private void updateWeather() {
         getCurrentConditions();
         getFiveDayForecast();
         getOneDayForecast();
     }
 
+    /**
+     * Listener for current location button
+     *
+     * @param view the button
+     */
     public void onClickCurrent(View view) {
         if (mCurrentLocation != null) {
             getCurrentLocationKey();
         } else {
-            Context context = this.getActivity().getApplicationContext();
+            Context context = Objects.requireNonNull(this.getActivity()).getApplicationContext();
             CharSequence text = "Current location not available";
             int duration = Toast.LENGTH_SHORT;
 
@@ -822,12 +834,16 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         }
     }
 
+    /**
+     * Listener for save button
+     *
+     * @param view the button
+     */
     public void onClickSave(View view) {
-
 
         // get shared prefs
         SharedPreferences prefs =
-                getActivity().getSharedPreferences(
+                Objects.requireNonNull(getActivity()).getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
         // add the location and key to the JSONArray
@@ -835,7 +851,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             String arr = prefs.getString(getString(R.string.keys_prefs_saved_locations),
                     "");
             JSONArray list;
-            if (arr == "") {
+            if (arr.equals("")) {
                 list = new JSONArray();
             } else {
                 list = new JSONArray(arr);
@@ -860,23 +876,22 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     }
 
 
+    /**
+     * Listener for spinner items
+     *
+     * @param parent   Spinner adapter
+     * @param view     item selected
+     * @param position position of item selected
+     * @param id       id of item selected
+     */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String name = (String) parent.getAdapter().getItem(position);
         selectLocationKey(mLocationKeyMap.get(name), name);
-        System.out.println("Is this working?");
-        Context context = this.getActivity().getApplicationContext();
-        CharSequence text = "Getting location...";
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
-
-
 }

@@ -1,17 +1,16 @@
 package group4.tcss450.uw.edu.tcss450project;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,26 +21,21 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-
-import group4.tcss450.uw.edu.tcss450project.model.Connection;
-import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
-
+/**
+ * {@link AppCompatActivity} that handles fragments once a user has logged in.
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         SettingsFragment.OnFragmentInteractionListener,
-        ConversationsFragment.OnConversationViewInteractionListener{
+        ConversationsFragment.OnConversationViewInteractionListener {
 
-    private String mUsername;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setUserTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_drawer);
 
+        // Get the username from preferences
         SharedPreferences prefs =
                 getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
@@ -49,25 +43,20 @@ public class MainActivity extends AppCompatActivity
 
         if (!prefs.getBoolean(getString(R.string.keys_prefs_stay_logged_in),
                 false)) {
-            mUsername = getIntent().getStringExtra("username");
+            String mUsername = getIntent().getStringExtra("username");
             prefs.edit().putString("username", mUsername)
                     .apply();
         }
 
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // Initialize UI components and set on click listeners
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_chat_bubble);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new NewConversationFragment());
-            }
-        });
+        fab.setOnClickListener(view -> loadFragment(new NewConversationFragment()));
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -81,11 +70,11 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         });
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         //setContentView(R.layout.content_main);
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             if (findViewById(R.id.fragmentContainer2) != null) {
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragmentContainer2, new HomeFragment())
@@ -97,7 +86,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -131,7 +120,7 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         // Handle navigation view item clicks here.
         int id = item.getItemId();
@@ -148,16 +137,16 @@ public class MainActivity extends AppCompatActivity
             loadFragment(new RequestsFragment());
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    @SuppressLint("CommitPrefEdits")
     private void onLogout() {
-        SharedPreferences prefs =
-                getSharedPreferences(
-                        getString(R.string.keys_shared_prefs),
-                        Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(
+                getString(R.string.keys_shared_prefs),
+                Context.MODE_PRIVATE);
         //This should remove all saved user data, we will need to save the selected theme though
         prefs.edit().clear();
         //prefs.edit().remove(getString(R.string.keys_prefs_username));
@@ -173,16 +162,20 @@ public class MainActivity extends AppCompatActivity
 
     private void loadFragment(Fragment frag) {
         FragmentTransaction transaction = getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.fragmentContainer2, frag)
-                            .addToBackStack(null);
+                .beginTransaction()
+                .replace(R.id.fragmentContainer2, frag)
+                .addToBackStack(null);
 
 
         // Commit the transaction
         transaction.commit();
     }
 
-
+    /**
+     * Update the user's layout theme preference
+     *
+     * @param choice the theme choice
+     */
     @Override
     public void onSettingsUpdate(int choice) {
         SharedPreferences prefs =
@@ -202,6 +195,9 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Change the theme of the layout
+     */
     private void setUserTheme() {
 
         SharedPreferences prefs =
@@ -209,7 +205,7 @@ public class MainActivity extends AppCompatActivity
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
         int theme = prefs.getInt(getString(R.string.keys_prefs_theme), 1);
-        switch(theme) {
+        switch (theme) {
             case 1:
                 setTheme(R.style.AppTheme_NoActionBar);
                 break;
@@ -226,6 +222,9 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Change the drawer color according to the user's preference
+     */
     private void setDrawerColor() {
         LinearLayout t = findViewById(R.id.actionBarStuff);
         SharedPreferences prefs =
@@ -233,7 +232,7 @@ public class MainActivity extends AppCompatActivity
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
         int theme = prefs.getInt(getString(R.string.keys_prefs_theme), 1);
-        switch(theme) {
+        switch (theme) {
             case 2:
                 t.setBackgroundColor(Color.rgb(216, 27, 96));
                 break;
@@ -246,6 +245,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Take the user to the chat fragment when a conversation is selected
+     *
+     * @param conversationID the id of the conversation
+     */
     @Override
     public void onConversationSelected(int conversationID) {
         ChatFragment chatFrag = new ChatFragment();

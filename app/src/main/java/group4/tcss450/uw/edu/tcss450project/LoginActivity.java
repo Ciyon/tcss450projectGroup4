@@ -4,16 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.CheckBox;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -22,10 +20,14 @@ import org.json.JSONObject;
 import group4.tcss450.uw.edu.tcss450project.model.Credentials;
 import group4.tcss450.uw.edu.tcss450project.utils.SendPostAsyncTask;
 
+/**
+ * {@link AppCompatActivity} that manages login and registration functionality and fragments
+ */
 public class LoginActivity extends AppCompatActivity implements LoginFragment.OnFragmentInteractionListener,
         RegisterFragment.OnFragmentInteractionListener, AccountOptionsFragment.OnFragmentInteractionListener, ResetPasswordFragment.OnFragmentInteractionListener {
 
     private Credentials mCredentials;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //No user theme should get set here, since no user is logged in with their theme
@@ -39,8 +41,10 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                         getSharedPreferences(
                                 getString(R.string.keys_shared_prefs),
                                 Context.MODE_PRIVATE);
+                // Check to see if the user has checked stay logged in on a previouc login
                 if (prefs.getBoolean(getString(R.string.keys_prefs_stay_logged_in),
                         false)) {
+                    // if they have, skip login
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
@@ -55,6 +59,12 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
 
     }
 
+    /**
+     * Inflates the layout for the options action bar
+     *
+     * @param menu the menu
+     * @return on success
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -62,6 +72,12 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         return true;
     }
 
+    /**
+     * Handles selection of action bar items
+     *
+     * @param item action bar item
+     * @return true if the item is selected, false otherwise
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -83,6 +99,10 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Adds the register fragment to the fragment container, takes
+     * the user to the register page.
+     */
     @Override
     public void onRegisterClicked() {
         FragmentTransaction transaction = getSupportFragmentManager()
@@ -94,7 +114,11 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         transaction.commit();
     }
 
-
+    /**
+     * Starts a {@link SendPostAsyncTask} to make a login attempt.
+     *
+     * @param credentials The user's login credentials
+     */
     @Override
     public void onLoginAttempt(Credentials credentials) {
         //build the web service URL
@@ -139,11 +163,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
     }
 
     @Override
-    public void onResendConfirmationClick(String email)
-    {
-        AccountOptionsFragment frag =
-                (AccountOptionsFragment) getSupportFragmentManager()
-                        .findFragmentByTag(getString(R.string.keys_fragment_account_options));
+    public void onResendConfirmationClick(String email) {
         //build the web service URL
         Uri uri = new Uri.Builder()
                 .scheme("https")
@@ -158,15 +178,17 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
             Log.wtf("RESEND EMAIL", "Error creating JSON: " + e.getMessage());
         }
         //instantiate and execute the AsyncTask.
-        //Feel free to add a handler for onPreExecution so that a progress bar
-        //is displayed or maybe disable buttons. You would need a method in
-        //LoginFragment to perform this.
         new SendPostAsyncTask.Builder(uri.toString(), msg)
                 .onPostExecute(this::handleResendEmailOnPost)
                 .onCancelled(this::handleErrorsInTask)
                 .build().execute();
     }
 
+    /**
+     * Start an {@link SendPostAsyncTask} to send a reset code to the user
+     *
+     * @param email the user's email
+     */
     @Override
     public void onSendResetCode(String email) {
         //build the web service URL
@@ -183,15 +205,15 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
             Log.wtf("RESET PASSWORD", "Error creating JSON: " + e.getMessage());
         }
         //instantiate and execute the AsyncTask.
-        //Feel free to add a handler for onPreExecution so that a progress bar
-        //is displayed or maybe disable buttons. You would need a method in
-        //LoginFragment to perform this.
         new SendPostAsyncTask.Builder(uri.toString(), msg)
                 .onPostExecute(this::handleResetPasswordOnPost)
                 .onCancelled(this::handleErrorsInTask)
                 .build().execute();
     }
 
+    /**
+     * Takes the user to the reset password fragment.
+     */
     @Override
     public void onPasswordCodeSubmit() {
         FragmentTransaction transaction = getSupportFragmentManager()
@@ -203,6 +225,13 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         transaction.commit();
     }
 
+    /**
+     * Start a {@link SendPostAsyncTask} to reset a user's password.
+     *
+     * @param password the user's new password
+     * @param code     the password code
+     * @param email    the user's email
+     */
     @Override
     public void onSubmitPassword(Editable password, String code, String email) {
 
@@ -231,7 +260,9 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                 .build().execute();
     }
 
-
+    /**
+     * Sets the user's preferences to indicate they checked stay logged in.
+     */
     private void checkStayLoggedIn() {
         if (((CheckBox) findViewById(R.id.logCheckBox)).isChecked()) {
             SharedPreferences prefs =
@@ -271,7 +302,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
-                if(resultsJSON.has(getString(R.string.keys_json_member_id))) {
+                if (resultsJSON.has(getString(R.string.keys_json_member_id))) {
                     int id = resultsJSON.getInt(getString(R.string.keys_json_member_id));
                     SharedPreferences prefs =
                             getSharedPreferences(
@@ -305,8 +336,14 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         }
     }
 
+    /**
+     * Handle the registration of a user if the webservice was successful in registering.
+     *
+     * @param result JSON message to parse
+     */
     private void handleRegisterOnPost(String result) {
         try {
+            // Parse the JSON
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
@@ -339,6 +376,11 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         }
     }
 
+    /**
+     * Handle resend e-mail if the webservice call was successful.
+     *
+     * @param result JSON message to parse
+     */
     private void handleResendEmailOnPost(String result) {
         try {
             JSONObject resultsJSON = new JSONObject(result);
@@ -372,13 +414,20 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         }
     }
 
+    /**
+     * Handle resetting the password if the webservice call was successful.
+     *
+     * @param result JSON message to parse
+     */
     private void handleResetPasswordOnPost(String result) {
         try {
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
             if (success) {
+                // Notify the user that the e-mail has been sent
                 Toast.makeText(this,
-                        "Password reset code email sent!\nPlease enter the code on this page within 24 hours to reset your password.",
+                        "Password reset code email sent!\nPlease enter " +
+                                "the code on this page within 24 hours to reset your password.",
                         Toast.LENGTH_LONG).show();
 
                 FragmentTransaction transaction = getSupportFragmentManager()
@@ -406,10 +455,16 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
         }
     }
 
+    /**
+     * If passwords reset was successful on the webserver, notifies the user.
+     *
+     * @param result JSON message to parse
+     */
     private void handleSubmitPasswordOnPost(String result) {
         try {
             JSONObject resultsJSON = new JSONObject(result);
             boolean success = resultsJSON.getBoolean("success");
+            // Tell the user password reset was successful
             if (success) {
                 Toast.makeText(this,
                         "Password has been reset.",
@@ -422,9 +477,7 @@ public class LoginActivity extends AppCompatActivity implements LoginFragment.On
                 // Commit the transaction
                 transaction.commit();
 
-            }
-            else
-            {
+            } else {
                 ResetPasswordFragment frag =
                         (ResetPasswordFragment) getSupportFragmentManager()
                                 .findFragmentByTag(getString(R.string.keys_fragment_reset_password));

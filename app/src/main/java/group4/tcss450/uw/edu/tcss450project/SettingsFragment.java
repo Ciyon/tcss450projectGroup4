@@ -4,16 +4,18 @@ package group4.tcss450.uw.edu.tcss450project;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.RadioButton;
+
+import java.util.Objects;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * {@link Fragment} handles user settings
  */
 public class SettingsFragment extends Fragment {
     private SettingsFragment.OnFragmentInteractionListener mListener;
@@ -24,40 +26,29 @@ public class SettingsFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         SharedPreferences prefs =
-        getActivity().getSharedPreferences(
-                getString(R.string.keys_shared_prefs),
-                Context.MODE_PRIVATE);
+                Objects.requireNonNull(getActivity()).getSharedPreferences(
+                        getString(R.string.keys_shared_prefs),
+                        Context.MODE_PRIVATE);
         int theme = prefs.getInt(getString(R.string.keys_prefs_theme), 1);
         // Inflate the layout for this fragment
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_settings, container, false);
-        RadioButton rb = (RadioButton) v.findViewById(R.id.radioTheme1);
-        rb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onRadioColorClicked(view);
-            }
-        });
-        if(theme == 1) rb.toggle();
-        rb = (RadioButton) v.findViewById(R.id.radioTheme2);
-        rb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onRadioColorClicked(view);
-            }
-        });
-        if(theme == 2) rb.toggle();
-        rb = (RadioButton) v.findViewById(R.id.radioTheme3);
-        rb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onRadioColorClicked(view);
-            }
-        });
-        if(theme == 3) rb.toggle();
+
+        // Initialize UI components
+        RadioButton rb = v.findViewById(R.id.radioTheme1);
+        rb.setOnClickListener(this::onRadioColorClicked);
+
+        if (theme == 1) rb.toggle();
+        rb = v.findViewById(R.id.radioTheme2);
+        rb.setOnClickListener(this::onRadioColorClicked);
+
+        if (theme == 2) rb.toggle();
+        rb = v.findViewById(R.id.radioTheme3);
+        rb.setOnClickListener(this::onRadioColorClicked);
+        if (theme == 3) rb.toggle();
         return v;
     }
 
@@ -78,29 +69,28 @@ public class SettingsFragment extends Fragment {
         mListener = null;
     }
 
-
-
+    /**
+     * Listener for layout radio buttons
+     *
+     * @param view the button
+     */
     public void onRadioColorClicked(View view) {
         boolean checked = ((RadioButton) view).isChecked();
         // Check which radio button was clicked
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.radioTheme1:
                 if (checked)
                     mListener.onSettingsUpdate(1);
                 break;
             case R.id.radioTheme2:
                 if (checked)
-                   mListener.onSettingsUpdate(2);
+                    mListener.onSettingsUpdate(2);
                 break;
             case R.id.radioTheme3:
-                if(checked)
+                if (checked)
                     mListener.onSettingsUpdate(3);
                 break;
         }
-    }
-
-    private void showColor(int choice) {
-
     }
 
     /**

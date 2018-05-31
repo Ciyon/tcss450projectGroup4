@@ -3,6 +3,7 @@ package group4.tcss450.uw.edu.tcss450project;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.util.Objects;
 
 import group4.tcss450.uw.edu.tcss450project.model.Credentials;
 
@@ -32,7 +35,7 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_login, container, false);
@@ -40,6 +43,7 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
         mLoginButton = v.findViewById(R.id.loginButton);
         mLoginButton.setOnClickListener(this); //add this Fragment Object as the OnClickListener
 
+        // Initialize UI components
         Button b = v.findViewById(R.id.registerButton);
         b.setOnClickListener(this);
 
@@ -74,6 +78,10 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
         mListener = null;
     }
 
+    /**
+     * On click for login button and register button
+     * @param v the button
+     */
     @Override
     public void onClick(View v) {
 
@@ -92,10 +100,12 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
 
     }
 
-    //Performs the client side checks for login, will set errors for empty fields
-    //and for any password < 5 characters, which cannot possibly be valid
+    /**
+     * Performs the client side checks for login, will set errors for empty fields
+     * and for any password < 5 characters, which cannot possibly be valid
+     */
     private void login() {
-        EditText username = getActivity().findViewById(R.id.usernameLogin);
+        EditText username = Objects.requireNonNull(getActivity()).findViewById(R.id.usernameLogin);
         EditText password = getActivity().findViewById(R.id.passwordEdit);
         String un = username.getText().toString();
         boolean valid = true;
@@ -134,7 +144,7 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
     public void setError(String err) {
         mProgressBar.setVisibility(View.GONE);
         mLoginButton.setEnabled(true);
-        TextView username = getView().findViewById(R.id.usernameLogin);
+        TextView username = Objects.requireNonNull(getView()).findViewById(R.id.usernameLogin);
         TextView pass = getView().findViewById(R.id.passwordEdit);
         username.setError(null);
         pass.setError(null);
@@ -159,7 +169,6 @@ public class LoginFragment extends android.support.v4.app.Fragment implements Vi
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onLoginAttempt(Credentials credentials);
         void onRegisterClicked();
     }

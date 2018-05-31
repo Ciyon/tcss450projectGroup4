@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,8 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import group4.tcss450.uw.edu.tcss450project.model.Connection;
 import group4.tcss450.uw.edu.tcss450project.utils.PendingRequestsAdapter;
@@ -32,22 +33,25 @@ import group4.tcss450.uw.edu.tcss450project.utils.SentRequestsAdapter;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * {@link Fragment} handles request functionality
  */
 public class RequestsFragment extends Fragment implements PendingRequestsAdapter.OnPendingRequestsAdapterInteractionListener,
-                                                        View.OnClickListener {
-    private RecyclerView mPendingRecyclerView;
-    private LinearLayoutManager mPendingLayoutManager;
+        View.OnClickListener {
     private PendingRequestsAdapter mPendingAdapter;
     private ArrayList<Connection> mPendingDataSet;
 
-    private RecyclerView mSentRecyclerView;
-    private LinearLayoutManager mSentLayoutManager;
     private SentRequestsAdapter mSentAdapter;
     private ArrayList<Connection> mSentDataSet;
     private ArrayAdapter<String> mSearchAdapter;
     private List<String> mSearchDataSet;
 
+    private int mPendingAcceptPosition;
+    private int mPendingDeletePosition;
+    private int mSentDeletePosition;
+
+    /*
+     * UI Components
+     */
     private String mUsername;
     private int mMemberId;
     private String mGetReceivedUrl;
@@ -56,11 +60,6 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
     private String mDeleteUrl;
     private String mSendRequestUrl;
     private String mGetUnconnectedUrl;
-
-    private int mPendingAcceptPosition;
-    private int mPendingDeletePosition;
-    private int mSentDeletePosition;
-
     private AutoCompleteTextView mConnectionSearchText;
     private Button mRequestConnectionButton;
 
@@ -70,16 +69,17 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_requests, container, false);
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        FloatingActionButton fab = Objects.requireNonNull(getActivity()).findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
+        // Initialize data set and ui components
         mSearchDataSet = new ArrayList<>();
         mSearchAdapter =
-                new ArrayAdapter<String>(getActivity(),
+                new ArrayAdapter<>(getActivity(),
                         android.R.layout.simple_dropdown_item_1line,
                         mSearchDataSet);
         mConnectionSearchText = view.findViewById(R.id.searchContactEdit);
@@ -90,13 +90,14 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         mRequestConnectionButton.setOnClickListener(this);
         mRequestConnectionButton.setEnabled(false);
 
+        // Set up urls
         setUpRequests();
-
         requestUnconnectedMembers();
 
-        mPendingRecyclerView = view.findViewById(R.id.recyclerPendingConnections);
+        // Initialize recycler views
+        RecyclerView mPendingRecyclerView = view.findViewById(R.id.recyclerPendingConnections);
         // size should stay the same regardless of data
-        mPendingLayoutManager = new LinearLayoutManager(this.getContext());
+        LinearLayoutManager mPendingLayoutManager = new LinearLayoutManager(this.getContext());
         mPendingRecyclerView.setLayoutManager(mPendingLayoutManager);
 
         // Make an empty list to hold the data
@@ -108,9 +109,9 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
 
         mPendingRecyclerView.setAdapter(mPendingAdapter);
 
-        mSentRecyclerView = view.findViewById(R.id.recyclerSentConnections);
+        RecyclerView mSentRecyclerView = view.findViewById(R.id.recyclerSentConnections);
         // size should stay the same regardless of data
-        mSentLayoutManager = new LinearLayoutManager(this.getContext());
+        LinearLayoutManager mSentLayoutManager = new LinearLayoutManager(this.getContext());
         mSentRecyclerView.setLayoutManager(mSentLayoutManager);
 
         // Make an empty list to hold the data
@@ -123,6 +124,12 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         return view;
     }
 
+    /**
+     * Starts a {@link SendPostAsyncTask} to accept a connection request
+     *
+     * @param contactUsername The new connection's username
+     * @param position        the position of the selection in the recycler view
+     */
     @Override
     public void onConnectionAccepted(String contactUsername, int position) {
         mPendingAcceptPosition = position;
@@ -142,9 +149,16 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
                 .build().execute();
     }
 
+    /**
+     * Starts a {@link SendPostAsyncTask} to deny a connection request
+     *
+     * @param contactUsername the connection's username
+     * @param position        the selection's position in the recyclerview
+     * @param fromPending     if the request was pending
+     */
     @Override
     public void onConnectionDenied(String contactUsername, int position, boolean fromPending) {
-        if(fromPending) {
+        if (fromPending) {
             mPendingDeletePosition = position;
         } else {
             mSentDeletePosition = position;
@@ -159,9 +173,11 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
             e.printStackTrace();
         }
 
+        // Start an async task to delete the connection request
         SendPostAsyncTask.Builder taskBuilder = new SendPostAsyncTask.Builder(mDeleteUrl, messageJson);
 
-        if(fromPending) {
+        // Handle differently if the request was from pending
+        if (fromPending) {
             taskBuilder.onPostExecute(this::deleteReceivedRequest);
         } else {
             taskBuilder.onPostExecute(this::deleteSentRequest);
@@ -172,12 +188,18 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         task.execute();
     }
 
+    /**
+     * When the webservice successfully deletes a received request, remove it
+     * from datasets as well
+     *
+     * @param result JSON to parse
+     */
     private void deleteReceivedRequest(final String result) {
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
-
+                // Remove from datasets
                 mPendingDataSet.remove(mPendingDeletePosition);
                 mPendingAdapter.notifyItemRemoved(mPendingDeletePosition);
                 mPendingAdapter.notifyItemRangeChanged(mPendingDeletePosition, mPendingDataSet.size() - mPendingDeletePosition);
@@ -188,10 +210,16 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         }
     }
 
+    /**
+     * When the webservice successfully deletes a sent request, remove it
+     * from datasets as well
+     *
+     * @param result JSON to parse
+     */
     private void deleteSentRequest(final String result) {
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
                 mSentDataSet.remove(mSentDeletePosition);
@@ -203,9 +231,14 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
             e.printStackTrace();
         }
     }
+
+    /**
+     * Set up urls for requests to the webservice
+     */
     private void setUpRequests() {
+        // Get the user's prefs
         SharedPreferences prefs =
-                getActivity().getSharedPreferences(
+                Objects.requireNonNull(getActivity()).getSharedPreferences(
                         getString(R.string.keys_shared_prefs),
                         Context.MODE_PRIVATE);
         if (!prefs.contains(getString(R.string.keys_prefs_username))) {
@@ -217,6 +250,7 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         mUsername = prefs.getString(getString(R.string.keys_prefs_username), "");
         mMemberId = prefs.getInt(getString(R.string.keys_prefs_user_id), 0);
 
+        // Build the urls
         mGetReceivedUrl = new Uri.Builder()
                 .scheme("https")
                 .appendPath(getString(R.string.ep_base_url))
@@ -263,6 +297,9 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
 
     }
 
+    /**
+     * Starts a {@link SendPostAsyncTask} to get the user's pending connections
+     */
     private void requestPendingConnections() {
         JSONObject messageJson = new JSONObject();
         try {
@@ -279,6 +316,9 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
 
     }
 
+    /**
+     * Starts a {@link SendPostAsyncTask} to get user's the user is not connected to
+     */
     private void requestUnconnectedMembers() {
         JSONObject messageJson = new JSONObject();
         try {
@@ -295,15 +335,20 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
 
     }
 
+    /**
+     * Displays results of a search
+     *
+     * @param result JSON to parse
+     */
     private void populateSearchView(final String result) {
         Log.d("testing", Integer.toString(mMemberId));
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
                 ArrayList<String> connections = new ArrayList<>();
 
-                if(res.has(getString(R.string.keys_json_result))){
+                if (res.has(getString(R.string.keys_json_result))) {
                     JSONArray members = res.getJSONArray(getString(R.string.keys_json_result));
                     Log.d("testing", Integer.toString(members.length()));
                     for (int i = 0; i < members.length(); i++) {
@@ -312,7 +357,7 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
                         String uName = member.getString(getString(R.string.keys_json_username));
                         connections.add(uName);
                     }
-                    Collections.sort(mSearchDataSet, String.CASE_INSENSITIVE_ORDER);
+                    mSearchDataSet.sort(String.CASE_INSENSITIVE_ORDER);
                     mSearchDataSet.addAll(connections);
                     mSearchAdapter.notifyDataSetChanged();
 
@@ -325,6 +370,9 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         mRequestConnectionButton.setEnabled(true);
     }
 
+    /**
+     * Starts a {@link SendPostAsyncTask} to get the user's sent connection requests
+     */
     private void requestSentConnections() {
         JSONObject messageJson = new JSONObject();
         try {
@@ -342,13 +390,19 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
     }
 
     private void handleError(final String msg) {
-        Log.e("Requests ERROR!!!", msg.toString());
+        Log.e("Requests ERROR!!!", msg);
     }
 
+    /**
+     * When a connection has successfully been accepted by the webservice,
+     * update the datasets
+     *
+     * @param result JSON to parse
+     */
     private void acceptConnectionOnPost(final String result) {
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
                 mPendingDataSet.remove(mPendingAcceptPosition);
@@ -362,6 +416,11 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         }
     }
 
+    /**
+     * Create the pending connections list received from the webservice
+     *
+     * @param result JSON to parse
+     */
     private void createPendingConnectionsList(final String result) {
         try {
             JSONObject res = new JSONObject(result);
@@ -394,6 +453,11 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         }
     }
 
+    /**
+     * Create the sent connections list received from the webservice
+     *
+     * @param result JSON to parse
+     */
     private void createSentConnectionsList(final String result) {
         try {
             JSONObject res = new JSONObject(result);
@@ -427,12 +491,18 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         }
     }
 
+    /**
+     * On click for the send request button
+     *
+     * @param v the button
+     */
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.sendRequestButton) {
+        if (v.getId() == R.id.sendRequestButton) {
+            // Get the contact's username
             String contactUsername = mConnectionSearchText.getText().toString();
 
-            if(!contactUsername.isEmpty()) {
+            if (!contactUsername.isEmpty()) {
                 mRequestConnectionButton.setEnabled(false);
                 JSONObject messageJson = new JSONObject();
 
@@ -444,6 +514,7 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
                     e.printStackTrace();
                 }
 
+                // Start the async task to send a new request
                 new SendPostAsyncTask.Builder(mSendRequestUrl, messageJson)
                         .onPostExecute(this::acceptSentRequestOnPost)
                         .onCancelled(this::handleSendRequestError)
@@ -454,26 +525,38 @@ public class RequestsFragment extends Fragment implements PendingRequestsAdapter
         }
     }
 
+    /**
+     * Handle a failed request
+     *
+     * @param msg Error message
+     */
     private void handleSendRequestError(final String msg) {
         mRequestConnectionButton.setEnabled(true);
         mConnectionSearchText.setError("Request Failed");
-        Log.e("Requests ERROR!!!", msg.toString());
+        Log.e("Requests ERROR!!!", msg);
     }
 
+    /**
+     * When the webservice successfully processes an accepted request, process
+     * Otherwise, notify the user of the error
+     *
+     * @param result JSON to parse
+     */
     private void acceptSentRequestOnPost(final String result) {
         mRequestConnectionButton.setEnabled(true);
         try {
             JSONObject res = new JSONObject(result);
-            if(res.get(getString(R.string.keys_json_success)).toString()
+            if (res.get(getString(R.string.keys_json_success)).toString()
                     .equals(getString(R.string.keys_json_success_value_true))) {
 
+                // Clear the search text
                 mConnectionSearchText.setText("");
                 //Reload the sent Connections List
                 requestSentConnections();
                 requestUnconnectedMembers();
             } else {
                 String error = res.get("error").toString();
-                if(error.equals("Connection already exists.")) {
+                if (error.equals("Connection already exists.")) {
                     mConnectionSearchText.setError(error);
                 } else {
                     mConnectionSearchText.setError("User Not Found");

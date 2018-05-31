@@ -176,7 +176,7 @@ public class ChatFragment extends Fragment {
                 return;
             }
 
-            
+
             // Update the text view of messages (display the conversation)
             Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
                 mOutputTextView.setText("");

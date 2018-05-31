@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * {@link Fragment} for the home page. Doesn't do much.
  */
 public class HomeFragment extends Fragment {
 
