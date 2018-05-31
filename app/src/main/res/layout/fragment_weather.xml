@@ -8,11 +8,25 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <ImageButton
-        android:id="@+id/imageButton"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        card_view:srcCompat="@drawable/ic_accuweatherlogo" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            card_view:layout_constraintLeft_toLeftOf="parent"
+            android:text="Weather"
+            android:textSize="20dp"/>
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/cardview_light_background"
+            card_view:layout_constraintRight_toRightOf="parent"
+            card_view:srcCompat="@drawable/ic_accuweatherlogo" />
+
+    </android.support.constraint.ConstraintLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,13 +41,13 @@
 
         <ImageButton
             android:id="@+id/searchButton"
-            android:layout_width="35dp"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_search_icon" />
 
         <ImageButton
             android:id="@+id/currentLocationButton"
-            android:layout_width="35dp"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_my_location_black_24dp" />
 
@@ -60,8 +74,8 @@
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="20dp"
-            android:text="@string/button_save_location" />
+            android:text="@string/button_save_location"
+            tools:layout_marginLeft="50dp" />
 
     </LinearLayout>
 
