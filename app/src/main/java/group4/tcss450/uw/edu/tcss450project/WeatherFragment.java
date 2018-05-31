@@ -53,11 +53,15 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         View.OnClickListener,
         AdapterView.OnItemSelectedListener {
 
+    /*====== CONSTANTS FOR DEVICE LOCATION =====*/
+
     private static final String TAG = "MyLocationsActivity";
+
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
      */
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+
     /**
      * The fastest rate for active location updates. Exact. Updates will never be more frequent
      * than this value.
@@ -68,18 +72,31 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     private static final int MY_PERMISSIONS_LOCATIONS = 814;
 
+
+    /* ===== INSTANCE FIELDS ===== */
+
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
 
-
+    /**
+     * The location key that weather is currently being displayed for.
+     */
     private String mLocationKey = "";
+
+    /**
+     * The location name currently being displayed.
+     */
     private String mLocationName = "";
-    private ArrayAdapter<String> mArrayAdapter;
+
     private List<String> mSavedLocationNames;
+
+    /**
+     * Maps the names of saved locations to their corresponding location keys.
+     */
     private Map<String, String> mLocationKeyMap;
 
-    // UI components
+    /* UI Components */
     private EditText mSearchView;
     private TextView mCurrentLocationText;
     private TextView mCurrentConditionsTemp;
@@ -114,17 +131,11 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
     private TextView mDayFiveDate;
     private TextView mDayFiveConditions;
 
-    private ImageView mIconCurrentConditions;
-    private ImageButton mSearchButton;
-    private ImageButton mCurrentLocationButton;
     private Button mSaveLocationButton;
-    private Spinner mSavedLocationsSpinner;
-
 
     public WeatherFragment() {
         // Required empty public constructor
     }
-
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -135,12 +146,12 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
+        // Initialize saved location list and map
         mSavedLocationNames = new ArrayList<String>();
         mLocationKeyMap = new HashMap<String, String>();
 
         // Initialize UI Components
         mCurrentConditionsTemp = view.findViewById(R.id.tempCurrentCondtions);
-        mIconCurrentConditions = view.findViewById(R.id.iconCurrentConditions);
         mWeatherCurrentConditions = view.findViewById(R.id.weatherCurrentCondtions);
         mOneDayDate = view.findViewById(R.id.oneDayDate);
         mOneDayMaxTemp = view.findViewById(R.id.oneDayMaxTemp);
@@ -173,14 +184,14 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         mDayFiveConditions = view.findViewById(R.id.dayFiveConditions);
 
         mSearchView = view.findViewById(R.id.searchLocation);
-        mSearchButton = view.findViewById(R.id.searchButton);
+        ImageButton mSearchButton = view.findViewById(R.id.searchButton);
         mSaveLocationButton = view.findViewById(R.id.saveButton);
         mCurrentLocationText = view.findViewById(R.id.textLocation);
-        mSavedLocationsSpinner = view.findViewById(R.id.saveLocationsSpinner);
-        mCurrentLocationButton = view.findViewById(R.id.currentLocationButton);
+        Spinner mSavedLocationsSpinner = view.findViewById(R.id.saveLocationsSpinner);
+        ImageButton mCurrentLocationButton = view.findViewById(R.id.currentLocationButton);
 
-        // Initialize adapter
-        mArrayAdapter = new ArrayAdapter<>(this.getContext(),
+        // Initialize spinner and adapter for saved locations
+        ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<>(this.getContext(),
                 R.layout.adapter_array_text, mSavedLocationNames);
         mSavedLocationsSpinner.setAdapter(mArrayAdapter);
 
@@ -243,6 +254,7 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
             getCurrentLocationKey();
             updateWeather();
         }
+        // Update saved locations based on prefs
         populateSavedLocationsListAndMap();
 
     }
@@ -375,6 +387,10 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
                 connectionResult.getErrorCode());
     }
 
+    /**
+     * Starts an AsyncTask to get a location key from Accuweather
+     * based on the device's current location
+     */
     private void getCurrentLocationKey() {
 
         // latitude and longitude pair of current location
@@ -397,6 +413,10 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     }
 
+    /**
+     * Starts an AsyncTask to get a location key from Accuweather
+     * based on a search parameter entered by the user.
+     */
     private void getSearchLocationKey() {
         //TODO
         String postalcode = mSearchView.getText().toString();
@@ -414,6 +434,11 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         builder.build().execute();
     }
 
+    /**
+     * Starts an AsyncTask to get a location name from Accuweather
+     * based on a provided location key.
+     * @param key The location key
+     */
     private void getLocationName(String key) {
         String[] endpoints = new String[]{getString(R.string.ep_api_locations),
                 getString(R.string.ep_api_v1),
@@ -425,6 +450,10 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         builder.build().execute();
     }
 
+    /**
+     * Starts an AsyncTask to get a one day forecast from Accuweather
+     * based on the location key saved in mLocationKey.
+     */
     private void getOneDayForecast() {
         // Make the forecast url
         String[] endpoints = new String[]{getString(R.string.ep_api_forecasts),
@@ -439,6 +468,10 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         builder.build().execute();
     }
 
+    /**
+     * Starts an AsyncTask to get a five day forecast from Accuweather
+     * based on the location key saved in mLocationKey.
+     */
     private void getFiveDayForecast() {
 
         String[] endpoints = new String[]{getString(R.string.ep_api_forecasts),
@@ -453,6 +486,10 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         builder.build().execute();
     }
 
+    /**
+     * Starts an AsyncTask to get the current conditions from Accuweather
+     * based on the location key saved in mLocationKey.
+     */
     private void getCurrentConditions() {
 
         String[] endpoints = new String[]{
@@ -466,6 +503,11 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         builder.build().execute();
     }
 
+    /**
+     * Parses a JSON string result and updates the one day forecast
+     * UI components.
+     * @param result The JSON string to be parsed
+     */
     private void displayOneDayForecast(String result) {
         //parse json and display the weather
         //parse json and display the weather
@@ -495,6 +537,11 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         }
     }
 
+    /**
+     * Parses a JSON string result and updates the five day forecast
+     * UI components.
+     * @param result The JSON string to be parsed
+     */
     private void displayFiveDayForecast(String result) {
         //parse json and display the weather
         //parse json and display the weather
@@ -581,6 +628,11 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
 
     }
 
+    /**
+     * Parses a JSON string result and updates the current conditions
+     * UI components.
+     * @param result The JSON string to be parsed
+     */
     private void displayCurrentConditions(String result) {
         //parse json and display the weather
         JSONArray resArray = null;
@@ -598,7 +650,11 @@ public class WeatherFragment extends Fragment implements GoogleApiClient.Connect
         }
     }
 
-
+    /**
+     * Parses a JSON string with location information, and saves it
+     * for reference
+     * @param result The JSON string to be parsed.
+     */
     private void insertLocationInMap(String result) {
         JSONObject res = null;
         String locationKey = "";
