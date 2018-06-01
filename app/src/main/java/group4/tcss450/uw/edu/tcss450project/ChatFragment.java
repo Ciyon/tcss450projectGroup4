@@ -246,6 +246,7 @@ public class ChatFragment extends Fragment {
                     }
                     // Update the text view of messages (display the conversation)
                     Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                        mOutputTextView.setText("");
                         for (String msg : messageList) {
                             mOutputTextView.append(msg);
                             mOutputTextView.append(System.lineSeparator());
